@@ -34,7 +34,7 @@ py_parsing(PyObject *self, PyObject *args)
     long l;
     arg_parse_tuple(args, i, j, d, l);
     std::string str = "string";
-    return build_value(str, str.c_str(), true, false);
+    return build_value(i, j, d, l, str, str.c_str(), true, false);
 }
 
 PyObject *

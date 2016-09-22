@@ -8,7 +8,7 @@ def test_native():
     'pybinding.ext.native'
 
     >>> native.parsing(1, 2, 20.0, 5)
-    ('string', 'string', True, False)
+    (1, 2, 20.0, 5, 'string', 'string', True, False)
     >>> native.func(4, 0, 0)
     4
     >>> native.one

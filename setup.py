@@ -112,17 +112,17 @@ ext_modules = [
         libraries=libraries + ['fftw3'],
     ),
 
-    Extension(
-        'pybinding.ext.arrayfire',
-        sources=[
-            'src/modules/ext/arrayfire.cpp',
-        ],
-        depends=depends,
-        include_dirs=include_dirs,
-        extra_compile_args=extra_compile_args,
-        language="c++",
-        libraries=libraries + ['af'],
-    ),
+    # Extension(
+    #     'pybinding.ext.arrayfire',
+    #     sources=[
+    #         'src/modules/ext/arrayfire.cpp',
+    #     ],
+    #     depends=depends,
+    #     include_dirs=include_dirs,
+    #     extra_compile_args=extra_compile_args,
+    #     language="c++",
+    #     libraries=libraries + ['af'],
+    # ),
 
 ]
 
@@ -135,7 +135,7 @@ setup(
         'pybinding': 'pybinding'
     },
     ext_modules=ext_modules,
-    version='0.1',
+    version='999.999.999',
     description='Python Bindings from C++',
     author='Dzhelil Rufat',
     author_email='drufat@caltech.edu',
