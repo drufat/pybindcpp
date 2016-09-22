@@ -1,0 +1,38 @@
+# Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
+import numpy as np
+from dec.helper import eq
+from pybinding.ext import numpy as nn
+
+def test_numpy():
+
+    fn = np.vectorize(lambda N, x: N * x)
+
+    for N, x in (
+            (1, 2),
+            (1, [1, 2, 3, 4]),
+            (1, [[1, 2], [3, 4]]),
+            ([1, 2], [[1, 2], [3, 4]]),
+    ):
+        assert eq(fn(N, x),
+                  nn.fn_ufunc(N, x),
+                  nn.fn_ufunc1(N, x),
+                  nn.fn_ufunc2(N, x),
+                  nn.fn_ufunc3(N, x),
+                  )
+
+    for N, x in (
+            (1, 2),
+    ):
+        assert eq(fn(N, x),
+                  nn.fn(N, x))
+
+    for N, x in (
+            (1, [1, 2, 3, 4]),
+            (1, np.ones(100)),
+            (1, np.zeros(100)),
+    ):
+        assert eq(fn(N, x),
+                  nn.fn_array(N, x),
+                  nn.fn_array1(N, x),
+                  nn.fn_array2(N, x),
+                  )
