@@ -41,7 +41,7 @@ if OPENMP:
 ext_modules = [
 
     Extension(
-        'pybinding.dispatch',
+        'pybindcpp.dispatch',
         sources=[
             'src/modules/ext/dispatch.cpp',
         ],
@@ -53,7 +53,7 @@ ext_modules = [
     ),
 
     Extension(
-        'pybinding.ext.simple',
+        'pybindcpp.ext.simple',
         sources=[
             'src/modules/ext/simple.cpp',
         ],
@@ -65,7 +65,7 @@ ext_modules = [
     ),
 
     Extension(
-        'pybinding.ext.native',
+        'pybindcpp.ext.native',
         sources=[
             'src/modules/ext/native.cpp',
         ],
@@ -77,7 +77,7 @@ ext_modules = [
     ),
 
     Extension(
-        'pybinding.ext.numpy',
+        'pybindcpp.ext.numpy',
         sources=[
             'src/modules/ext/numpy.cpp',
         ],
@@ -89,7 +89,7 @@ ext_modules = [
     ),
 
     Extension(
-        'pybinding.ext.eigen',
+        'pybindcpp.ext.eigen',
         sources=[
             'src/modules/ext/eigen.cpp',
         ],
@@ -101,7 +101,7 @@ ext_modules = [
     ),
 
     Extension(
-        'pybinding.ext.fftw',
+        'pybindcpp.ext.fftw',
         sources=[
             'src/modules/ext/fftw.cpp',
         ],
@@ -113,7 +113,7 @@ ext_modules = [
     ),
 
     # Extension(
-    #     'pybinding.ext.arrayfire',
+    #     'pybindcpp.ext.arrayfire',
     #     sources=[
     #         'src/modules/ext/arrayfire.cpp',
     #     ],
@@ -127,12 +127,12 @@ ext_modules = [
 ]
 
 setup(
-    name='pybinding',
+    name='pybindcpp',
     packages=[
-        'pybinding'
+        'pybindcpp'
     ],
     package_dir={
-        'pybinding': 'pybinding'
+        'pybindcpp': 'pybindcpp'
     },
     ext_modules=ext_modules,
     version='999.999.999',
@@ -140,7 +140,7 @@ setup(
     author='Dzhelil Rufat',
     author_email='drufat@caltech.edu',
     license='GNU GPLv3',
-    url='http://dzhelil.info/pybinding',
+    url='http://dzhelil.info/pybindcpp',
     requires=[
         'numpy',
     ],

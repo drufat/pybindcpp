@@ -6,6 +6,6 @@ Python Bindings
 A python module to create bindings using modern C++. 
 
 
-.. |Build Status| image:: https://travis-ci.org/drufat/pybinding.png
-   :target: https://travis-ci.org/drufat/pybinding
+.. |Build Status| image:: https://travis-ci.org/drufat/pybindcpp.png
+   :target: https://travis-ci.org/drufat/pybindcpp
 
