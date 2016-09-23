@@ -1,11 +1,11 @@
 # Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
 # import numpy as np
 # import numpy.fft as fft
-# from pybinding.helper import eq
+# from pybindcpp.helper import eq
 #
 #
 # def test_fft():
-#     from pybinding.ext import arrayfire as af
+#     from pybindcpp.ext import arrayfire as af
 #     af.set_backend('cpu')
 #
 #     x = [0, 1, 2, 3]

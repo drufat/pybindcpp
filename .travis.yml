@@ -19,7 +19,7 @@ install:
     - python setup.py develop
 
 script:
-    - py.test --doctest-modules pybinding
+    - py.test --doctest-modules pybindcpp
 
 notifications:
     email: false

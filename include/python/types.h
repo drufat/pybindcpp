@@ -134,7 +134,7 @@ varargs(std::shared_ptr<VarArg> func)
     auto gil = PyGILState_Ensure();
 
     auto caps = capsule_new(func);
-    auto dmod = PyImport_ImportModule("pybinding.function");
+    auto dmod = PyImport_ImportModule("pybindcpp.function");
     auto dfun = PyObject_GetAttrString(dmod, "function");
     auto args = Py_BuildValue("(O)", caps);
     auto obj = PyObject_Call(dfun, args, NULL);

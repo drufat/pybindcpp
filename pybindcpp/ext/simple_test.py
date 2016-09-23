@@ -1,5 +1,5 @@
 # Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
-from pybinding.ext import simple
+from pybindcpp.ext import simple
 
 
 def test_simple():

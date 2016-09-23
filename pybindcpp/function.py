@@ -1,5 +1,5 @@
 # Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
-from pybinding import dispatch
+from pybindcpp import dispatch
 
 
 class function(object):

@@ -1,8 +1,8 @@
 # Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
 import numpy as np
 import numpy.fft as fft
-from pybinding.helper import eq
-from pybinding.ext import fftw
+from pybindcpp.helper import eq
+from pybindcpp.ext import fftw
 
 
 def test_fftw():

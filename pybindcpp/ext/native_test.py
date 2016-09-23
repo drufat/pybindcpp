@@ -1,11 +1,11 @@
 # Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
-from pybinding.ext import native
+from pybindcpp.ext import native
 
 def test_native():
     '''
     >>> native.__doc__
     >>> native.__name__
-    'pybinding.ext.native'
+    'pybindcpp.ext.native'
 
     >>> native.parsing(1, 2, 20.0, 5)
     (1, 2, 20.0, 5, 'string', 'string', True, False)

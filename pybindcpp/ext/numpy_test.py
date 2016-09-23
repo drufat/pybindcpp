@@ -1,7 +1,7 @@
 # Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
 import numpy as np
-from pybinding.helper import eq
-from pybinding.ext import numpy as nn
+from pybindcpp.helper import eq
+from pybindcpp.ext import numpy as nn
 
 def test_numpy():
 
