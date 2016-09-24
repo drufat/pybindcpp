@@ -63,7 +63,7 @@ dispatch(char **args,
 PyObject *
 make_ufunc_imp(
     std::string name_,
-    std::vector <ftype> funcs_,
+    std::vector<ftype> funcs_,
     std::vector<char> types_,
     int nin,
     int nout
@@ -125,7 +125,7 @@ inline
 void
 ufunc_raw(Module &m,
           std::string name,
-          std::vector <ftype> funcs,
+          std::vector<ftype> funcs,
           std::vector<char> types,
           int nin, int nout) {
   m.var(name, make_ufunc_imp(name, funcs, types, nin, nout));

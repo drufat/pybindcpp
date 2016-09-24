@@ -1,3 +1,4 @@
+# Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
 import numpy as np
 
 
@@ -17,6 +18,7 @@ def eq(*args):
         if not np.allclose(l, r):
             return False
     return True
+
 
 def nothing():
     return 10
