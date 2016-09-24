@@ -3,6 +3,8 @@ project(pybindcpp)
 
 add_compile_options(-std=c++1z)
 
+include_directories(include)
+
 add_custom_target(
         pythonmodule ALL python3 setup.py develop --user
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}

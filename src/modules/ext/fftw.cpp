@@ -15,15 +15,19 @@ fftw(Module &m) {
     if (!pybindcpp::arg_parse_tuple(args, o))
       return NULL;
 
-    const auto x = (PyArrayObject *) PyArray_ContiguousFromAny(o,
-                                                               NPY_CDOUBLE,
-                                                               1, 1);
+    const auto x = (PyArrayObject *) PyArray_ContiguousFromAny(
+        o,
+        NPY_CDOUBLE,
+        1, 1
+    );
     if (!x) return NULL;
 
-    auto y = (PyArrayObject *) PyArray_EMPTY(PyArray_NDIM(x),
-                                             PyArray_DIMS(x),
-                                             NPY_CDOUBLE,
-                                             0);
+    auto y = (PyArrayObject *) PyArray_EMPTY(
+        PyArray_NDIM(x),
+        PyArray_DIMS(x),
+        NPY_CDOUBLE,
+        0
+    );
     if (!y) return NULL;
 
     auto N = PyArray_DIMS(x)[0];

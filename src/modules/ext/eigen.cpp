@@ -25,15 +25,17 @@ eigen(Module &m) {
     if (!arg_parse_tuple(args, o))
       return NULL;
 
-    const auto x = (PyArrayObject *) PyArray_ContiguousFromAny(o,
-                                                               NPY_DOUBLE,
-                                                               2, 2);
+    const auto x = (PyArrayObject *) PyArray_ContiguousFromAny(
+        o,
+        NPY_DOUBLE,
+        2, 2);
     if (!x) return NULL;
 
-    auto y = (PyArrayObject *) PyArray_EMPTY(PyArray_NDIM(x),
-                                             PyArray_DIMS(x),
-                                             NPY_DOUBLE,
-                                             0);
+    auto y = (PyArrayObject *) PyArray_EMPTY(
+        PyArray_NDIM(x),
+        PyArray_DIMS(x),
+        NPY_DOUBLE,
+        0);
     if (!y) return NULL;
 
     Map <ArrayXXd> X((double *) PyArray_DATA(x), PyArray_DIMS(x)[0], PyArray_DIMS(x)[1]);

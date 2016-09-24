@@ -44,7 +44,7 @@ constexpr str<S0..., S1...> operator+(str<S0...>, str<S1...>) {
 struct StrConst {
 
   const char *const str_ptr;
-  const unsigned int str_size;
+  const size_t str_size;
 
   template<std::size_t N>
   constexpr StrConst(const char(&a)[N])
@@ -103,12 +103,11 @@ int main() {
   constexpr auto my_other_string = StrConst(my_string);
   static_assert(my_string == my_other_string, "");
 
-  int a, b, c, d, e, f;
-
   auto add = [](int a, int b, int c) {
     return a + b + c;
   };
 
+  int a, b, c, d, e, f;
   auto tup1 = std::make_tuple(4, 5, 6);
   lvalue(std::tie(a, b, c)) = tup1;
 
