@@ -28,9 +28,6 @@ def test_fun():
     >>> add(1, 1)
     2
 
-    >>> type(bindctypes_so.register_function)
-    <class 'ctypes.CDLL.__init__.<locals>._FuncPtr'>
-
     >>> size = 20
     >>> buf = ct.create_string_buffer(size+1)
     >>> create_string(b'a', size, buf)
