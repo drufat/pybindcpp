@@ -5,7 +5,7 @@
 #include <vector>
 #include <arrayfire.h>
 
-using namespace python;
+using namespace pybindcpp;
 using namespace af;
 
 void

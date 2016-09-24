@@ -1,7 +1,7 @@
 // Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
-#include "python/module.h"
+#include "pybindcpp/module.h"
 
-using namespace python;
+using namespace pybindcpp;
 
 struct MyClass {
 

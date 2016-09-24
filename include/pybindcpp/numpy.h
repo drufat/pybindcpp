@@ -6,9 +6,9 @@
 #include "numpy/ndarrayobject.h"
 #include "numpy/ufuncobject.h"
 
-#include "python/module.h"
+#include "pybindcpp/module.h"
 
-namespace python {
+namespace pybindcpp {
 namespace {
 
 
@@ -68,7 +68,7 @@ dispatch(char **args,
 }
 
 PyObject*
-create_ufunc(
+make_ufunc_imp(
         std::string name_,
         std::vector<ftype> funcs_,
         std::vector<char> types_,
@@ -116,7 +116,7 @@ make_ufunc(std::string name, F f)
 {
     constexpr auto nin = sizeof...(I);
     constexpr auto nout = 1;
-    return create_ufunc(name, {
+    return make_ufunc_imp(name, {
                             loop1d<O, F, I...>(f),
                         }, {
                             NumpyTypes.at(typeid(I))...,
@@ -133,7 +133,7 @@ ufunc_raw(Module& m,
           std::vector<char> types,
           int nin, int nout)
 {
-    m.var(name, create_ufunc(name, funcs, types, nin, nout));
+    m.var(name, make_ufunc_imp(name, funcs, types, nin, nout));
 }
 
 template<class O, class F, class... I>

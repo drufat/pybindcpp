@@ -1,9 +1,9 @@
 // Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
-#include "python/module.h"
-#include "python/numpy.h"
+#include "pybindcpp/module.h"
+#include "pybindcpp/numpy.h"
 #include "numpy_cpp.h"
 
-using namespace python;
+using namespace pybindcpp;
 
 double
 fn(int N, double x){
@@ -85,17 +85,17 @@ numpymodule(Module& m)
     m.varargs("fn", [](PyObject* self, PyObject* args) -> PyObject*
     {
         int N; double x;
-        if(!python::arg_parse_tuple(args, N, x))
+        if(!pybindcpp::arg_parse_tuple(args, N, x))
             return NULL;
         auto out = fn(N, x);
-        return python::build_value(out);
+        return pybindcpp::build_value(out);
     });
 
     m.varargs("fn_array",  [](PyObject* self, PyObject* args) -> PyObject*
     {
 
         int N; PyObject* o;
-        if(!python::arg_parse_tuple(args, N, o))
+        if(!pybindcpp::arg_parse_tuple(args, N, o))
             return NULL;
 
         const auto x = (PyArrayObject*)PyArray_ContiguousFromAny(o,
@@ -126,7 +126,7 @@ numpymodule(Module& m)
     {
 
         int N; PyObject* x;
-        if(!python::arg_parse_tuple(args, N, x))
+        if(!pybindcpp::arg_parse_tuple(args, N, x))
             return NULL;
 
         auto xa = numpy::array_view<double, 1>(x);
@@ -147,15 +147,15 @@ numpymodule(Module& m)
 
         {
             int N; double x;
-            if(python::arg_parse_tuple(args, N, x)) {
+            if(pybindcpp::arg_parse_tuple(args, N, x)) {
                 auto out = fn(N, x);
-                return python::build_value(out);
+                return pybindcpp::build_value(out);
             }
         }
         PyErr_Clear();
         {
             int N; PyObject* x;
-            if(python::arg_parse_tuple(args, N, x)) {
+            if(pybindcpp::arg_parse_tuple(args, N, x)) {
 
                 auto xa = numpy::array_view<double, 1>(x);
                 auto len = xa.dim(0);

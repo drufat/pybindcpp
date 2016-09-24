@@ -1,10 +1,10 @@
 // Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
-#include "python/module.h"
-#include "python/numpy.h"
+#include "pybindcpp/module.h"
+#include "pybindcpp/numpy.h"
 
 #include <fftw3.h>
 
-using namespace python;
+using namespace pybindcpp;
 
 auto
 fftw(Module& m)
@@ -14,7 +14,7 @@ fftw(Module& m)
     m.varargs("fft", [](PyObject* self, PyObject* args) -> PyObject*
     {
         PyObject* o;
-        if(!python::arg_parse_tuple(args, o))
+        if(!pybindcpp::arg_parse_tuple(args, o))
             return NULL;
 
         const auto x = (PyArrayObject*)PyArray_ContiguousFromAny(o,
@@ -45,7 +45,7 @@ fftw(Module& m)
     m.varargs("fft2", [](PyObject* self, PyObject* args) -> PyObject*
     {
         PyObject* o;
-        if(!python::arg_parse_tuple(args, o))
+        if(!pybindcpp::arg_parse_tuple(args, o))
             return NULL;
 
         const auto x = (PyArrayObject*)PyArray_ContiguousFromAny(o,

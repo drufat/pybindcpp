@@ -1,12 +1,12 @@
 // Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
-#include "python/module.h"
-#include "python/numpy.h"
+#include "pybindcpp/module.h"
+#include "pybindcpp/numpy.h"
 
 #include <complex>
 #include <cmath>
 #include <Eigen/Core>
 
-using namespace python;
+using namespace pybindcpp;
 using namespace Eigen;
 
 

@@ -16,11 +16,11 @@
 #include <iostream>
 #include <memory>
 
-#include "python/types.h"
-#include "python/capsule.h"
-#include "python/storage.h"
+#include "pybindcpp/types.h"
+#include "pybindcpp/capsule.h"
+#include "pybindcpp/storage.h"
 
-namespace python {
+namespace pybindcpp {
 
 
 struct Module
@@ -41,19 +41,19 @@ struct Module
     template<class T>
     void var(std::string name, T&& t)
     {
-        add(name, python::var<T>(std::forward<T>(t)));
+        add(name, pybindcpp::var<T>(std::forward<T>(t)));
     }
 
     template<class T>
     void fun(std::string name, T&& t)
     {
-        add(name, python::fun(std::forward<T>(t)));
+        add(name, pybindcpp::fun(std::forward<T>(t)));
     }
 
     template<class T>
     void varargs(std::string name, T&& t)
     {
-        add(name, python::varargs(std::forward<T>(t)));
+        add(name, pybindcpp::varargs(std::forward<T>(t)));
     }
 
 };

@@ -23,6 +23,8 @@ clean:
 	rm -rf $(CPP_OBJECTS)
 	rm -rf `find . -name "*.o"`
 	rm -rf `find . -name "*.so"`
+	rm -rf `find . -name "__pycache__"`
+	rm -rf `find . -name "*.pyc"`
 
 .PHONY: all pymodules clean
 

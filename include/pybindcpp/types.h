@@ -5,10 +5,10 @@
 #include <map>
 #include <memory>
 
-#include "python/util.h"
-#include "python/capsule.h"
+#include "pybindcpp/util.h"
+#include "pybindcpp/capsule.h"
 
-namespace python {
+namespace pybindcpp {
 
 
 typedef unsigned int uint;

@@ -6,7 +6,7 @@
 #include <string>
 #include <sstream>
 
-namespace python {
+namespace pybindcpp {
 
 template<typename... Args>
 std::string stringer(Args const& ... args )

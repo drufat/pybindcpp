@@ -53,6 +53,18 @@ ext_modules = [
     ),
 
     Extension(
+        'pybindcpp.bindctypes',
+        sources=[
+            'src/modules/ext/bindctypes.cpp',
+        ],
+        depends=depends,
+        include_dirs=include_dirs,
+        extra_compile_args=extra_compile_args,
+        language="c++",
+        libraries=libraries,
+    ),
+
+    Extension(
         'pybindcpp.ext.simple',
         sources=[
             'src/modules/ext/simple.cpp',

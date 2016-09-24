@@ -6,7 +6,7 @@
 #include <memory>
 
 
-namespace python {
+namespace pybindcpp {
 
 template<class T>
 void

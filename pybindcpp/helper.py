@@ -17,3 +17,6 @@ def eq(*args):
         if not np.allclose(l, r):
             return False
     return True
+
+def nothing():
+    return 10

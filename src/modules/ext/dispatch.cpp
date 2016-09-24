@@ -1,10 +1,8 @@
 // Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
 #include<Python.h>
 
-#include "python/types.h"
-#include "python/capsule.h"
-
-using namespace python;
+#include "pybindcpp/types.h"
+#include "pybindcpp/capsule.h"
 
 namespace {
 
@@ -20,7 +18,7 @@ dispatch(PyObject *self, PyObject *args)
         return NULL;
     }
 
-    auto func = capsule_get<VarArg>(ofunc);
+    auto func = pybindcpp::capsule_get<pybindcpp::VarArg>(ofunc);
     if (!func) {
         PyErr_SetString(PyExc_TypeError, "Unable to unwrap std::function.");
         return NULL;
@@ -42,6 +40,7 @@ struct PyModuleDef moduledef = {
     methods
 };
 }
+
 
 PyMODINIT_FUNC
 PyInit_dispatch(void)
