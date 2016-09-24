@@ -5,19 +5,16 @@ using namespace pybindcpp;
 
 int
 g(int x, int y) {
-    return x  + y;
+  return x + y;
 }
 
 auto
-simple(Module& m)
-{
-    m.fun("g", g);
-    return NULL;
+simple(Module &m) {
+  m.fun("g", g);
+  return NULL;
 }
 
-
 PyMODINIT_FUNC
-PyInit_simple(void)
-{
-    return module_init("simple", simple);
+PyInit_simple(void) {
+  return module_init("simple", simple);
 }

@@ -22,39 +22,33 @@
 
 namespace pybindcpp {
 
+struct Module {
+  PyObject *self;
 
-struct Module
-{
-    PyObject* self;
+  Module(PyObject *obj)
+      :
+      self(obj) {
+  }
 
-    Module(PyObject* obj) :
-        self(obj)
-    {
-    }
+  void add(std::string name, PyObject *obj) {
+    auto name_ = store(name);
+    PyModule_AddObject(self, name_->c_str(), obj);
+  }
 
-    void add(std::string name, PyObject* obj)
-    {
-        auto name_ = store(name);
-        PyModule_AddObject(self, name_->c_str(), obj);
-    }
+  template<class T>
+  void var(std::string name, T &&t) {
+    add(name, pybindcpp::var<T>(std::forward<T>(t)));
+  }
 
-    template<class T>
-    void var(std::string name, T&& t)
-    {
-        add(name, pybindcpp::var<T>(std::forward<T>(t)));
-    }
+  template<class T>
+  void fun(std::string name, T &&t) {
+    add(name, pybindcpp::fun(std::forward<T>(t)));
+  }
 
-    template<class T>
-    void fun(std::string name, T&& t)
-    {
-        add(name, pybindcpp::fun(std::forward<T>(t)));
-    }
-
-    template<class T>
-    void varargs(std::string name, T&& t)
-    {
-        add(name, pybindcpp::varargs(std::forward<T>(t)));
-    }
+  template<class T>
+  void varargs(std::string name, T &&t) {
+    add(name, pybindcpp::varargs(std::forward<T>(t)));
+  }
 
 };
 
@@ -64,9 +58,8 @@ namespace __hidden__ {
 
 inline
 void
-print(PyObject* obj)
-{
-    PyObject_Print(obj, stdout, Py_PRINT_RAW);
+print(PyObject *obj) {
+  PyObject_Print(obj, stdout, Py_PRINT_RAW);
 }
 
 struct PyModuleDef moduledef = {
@@ -79,21 +72,20 @@ struct PyModuleDef moduledef = {
 
 } // end __hidden__ namespace
 
-PyObject*
-module_init(std::string name, std::function<void(Module&)> exec)
-{
-    using namespace __hidden__;
+PyObject *
+module_init(std::string name, std::function<void(Module &)> exec) {
+  using namespace __hidden__;
 
-    moduledef.m_name = store(name)->c_str();
+  moduledef.m_name = store(name)->c_str();
 
-    auto self = PyModule_Create(&moduledef);
-    if (self == NULL) return NULL;
+  auto self = PyModule_Create(&moduledef);
+  if (self == NULL) return NULL;
 
-    Module m(self);
+  Module m(self);
 
-    exec(m);
+  exec(m);
 
-    return self;
+  return self;
 }
 
 } // end anonymous namespace

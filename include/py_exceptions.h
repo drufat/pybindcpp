@@ -6,15 +6,12 @@
 #include <exception>
 #include <stdexcept>
 
-namespace py
-{
-class exception : public std::exception
-{
-  public:
-    const char *what() const throw()
-    {
-        return "python error has been set";
-    }
+namespace py {
+class exception : public std::exception {
+ public:
+  const char *what() const throw() {
+    return "python error has been set";
+  }
 };
 }
 

@@ -6,25 +6,24 @@
 
 namespace {
 
-PyObject*
-dispatch(PyObject *self, PyObject *args)
-{
-    PyObject* ofunc;
-    PyObject* rargs;
+PyObject *
+dispatch(PyObject *self, PyObject *args) {
+  PyObject *ofunc;
+  PyObject *rargs;
 
-    auto s = PyArg_ParseTuple(args, "OO", &ofunc, &rargs);
-    if (!s) {
-        PyErr_SetString(PyExc_TypeError, "Unable to parse args.");
-        return NULL;
-    }
+  auto s = PyArg_ParseTuple(args, "OO", &ofunc, &rargs);
+  if (!s) {
+    PyErr_SetString(PyExc_TypeError, "Unable to parse args.");
+    return NULL;
+  }
 
-    auto func = pybindcpp::capsule_get<pybindcpp::VarArg>(ofunc);
-    if (!func) {
-        PyErr_SetString(PyExc_TypeError, "Unable to unwrap std::function.");
-        return NULL;
-    }
+  auto func = pybindcpp::capsule_get<pybindcpp::VarArg>(ofunc);
+  if (!func) {
+    PyErr_SetString(PyExc_TypeError, "Unable to unwrap std::function.");
+    return NULL;
+  }
 
-    return (*func)(self, rargs);
+  return (*func)(self, rargs);
 }
 
 PyMethodDef methods[] = {
@@ -41,9 +40,7 @@ struct PyModuleDef moduledef = {
 };
 }
 
-
 PyMODINIT_FUNC
-PyInit_dispatch(void)
-{
-    return PyModule_Create(&moduledef);
+PyInit_dispatch(void) {
+  return PyModule_Create(&moduledef);
 }
