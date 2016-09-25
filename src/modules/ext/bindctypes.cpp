@@ -37,7 +37,7 @@ int minus(int x, int y) {
 }
 
 using VOIDFUNCTYPE = void (*)();
-using REGFUNCTYPE = PyObject *(*)(const char *, VOIDFUNCTYPE, const char *);
+using REGFUNCTYPE = PyObject *(*)(const char *, void *, const char *);
 
 struct Funcs {
   REGFUNCTYPE reg;
@@ -49,11 +49,11 @@ struct Funcs funcs;
 
 extern "C"
 void bind_init(REGFUNCTYPE reg) {
-  reg("add", reinterpret_cast<VOIDFUNCTYPE>(add), "c_int c_int c_int");
-  reg("minus", reinterpret_cast<VOIDFUNCTYPE>(minus), "c_int c_int c_int");
-  
-  auto a = reinterpret_cast<void*>(add);
-  auto b = reinterpret_cast<int(*)(int, int)>(a);
+  reg("add", reinterpret_cast<void *>(add), "c_int c_int c_int");
+  reg("minus", reinterpret_cast<void *>(minus), "c_int c_int c_int");
+
+  auto a = reinterpret_cast<void *>(add);
+  auto b = reinterpret_cast<int (*)(int, int)>(a);
   b(10, 10);
 }
 
@@ -73,6 +73,9 @@ static struct PyModuleDef moduledef =
 PyMODINIT_FUNC
 PyInit_bindctypes(void) {
   auto m = PyModule_Create(&moduledef);
+
+  auto cap = PyCapsule_New(reinterpret_cast<void*>(bind_init), "capsule", nullptr);
+  Py_DECREF(cap);
 
   {
     auto dmod = PyImport_ImportModule("pybindcpp.helper");

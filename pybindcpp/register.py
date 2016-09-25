@@ -10,7 +10,7 @@ def fun(name, ret_t, *args_t):
 
 
 VOIDFUNCTYPE = ct.CFUNCTYPE(None)
-REGFUNCTYPE = ct.CFUNCTYPE(ct.py_object, ct.POINTER(ct.c_char), VOIDFUNCTYPE, ct.POINTER(ct.c_char))
+REGFUNCTYPE = ct.CFUNCTYPE(ct.py_object, ct.c_char_p, ct.c_void_p, ct.c_char_p)
 
 create_string = fun("create_string", ct.c_int, ct.c_char, ct.c_int, ct.c_char_p)
 bind_init = fun('bind_init', None, REGFUNCTYPE)
