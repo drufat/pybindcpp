@@ -20,7 +20,7 @@ store(T &&t) {
 
 template<class T>
 T *
-store(T &t) {
+store(const T &t) {
   auto p = std::make_shared<T>(t);
   auto v = std::static_pointer_cast<void>(p);
   __storage__.push_back(v);

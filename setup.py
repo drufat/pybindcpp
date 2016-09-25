@@ -22,9 +22,8 @@ depends = [
           ] + headers
 
 extra_compile_args = [
-    '-std=c++1z',
+    '-std=c++14',
     '-Wall',
-    '-Wno-conversion-null',
     '-g',
     '-O3',
     '-DNDEBUG',
