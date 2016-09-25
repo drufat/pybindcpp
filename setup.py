@@ -14,7 +14,7 @@ include_dirs = [
 ]
 
 headers = glob.glob(
-    'include/python/*.h'
+    'include/pybindcpp/*.h'
 )
 
 depends = [
