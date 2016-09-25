@@ -2,32 +2,50 @@ import ctypes as ct
 
 from pybindcpp import bindctypes
 
-bindctypes_so = ct.CDLL(bindctypes.__file__)
+bindctypes_so = ct.PyDLL(bindctypes.__file__)
 
 
 def fun(name, ret_t, *args_t):
     return ct.CFUNCTYPE(ret_t, *args_t)((name, bindctypes_so))
 
 
-c_void_fn = ct.CFUNCTYPE(None)
+VOIDFUNCTYPE = ct.CFUNCTYPE(None)
+REGFUNCTYPE = ct.CFUNCTYPE(ct.py_object, ct.POINTER(ct.c_char), VOIDFUNCTYPE, ct.POINTER(ct.c_char))
 
-add = fun("add", ct.c_int, ct.c_int, ct.c_int)
 create_string = fun("create_string", ct.c_int, ct.c_char, ct.c_int, ct.c_char_p)
-register_function = fun("register_function", ct.py_object, ct.POINTER(c_void_fn), ct.POINTER(ct.c_char))
+bind_init = fun('bind_init', None, REGFUNCTYPE)
+
+module = {}
 
 
-def register(func, signature):
-    return register_function(
-        ct.cast(func, ct.POINTER(c_void_fn)),
-        signature
-    )
+def register(name, func, signature):
+    name = ct.string_at(name).decode()
+    signature = ct.string_at(signature).decode()
+    types = [getattr(ct, t) for t in signature.split()]
+    f = ct.cast(func, ct.CFUNCTYPE(*types))
+    module[name] = f
+
+
+class Funcs(ct.Structure):
+    _fields_ = [
+        ('reg', REGFUNCTYPE),
+    ]
+
+
+def test_assign():
+    funcs = Funcs.in_dll(bindctypes_so, "funcs")
+    funcs.reg = REGFUNCTYPE(register)
+
+
+def test_reg():
+    bind_init(REGFUNCTYPE(register))
+    assert module['add'](1, 2) == 3
+    assert module['add'](100, 2) == 102
+    assert module['minus'](2, 1) == 1
 
 
 def test_fun():
     '''
-    >>> add(1, 1)
-    2
-
     >>> size = 20
     >>> buf = ct.create_string_buffer(size+1)
     >>> create_string(b'a', size, buf)
@@ -41,7 +59,3 @@ def test_fun():
     b'Aaaaaaaaaaaaaaaaaaaa'
     '''
     pass
-
-
-def test_register():
-    register(add, b"int, int, int")

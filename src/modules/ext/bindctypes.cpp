@@ -6,17 +6,17 @@
 
 //const std::map<std::type_index, std::string> ctype_map = {
 //
-//    {typeid(wchar_t),           "c_wchar"},
-//    {typeid(char),              "c_byte"},
-//    {typeid(unsigned char),     "c_ubyte"},
-//    {typeid(short),             "c_short"},
-//    {typeid(unsigned short),    "c_ushort"},
-//    {typeid(int),               "c_int"},
-//    {typeid(unsigned int),      "c_uint"},
-//    {typeid(long),              "c_long"},
-//    {typeid(unsigned long),     "c_ulong"},
-//    {typeid(long long),         "c_longlong"},
-//    {typeid(unsigned long long),"c_ulonglong"},
+//    {typeid(wchar_t), "c_wchar"},
+//    {typeid(char), "c_byte"},
+//    {typeid(unsigned char), "c_ubyte"},
+//    {typeid(short), "c_short"},
+//    {typeid(unsigned short), "c_ushort"},
+//    {typeid(int), "c_int"},
+//    {typeid(unsigned int), "c_uint"},
+//    {typeid(long), "c_long"},
+//    {typeid(unsigned long), "c_ulong"},
+//    {typeid(long long), "c_longlong"},
+//    {typeid(unsigned long long), "c_ulonglong"},
 //
 //};
 
@@ -28,22 +28,29 @@ int create_string(char c, int size, char *buffer) {
   return 0;
 }
 
-extern "C"
 int add(int x, int y) {
   return x + y;
 }
 
-extern "C"
 int minus(int x, int y) {
   return x - y;
 }
 
+using VOIDFUNCTYPE = void (*)();
+using REGFUNCTYPE = PyObject *(*)(const char *, VOIDFUNCTYPE, const char *);
+
+struct Funcs {
+  REGFUNCTYPE reg;
+};
+
+extern "C" {
+struct Funcs funcs;
+}
+
 extern "C"
-PyObject *
-register_function(void(*func)(), const char *signature) {
-//  typeid(char *);
-//  printf("%s\n", ctype_map.at(typeid(char)).c_str());
-  Py_RETURN_NONE;
+void bind_init(REGFUNCTYPE reg) {
+  reg("add", reinterpret_cast<void (*)()>(add), "c_int c_int c_int");
+  reg("minus", reinterpret_cast<void (*)()>(minus), "c_int c_int c_int");
 }
 
 static struct PyModuleDef moduledef =
@@ -63,22 +70,16 @@ PyMODINIT_FUNC
 PyInit_bindctypes(void) {
   auto m = PyModule_Create(&moduledef);
 
-  auto f1 = register_function(reinterpret_cast<void (*)()>(&add), "c_int, c_int, c_int");
-  auto f2 = register_function(reinterpret_cast<void (*)()>(&minus), "c_int, c_int, c_int");
-
   {
     auto dmod = PyImport_ImportModule("pybindcpp.helper");
-    auto dfun = PyObject_GetAttrString(dmod, "nothing");
-    auto args = Py_BuildValue("()");
+    auto dfun = PyObject_GetAttrString(dmod, "eq");
+    auto args = Py_BuildValue("(ii)", 1, 2);
     auto obj = PyObject_Call(dfun, args, NULL);
     Py_DECREF(args);
     Py_DECREF(dfun);
     Py_DECREF(dmod);
     PyModule_AddObject(m, "nothing", obj);
   }
-
-  Py_INCREF(Py_None);
-  PyModule_AddObject(m, "none", Py_None);
 
   return m;
 }
