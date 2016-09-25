@@ -56,13 +56,13 @@ PyInit_bindctypes(void) {
   Py_DECREF(cap);
 
   {
-    auto dmod = PyImport_ImportModule("pybindcpp.helper");
-    auto dfun = PyObject_GetAttrString(dmod, "eq");
+    auto mod = PyImport_ImportModule("pybindcpp.register");
+    auto fun = PyObject_GetAttrString(mod, "add");
     auto args = Py_BuildValue("(ii)", 1, 2);
-    auto obj = PyObject_Call(dfun, args, NULL);
+    auto obj = PyObject_Call(fun, args, NULL);
     Py_DECREF(args);
-    Py_DECREF(dfun);
-    Py_DECREF(dmod);
+    Py_DECREF(fun);
+    Py_DECREF(mod);
     PyModule_AddObject(m, "nothing", obj);
   }
 

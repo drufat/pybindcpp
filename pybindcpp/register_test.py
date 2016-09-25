@@ -43,3 +43,14 @@ def test_fun():
     b'Aaaaaaaaaaaaaaaaaaaa'
     '''
     pass
+
+def test_module():
+    '''
+    >>> bindctypes.__dict__.update({'one':1, 'two':2})
+    >>> bindctypes.one
+    1
+    >>> setattr(bindctypes, 'three', 3)
+    >>> bindctypes.three
+    3
+    '''
+    pass

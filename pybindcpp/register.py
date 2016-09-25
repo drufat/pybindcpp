@@ -40,3 +40,7 @@ def register(module):
         module[name] = f
 
     return _
+
+
+def add(x, y):
+    return x + y
