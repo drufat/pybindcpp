@@ -15,6 +15,10 @@ int add(int x, int y) {
   return x + y;
 }
 
+double add_d(double x, double y) {
+  return x + y;
+}
+
 int minus(int x, int y) {
   return x - y;
 };;
@@ -29,10 +33,18 @@ struct Funcs funcs;
 
 extern "C"
 void bind_init(REGFUNCTYPE reg) {
-  constexpr int func_signature[] = {c_int, c_int, c_int};
-  constexpr size_t func_signature_size = sizeof(func_signature) / sizeof(int);
-  reg("add", reinterpret_cast<void *>(add), func_signature, func_signature_size);
-  reg("minus", reinterpret_cast<void *>(minus), func_signature, func_signature_size);
+  {
+    constexpr int func_signature[] = {c_int, c_int, c_int};
+    constexpr size_t func_signature_size = sizeof(func_signature) / sizeof(int);
+    reg("add", reinterpret_cast<void *>(add), func_signature, func_signature_size);
+    reg("minus", reinterpret_cast<void *>(minus), func_signature, func_signature_size);
+  }
+
+  {
+    constexpr int func_signature[] = {c_double, c_double, c_double};
+    constexpr size_t func_signature_size = sizeof(func_signature) / sizeof(int);
+    reg("add_d", reinterpret_cast<void *>(add_d), func_signature, func_signature_size);
+  }
 }
 
 static struct PyModuleDef moduledef =
@@ -52,7 +64,7 @@ PyMODINIT_FUNC
 PyInit_bindctypes(void) {
   auto m = PyModule_Create(&moduledef);
 
-  auto cap = PyCapsule_New(reinterpret_cast<void *>(bind_init), typeid(void*).name(), nullptr);
+  auto cap = PyCapsule_New(reinterpret_cast<void *>(bind_init), typeid(void *).name(), nullptr);
   Py_DECREF(cap);
 
   {

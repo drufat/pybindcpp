@@ -26,6 +26,7 @@ def test_reg():
     assert module['add'](1, 2) == 3
     assert module['add'](100, 2) == 102
     assert module['minus'](2, 1) == 1
+    assert module['add_d'](1., 2.) == 3.
 
 
 def test_fun():
@@ -44,6 +45,7 @@ def test_fun():
     '''
     pass
 
+
 def test_module():
     '''
     >>> bindctypes.__dict__.update({'one':1, 'two':2})
@@ -52,5 +54,29 @@ def test_module():
     >>> setattr(bindctypes, 'three', 3)
     >>> bindctypes.three
     3
+    '''
+    pass
+
+
+PyCapsule_Destructor = ct.CFUNCTYPE(None, ct.py_object)
+
+PyCapsule_New = ct.pythonapi.PyCapsule_New
+PyCapsule_New.restype = ct.py_object
+PyCapsule_New.argtypes = (ct.c_void_p, ct.c_char_p, ct.c_void_p)
+
+PyCapsule_GetPointer = ct.pythonapi.PyCapsule_GetPointer
+PyCapsule_GetPointer.restype = ct.c_void_p
+PyCapsule_GetPointer.argtypes = (ct.py_object, ct.c_char_p)
+
+
+def test_capsule():
+    '''
+    >>> p = ct.c_char_p(b"abcdef")
+    >>> name = ct.c_char_p(b"char *")
+    >>> o = PyCapsule_New(p, name, None)
+    >>> name1 = ct.c_char_p(b"char *")
+    >>> pp = PyCapsule_GetPointer(o, name1)
+    >>> ct.cast(pp, ct.c_char_p).value
+    b'abcdef'
     '''
     pass
