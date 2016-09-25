@@ -49,8 +49,12 @@ struct Funcs funcs;
 
 extern "C"
 void bind_init(REGFUNCTYPE reg) {
-  reg("add", reinterpret_cast<void (*)()>(add), "c_int c_int c_int");
-  reg("minus", reinterpret_cast<void (*)()>(minus), "c_int c_int c_int");
+  reg("add", reinterpret_cast<VOIDFUNCTYPE>(add), "c_int c_int c_int");
+  reg("minus", reinterpret_cast<VOIDFUNCTYPE>(minus), "c_int c_int c_int");
+  
+  auto a = reinterpret_cast<void*>(add);
+  auto b = reinterpret_cast<int(*)(int, int)>(a);
+  b(10, 10);
 }
 
 static struct PyModuleDef moduledef =
