@@ -22,16 +22,20 @@ def test_fun():
     >>> so = ct.PyDLL(bindctypes.__file__)
     >>> create_string = ct.CFUNCTYPE(ct.c_int, ct.c_char, ct.c_int, ct.c_char_p)(("create_string", so))
     >>> size = 20
-    >>> buf = ct.create_string_buffer(size+1)
+
+    >>> buf = b'\\x00'*(size+1)
     >>> create_string(b'a', size, buf)
     0
-    >>> buf.raw
+    >>> buf
     b'aaaaaaaaaaaaaaaaaaaa\\x00'
-    >>> buf[0] = b'A'
-    >>> buf.raw
-    b'Aaaaaaaaaaaaaaaaaaaa\\x00'
     >>> ct.cast(ct.cast(buf, ct.c_void_p), ct.c_char_p).value
-    b'Aaaaaaaaaaaaaaaaaaaa'
+    b'aaaaaaaaaaaaaaaaaaaa'
+
+    >>> buf = b'\\x00'*(size+1)
+    >>> bindctypes.create_string(b'o', size, buf)
+    0
+    >>> buf
+    b'oooooooooooooooooooo\\x00'
     '''
     pass
 

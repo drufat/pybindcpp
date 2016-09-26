@@ -25,7 +25,7 @@ const std::map<std::type_index, std::string> BuildValueTypes = {
     {typeid(uint), "I"},
     {typeid(long), "l"},
     {typeid(ulong), "k"},
-    {typeid(PyObject * ), "N"},
+    {typeid(PyObject *), "N"},
 
 };
 
@@ -39,7 +39,7 @@ const std::map<std::type_index, std::string> ArgParseTypes = {
     {typeid(uint), "I"},
     {typeid(long), "l"},
     {typeid(ulong), "k"},
-    {typeid(PyObject * ), "O"},
+    {typeid(PyObject *), "O"},
 
 };
 
@@ -82,27 +82,7 @@ auto arg_parse_tuple(PyObject *obj, Args &... args) {
   return PyArg_ParseTuple(obj, format.c_str(), &args...);
 }
 
-template<class... Args>
-auto packtuple(Args... args)
-// returns new reference to tuple without incrementing references to members
-{
-  const Py_ssize_t n = sizeof...(Args);
-  auto rslt = PyTuple_Pack(n, args...);
-  using List = int[];
-  (void) List {Py_DecRef(args)...};
-  return rslt;
-}
-
-template<class... Args>
-auto unpacktuple(PyObject *tuple, Args... args)
-// returns borrowed references to tuple members
-{
-  const Py_ssize_t n = sizeof...(Args);
-  return PyArg_UnpackTuple(tuple, "pythontypes", n, n, args...);
-
-}
-
-using VarArg = std::function<PyObject * (PyObject * , PyObject *)>;
+using VarArg = std::function<PyObject *(PyObject *, PyObject *)>;
 
 template<class T>
 PyObject *

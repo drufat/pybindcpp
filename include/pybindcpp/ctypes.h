@@ -7,7 +7,7 @@
 
 enum CTYPE {
   c_wchar,
-  c_byte,
+  c_char,
   c_ubyte,
   c_short,
   c_ushort,
@@ -30,7 +30,7 @@ enum CTYPE {
 const std::map<std::type_index, CTYPE> ctype_map = {
 
     {typeid(wchar_t), c_wchar},
-    {typeid(char), c_byte},
+    {typeid(char), c_char},
     {typeid(unsigned char), c_ubyte},
     {typeid(short), c_short},
     {typeid(unsigned short), c_ushort},
@@ -52,5 +52,14 @@ const std::map<std::type_index, CTYPE> ctype_map = {
 
 using VOIDFUNCTYPE = void (*)();
 using REGFUNCTYPE = _object *(*)(void *, const int *, size_t);
+
+template<class Ret, class... Args>
+void
+fun(PyObject *m, REGFUNCTYPE reg, const char* name, Ret(*func)(Args...)) {
+  const int func_signature[] = {ctype_map.at(typeid(Ret)), ctype_map.at(typeid(Args))...};
+  const size_t func_signature_size = sizeof(func_signature) / sizeof(int);
+  auto obj = reg(reinterpret_cast<void *>(func), func_signature, func_signature_size);
+  PyModule_AddObject(m, name, obj);
+}
 
 #endif //PYBINDCPP_CTYPES_H

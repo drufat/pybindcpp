@@ -2,7 +2,7 @@ import ctypes as ct
 
 CTYPE_enum = (
     ct.c_wchar,
-    ct.c_byte,
+    ct.c_char,
     ct.c_ubyte,
     ct.c_short,
     ct.c_ushort,

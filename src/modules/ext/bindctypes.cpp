@@ -31,30 +31,6 @@ extern "C" {
 struct Funcs funcs;
 }
 
-void bindctypes_init(PyObject *m, REGFUNCTYPE reg) {
-  {
-    constexpr int func_signature[] = {c_int, c_int, c_int};
-    constexpr size_t func_signature_size = sizeof(func_signature) / sizeof(int);
-    PyModule_AddObject(
-        m, "add",
-        reg(reinterpret_cast<void *>(add), func_signature, func_signature_size)
-    );
-    PyModule_AddObject(
-        m, "minus",
-        reg(reinterpret_cast<void *>(minus), func_signature, func_signature_size)
-    );
-  }
-
-  {
-    constexpr int func_signature[] = {c_double, c_double, c_double};
-    constexpr size_t func_signature_size = sizeof(func_signature) / sizeof(int);
-    PyModule_AddObject(
-        m, "add_d",
-        reg(reinterpret_cast<void *>(add_d), func_signature, func_signature_size)
-    );
-  }
-}
-
 static struct PyModuleDef moduledef =
     {
         PyModuleDef_HEAD_INIT,
@@ -73,11 +49,23 @@ PyObject *
 PyInit_bindctypes(void) {
   auto m = PyModule_Create(&moduledef);
 
-  auto pnt = PyCapsule_Import("pybindcpp.register.c_register", 0);
-  if (!pnt) return NULL;
-  auto reg = reinterpret_cast<REGFUNCTYPE>(pnt);
+  REGFUNCTYPE reg;
+  {
+    auto mod = PyImport_ImportModule("pybindcpp.register");
+    if (!mod) return NULL;
+    auto cap = PyObject_GetAttrString(mod, "c_register");
+    if (!cap) return NULL;
+    auto pnt = PyCapsule_GetPointer(cap, "pybindcpp.register.c_register");
+    if (!pnt) return NULL;
+    reg = reinterpret_cast<REGFUNCTYPE>(pnt);
+    Py_DecRef(cap);
+    Py_DecRef(mod);
+  }
 
-  bindctypes_init(m, reg);
+  fun(m, reg, "add", add);
+  fun(m, reg, "minus", minus);
+  fun(m, reg, "add_d", add_d);
+  fun(m, reg, "create_string", create_string);
 
   return m;
 }
