@@ -146,7 +146,7 @@ setup(
         'pybindcpp': 'pybindcpp'
     },
     ext_modules=ext_modules,
-    version='0.0.2',
+    version='0.1.0',
     description='Python Bindings from C++',
     author='Dzhelil Rufat',
     author_email='drufat@caltech.edu',
