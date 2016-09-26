@@ -31,19 +31,27 @@ extern "C" {
 struct Funcs funcs;
 }
 
-extern "C"
-void bind_init(REGFUNCTYPE reg) {
+void bindctypes_init(PyObject *m, REGFUNCTYPE reg) {
   {
     constexpr int func_signature[] = {c_int, c_int, c_int};
     constexpr size_t func_signature_size = sizeof(func_signature) / sizeof(int);
-    reg("add", reinterpret_cast<void *>(add), func_signature, func_signature_size);
-    reg("minus", reinterpret_cast<void *>(minus), func_signature, func_signature_size);
+    PyModule_AddObject(
+        m, "add",
+        reg(reinterpret_cast<void *>(add), func_signature, func_signature_size)
+    );
+    PyModule_AddObject(
+        m, "minus",
+        reg(reinterpret_cast<void *>(minus), func_signature, func_signature_size)
+    );
   }
 
   {
     constexpr int func_signature[] = {c_double, c_double, c_double};
     constexpr size_t func_signature_size = sizeof(func_signature) / sizeof(int);
-    reg("add_d", reinterpret_cast<void *>(add_d), func_signature, func_signature_size);
+    PyModule_AddObject(
+        m, "add_d",
+        reg(reinterpret_cast<void *>(add_d), func_signature, func_signature_size)
+    );
   }
 }
 
@@ -60,23 +68,16 @@ static struct PyModuleDef moduledef =
         nullptr,      // m_free
     };
 
-PyMODINIT_FUNC
+extern "C"
+PyObject *
 PyInit_bindctypes(void) {
   auto m = PyModule_Create(&moduledef);
 
-  auto cap = PyCapsule_New(reinterpret_cast<void *>(bind_init), typeid(void *).name(), nullptr);
-  Py_DECREF(cap);
+  auto pnt = PyCapsule_Import("pybindcpp.register.c_register", 0);
+  if (!pnt) return NULL;
+  auto reg = reinterpret_cast<REGFUNCTYPE>(pnt);
 
-  {
-    auto mod = PyImport_ImportModule("pybindcpp.register");
-    auto fun = PyObject_GetAttrString(mod, "add");
-    auto args = Py_BuildValue("(ii)", 1, 2);
-    auto obj = PyObject_Call(fun, args, NULL);
-    Py_DECREF(args);
-    Py_DECREF(fun);
-    Py_DECREF(mod);
-    PyModule_AddObject(m, "nothing", obj);
-  }
+  bindctypes_init(m, reg);
 
   return m;
 }

@@ -1,36 +1,26 @@
 import ctypes as ct
 from pybindcpp import bindctypes
 
-from pybindcpp.register import REGFUNCTYPE, Funcs, register
-
-bindctypes_so = ct.PyDLL(bindctypes.__file__)
-
-
-def fun(name, ret_t, *args_t):
-    return ct.CFUNCTYPE(ret_t, *args_t)((name, bindctypes_so))
-
-
-create_string = fun("create_string", ct.c_int, ct.c_char, ct.c_int, ct.c_char_p)
-bind_init = fun('bind_init', None, REGFUNCTYPE)
+from pybindcpp.register import REGFUNCTYPE, Funcs, register, PyCapsule_New, PyCapsule_GetPointer
 
 
 def test_assign():
-    funcs = Funcs.in_dll(bindctypes_so, "funcs")
-    reg = register({})
-    funcs.reg = REGFUNCTYPE(reg)
+    so = ct.PyDLL(bindctypes.__file__)
+    funcs = Funcs.in_dll(so, "funcs")
+    funcs.reg = REGFUNCTYPE(register)
 
 
 def test_reg():
-    module = {}
-    bind_init(REGFUNCTYPE(register(module)))
-    assert module['add'](1, 2) == 3
-    assert module['add'](100, 2) == 102
-    assert module['minus'](2, 1) == 1
-    assert module['add_d'](1., 2.) == 3.
+    assert bindctypes.add(1, 2) == 3
+    assert bindctypes.add(100, 2) == 102
+    assert bindctypes.minus(2, 1) == 1
+    assert bindctypes.add_d(1., 2.) == 3.
 
 
 def test_fun():
     '''
+    >>> so = ct.PyDLL(bindctypes.__file__)
+    >>> create_string = ct.CFUNCTYPE(ct.c_int, ct.c_char, ct.c_int, ct.c_char_p)(("create_string", so))
     >>> size = 20
     >>> buf = ct.create_string_buffer(size+1)
     >>> create_string(b'a', size, buf)
@@ -56,17 +46,6 @@ def test_module():
     3
     '''
     pass
-
-
-PyCapsule_Destructor = ct.CFUNCTYPE(None, ct.py_object)
-
-PyCapsule_New = ct.pythonapi.PyCapsule_New
-PyCapsule_New.restype = ct.py_object
-PyCapsule_New.argtypes = (ct.c_void_p, ct.c_char_p, ct.c_void_p)
-
-PyCapsule_GetPointer = ct.pythonapi.PyCapsule_GetPointer
-PyCapsule_GetPointer.restype = ct.c_void_p
-PyCapsule_GetPointer.argtypes = (ct.py_object, ct.c_char_p)
 
 
 def test_capsule():

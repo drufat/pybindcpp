@@ -23,7 +23,7 @@ CTYPE_enum = (
 )
 
 VOIDFUNCTYPE = ct.CFUNCTYPE(None)
-REGFUNCTYPE = ct.CFUNCTYPE(ct.py_object, ct.c_char_p, ct.c_void_p, ct.POINTER(ct.c_int), ct.c_size_t)
+REGFUNCTYPE = ct.CFUNCTYPE(ct.py_object, ct.c_void_p, ct.POINTER(ct.c_int), ct.c_size_t)
 
 
 class Funcs(ct.Structure):
@@ -32,14 +32,30 @@ class Funcs(ct.Structure):
     ]
 
 
-def register(module):
-    def _(name, func, signature, signature_size):
-        name = ct.string_at(name).decode()
-        types = tuple(CTYPE_enum[signature[_]] for _ in range(signature_size))
-        f = ct.cast(func, ct.CFUNCTYPE(*types))
-        module[name] = f
+def register(func, signature, signature_size):
+    types = tuple(CTYPE_enum[signature[_]] for _ in range(signature_size))
+    f = ct.cast(func, ct.CFUNCTYPE(*types))
+    return f
 
-    return _
+
+PyCapsule_Destructor = ct.CFUNCTYPE(
+    None,
+    ct.py_object
+)
+
+PyCapsule_New = ct.CFUNCTYPE(
+    ct.py_object,
+    ct.c_void_p, ct.c_char_p, ct.c_void_p
+)(('PyCapsule_New', ct.pythonapi))
+
+PyCapsule_GetPointer = ct.CFUNCTYPE(
+    ct.c_void_p,
+    ct.py_object, ct.c_char_p
+)(('PyCapsule_GetPointer', ct.pythonapi))
+
+c_register_t = REGFUNCTYPE(register)
+c_register_name = ct.c_char_p(b'pybindcpp.register.c_register')
+c_register = PyCapsule_New(ct.cast(c_register_t, ct.c_void_p), c_register_name, None)
 
 
 def add(x, y):

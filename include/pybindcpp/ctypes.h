@@ -51,6 +51,6 @@ const std::map<std::type_index, CTYPE> ctype_map = {
 };
 
 using VOIDFUNCTYPE = void (*)();
-using REGFUNCTYPE = _object *(*)(const char *, void *, const int *, size_t);
+using REGFUNCTYPE = _object *(*)(void *, const int *, size_t);
 
 #endif //PYBINDCPP_CTYPES_H
