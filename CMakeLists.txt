@@ -5,10 +5,12 @@ find_package(PythonLibs)
 
 add_compile_options(-std=c++1z)
 
+# Linux
 include_directories(include)
 include_directories(/usr/include/python3.5m/)
 include_directories(/usr/lib/python3.5/site-packages/numpy/core/include/)
 
+# Mac OS X
 include_directories(/usr/local/Cellar/python3/3.5.2_1/Frameworks/Python.framework/Versions/3.5/include/python3.5m/)
 include_directories(/usr/local/lib/python3.5/site-packages/numpy/core/include/)
 link_directories(/usr/local/Cellar/python3/3.5.2_1/Frameworks/Python.framework/Versions/3.5/lib/)
