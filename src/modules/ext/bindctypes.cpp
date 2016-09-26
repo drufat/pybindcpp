@@ -49,23 +49,13 @@ PyObject *
 PyInit_bindctypes(void) {
   auto m = PyModule_Create(&moduledef);
 
-  REGFUNCTYPE reg;
-  {
-    auto mod = PyImport_ImportModule("pybindcpp.register");
-    if (!mod) return NULL;
-    auto cap = PyObject_GetAttrString(mod, "c_register");
-    if (!cap) return NULL;
-    auto pnt = PyCapsule_GetPointer(cap, "pybindcpp.register.c_register");
-    if (!pnt) return NULL;
-    reg = reinterpret_cast<REGFUNCTYPE>(pnt);
-    Py_DecRef(cap);
-    Py_DecRef(mod);
-  }
+  auto reg = cap<REGFUNCTYPE>("pybindcpp.register", "c_register_cap");
+  if (!reg) return NULL;
 
-  fun(m, reg, "add", add);
-  fun(m, reg, "minus", minus);
-  fun(m, reg, "add_d", add_d);
-  fun(m, reg, "create_string", create_string);
+  PyModule_AddObject(m, "add", fun(reg, add));
+  PyModule_AddObject(m, "minus", fun(reg, minus));
+  PyModule_AddObject(m, "add_d", fun(reg, add_d));
+  PyModule_AddObject(m, "create_string", fun(reg, create_string));
 
   return m;
 }

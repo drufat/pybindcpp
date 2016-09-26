@@ -2,6 +2,9 @@
 #ifndef PYBINDCPP_CTYPES_H
 #define PYBINDCPP_CTYPES_H
 
+#include <Python.h>
+
+#include <string>
 #include <map>
 #include <typeindex>
 
@@ -51,15 +54,39 @@ const std::map<std::type_index, CTYPE> ctype_map = {
 };
 
 using VOIDFUNCTYPE = void (*)();
-using REGFUNCTYPE = _object *(*)(void *, const int *, size_t);
+using REGFUNCTYPE = PyObject *(*)(void *, const int *, size_t);
+
+template<class T>
+T
+cap(const char *module, const char *attr) {
+
+  auto mod = PyImport_ImportModule(module);
+  if (!mod) return NULL;
+
+  auto cap = PyObject_GetAttrString(mod, attr);
+  if (!cap) return NULL;
+
+//  const auto name = std::string(module) + "." + std::string(attr);
+  auto pnt = PyCapsule_GetPointer(cap, nullptr);
+  if (!pnt) return NULL;
+
+  T reg = reinterpret_cast<T>(pnt);
+
+  Py_DecRef(cap);
+  Py_DecRef(mod);
+
+  return reg;
+}
 
 template<class Ret, class... Args>
-void
-fun(PyObject *m, REGFUNCTYPE reg, const char* name, Ret(*func)(Args...)) {
-  const int func_signature[] = {ctype_map.at(typeid(Ret)), ctype_map.at(typeid(Args))...};
-  const size_t func_signature_size = sizeof(func_signature) / sizeof(int);
-  auto obj = reg(reinterpret_cast<void *>(func), func_signature, func_signature_size);
-  PyModule_AddObject(m, name, obj);
+PyObject *
+fun(REGFUNCTYPE reg, Ret(*func)(Args...)) {
+  const int func_signature[] = {
+      ctype_map.at(typeid(Ret)),
+      ctype_map.at(typeid(Args))...
+  };
+  constexpr auto func_signature_size = 1 + sizeof...(Args);
+  return reg(reinterpret_cast<void *>(func), func_signature, func_signature_size);
 }
 
 #endif //PYBINDCPP_CTYPES_H

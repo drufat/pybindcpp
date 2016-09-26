@@ -34,7 +34,8 @@ class Funcs(ct.Structure):
 
 def register(func, signature, signature_size):
     types = tuple(CTYPE_enum[signature[_]] for _ in range(signature_size))
-    f = ct.cast(func, ct.CFUNCTYPE(*types))
+    fn_type = ct.CFUNCTYPE(*types)
+    f = ct.cast(func, fn_type)
     return f
 
 
@@ -53,9 +54,9 @@ PyCapsule_GetPointer = ct.CFUNCTYPE(
     ct.py_object, ct.c_char_p
 )(('PyCapsule_GetPointer', ct.pythonapi))
 
-c_register_t = REGFUNCTYPE(register)
-c_register_name = ct.c_char_p(b'pybindcpp.register.c_register')
-c_register = PyCapsule_New(ct.cast(c_register_t, ct.c_void_p), c_register_name, None)
+c_register = REGFUNCTYPE(register)
+# c_register_name = ct.c_char_p(b'pybindcpp.register.c_register_capsule')
+c_register_cap = PyCapsule_New(ct.cast(c_register, ct.c_void_p), None, None)
 
 
 def add(x, y):
