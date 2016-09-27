@@ -80,18 +80,18 @@ numpymodule(Module &m) {
     return pybindcpp::build_value(out);
   });
 
-  m.fun("fn_array", [](int N, PyObject *o) {
+  m.fun("fn_array", [](int N, PyObject *o) -> PyObject* {
 
     const auto x = (PyArrayObject *) PyArray_ContiguousFromAny(o,
                                                                NPY_DOUBLE,
                                                                1, 1);
-    if (!x) return NULL;
+    if (!x) return nullptr;
 
     auto y = (PyArrayObject *) PyArray_EMPTY(PyArray_NDIM(x),
                                              PyArray_DIMS(x),
                                              NPY_DOUBLE,
                                              0);
-    if (!y) return NULL;
+    if (!y) return nullptr;
 
     const auto len = PyArray_DIMS(x)[0];
 
