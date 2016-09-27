@@ -16,10 +16,8 @@ computation(const T &X, T &Y) {
   Y(0, 0) = 0.0;
 }
 
-auto
+void
 eigen(Module &m) {
-  import_array();
-
   m.fun("square", [](PyObject *o) -> PyObject * {
 
     const auto x = (PyArrayObject *) PyArray_ContiguousFromAny(
@@ -47,5 +45,6 @@ eigen(Module &m) {
 
 PyMODINIT_FUNC
 PyInit_eigen(void) {
+  import_array();
   return module_init("eigen", eigen);
 }

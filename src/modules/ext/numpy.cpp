@@ -44,10 +44,8 @@ loop1d_ii_o(F func) {
   };
 }
 
-auto
+void
 numpymodule(Module &m) {
-  import_array();
-  import_ufunc();
 
   ufunc_raw(m, "fn_ufunc1", {
       loop1d_ii_o<decltype(fn), int, double, double>(fn),
@@ -80,7 +78,7 @@ numpymodule(Module &m) {
     return pybindcpp::build_value(out);
   });
 
-  m.fun("fn_array", [](int N, PyObject *o) -> PyObject* {
+  m.fun("fn_array", [](int N, PyObject *o) -> PyObject * {
 
     const auto x = (PyArrayObject *) PyArray_ContiguousFromAny(o,
                                                                NPY_DOUBLE,
@@ -151,12 +149,12 @@ numpymodule(Module &m) {
     }
     return NULL;
   });
-
-  return NULL;
 }
 
 PyMODINIT_FUNC
 PyInit_numpy(void) {
+  import_array();
+  import_ufunc();
   return module_init("numpy", numpymodule);
 
 }

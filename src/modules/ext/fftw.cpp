@@ -6,9 +6,8 @@
 
 using namespace pybindcpp;
 
-auto
+void
 fftw(Module &m) {
-  import_array();
 
   m.varargs("fft", [](PyObject *self, PyObject *args) -> PyObject * {
     PyObject *o;
@@ -83,10 +82,10 @@ fftw(Module &m) {
     Py_DECREF(x);
     return (PyObject *) y;
   });
-  return NULL;
 }
 
 PyMODINIT_FUNC
 PyInit_fftw(void) {
+  import_array();
   return module_init("fftw", fftw);
 }

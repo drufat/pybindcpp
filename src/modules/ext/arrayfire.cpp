@@ -70,7 +70,7 @@ addone(const array &X) {
   return X + 1;
 }
 
-auto
+void
 arrayfire(Module &m) {
   m.fun("test", test);
   m.fun("set_backend", set_backend);
@@ -116,11 +116,12 @@ arrayfire(Module &m) {
         1, 1);
     if (!x) return NULL;
 
-    auto y = (PyArrayObject *) PyArray_EMPTY
-        (PyArray_NDIM(x),
-         PyArray_DIMS(x),
-         NPY_CDOUBLE,
-         0);
+    auto y = (PyArrayObject *) PyArray_EMPTY(
+        PyArray_NDIM(x),
+        PyArray_DIMS(x),
+        NPY_CDOUBLE,
+        0
+    );
     if (!y) return NULL;
 
     auto X = array(PyArray_DIMS(x)[0], (cdouble *) PyArray_DATA(x));

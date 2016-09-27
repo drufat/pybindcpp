@@ -51,7 +51,7 @@ struct function_traits<Ret(Args...)> {
 
   template<size_t i>
   struct arg {
-    static_assert(i < arity);
+    static_assert(i < arity, "Argument index out of bounds.");
     using type = typename std::tuple_element<i, std::tuple<Args...>>::type;
   };
 };

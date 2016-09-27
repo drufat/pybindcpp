@@ -143,8 +143,6 @@ template<class Ret, class... Args>
 PyObject *
 fun_ptr(std::shared_ptr<std::function<Ret(Args...)>> f) {
 
-  using traits = function_traits<decltype(*f)>;
-
   return varargs(std::make_shared<VarArg>(
 
       [f](PyObject *self, PyObject *args) -> PyObject * {
