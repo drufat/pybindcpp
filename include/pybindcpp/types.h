@@ -115,7 +115,7 @@ varargs(VarArg func) {
 
 template<class... Args>
 PyObject *
-fun(std::shared_ptr<std::function<void(Args...)>> f) {
+fun_ptr(std::shared_ptr<std::function<void(Args...)>> f) {
   return varargs(std::make_shared<VarArg>(
 
       [f](PyObject *self, PyObject *args) -> PyObject * {
@@ -141,7 +141,10 @@ fun(std::shared_ptr<std::function<void(Args...)>> f) {
 
 template<class Ret, class... Args>
 PyObject *
-fun(std::shared_ptr<std::function<Ret(Args...)>> f) {
+fun_ptr(std::shared_ptr<std::function<Ret(Args...)>> f) {
+
+  using traits = function_traits<decltype(*f)>;
+
   return varargs(std::make_shared<VarArg>(
 
       [f](PyObject *self, PyObject *args) -> PyObject * {
@@ -164,29 +167,49 @@ fun(std::shared_ptr<std::function<Ret(Args...)>> f) {
       }));
 }
 
-template<class Ret, class... Args>
-PyObject *
-fun(std::function<Ret(Args...)> f) {
-  auto ptr = std::make_shared<decltype(f)>(f);
-  return fun(ptr);
-}
+template<class F>
+struct callable_traits;
+
+template<class F>
+struct callable_traits
+    : public callable_traits<decltype(&F::operator())> {
+};
+
+template<class F, class Ret, class... Args>
+struct callable_traits<Ret(F::*)(Args...) const> {
+  static
+  PyObject *
+  obj(F f) {
+    auto ptr = std::make_shared<std::function<Ret(Args...)>>(f);
+    return fun_ptr(ptr);
+  }
+};
 
 template<class Ret, class... Args>
-PyObject *
-fun(Ret(*f)(Args...)) {
-  auto ptr = std::make_shared<std::function<Ret(Args...)>>(f);
-  return fun(ptr);
+struct callable_traits<Ret(*)(Args...)> {
+  static
+  PyObject *
+  obj(Ret(*f)(Args...)) {
+    auto ptr = std::make_shared<std::function<Ret(Args...)>>(f);
+    return fun_ptr(ptr);
+  }
+
+};
+
+template<class T>
+PyObject *fun(T t) {
+  return callable_traits<typename std::decay<T>::type>::obj(t);
 }
 
 template<class Ret, class Class, class... Args>
 PyObject *
-fun(Ret(Class::*f)(Args...)) {
+method(Ret(Class::*f)(Args...)) {
   Py_RETURN_NONE;
 }
 
 template<class T, class Class>
 PyObject *
-fun(T Class::*m) {
+method(T Class::*m) {
   Py_RETURN_NONE;
 }
 

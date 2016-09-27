@@ -75,21 +75,12 @@ numpymodule(Module &m) {
 
   ufunc<double, decltype(fn), long, double>(m, "fn_ufunc", fn);
 
-  m.varargs("fn", [](PyObject *self, PyObject *args) -> PyObject * {
-    int N;
-    double x;
-    if (!pybindcpp::arg_parse_tuple(args, N, x))
-      return NULL;
+  m.fun("fn", [](int N, double x) {
     auto out = fn(N, x);
     return pybindcpp::build_value(out);
   });
 
-  m.varargs("fn_array", [](PyObject *self, PyObject *args) -> PyObject * {
-
-    int N;
-    PyObject *o;
-    if (!pybindcpp::arg_parse_tuple(args, N, o))
-      return NULL;
+  m.fun("fn_array", [](int N, PyObject *o) {
 
     const auto x = (PyArrayObject *) PyArray_ContiguousFromAny(o,
                                                                NPY_DOUBLE,
@@ -115,12 +106,7 @@ numpymodule(Module &m) {
 
   });
 
-  m.varargs("fn_array1", [](PyObject *self, PyObject *args) -> PyObject * {
-
-    int N;
-    PyObject *x;
-    if (!pybindcpp::arg_parse_tuple(args, N, x))
-      return NULL;
+  m.fun("fn_array1", [](int N, PyObject *x) {
 
     auto xa = numpy::array_view<double, 1>(x);
     auto len = xa.dim(0);

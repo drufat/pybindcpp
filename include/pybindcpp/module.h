@@ -42,7 +42,7 @@ struct Module {
 
   template<class T>
   void fun(std::string name, T &&t) {
-    add(name, pybindcpp::fun(std::forward<T>(t)));
+    add(name, pybindcpp::fun<T>(std::forward<T>(t)));
   }
 
   template<class T>

@@ -78,7 +78,7 @@ native(Module &m) {
 
   });
 
-  m.varargs("closure", [&](PyObject *self, PyObject *args) {
+  m.fun("closure", [&]() {
 
     return build_value(N, n, x);
 
@@ -107,17 +107,14 @@ native(Module &m) {
     return NULL;
   });
 
-  m.varargs("S", [](PyObject *self, PyObject *args) {
-
-    PyObject *o;
-    arg_parse_tuple(args, o);
+  m.fun("S", [](PyObject *o) {
     return build_value(o);
-
   });
 
   m.fun("g_cfun", g);
   m.fun("g_fun", std::function<int(int, int)>(g));
-  m.fun < std::function < int(int, int) >> ("g_afun",
+  m.fun<std::function<int(int, int) >>(
+      "g_afun",
       [](int x, int y) -> int {
         return g(x, y);
       }
@@ -131,7 +128,7 @@ native(Module &m) {
   );
   m.fun("f_one", f_one);
 
-  auto f_func = std::function<PyObject * ()>(
+  auto f_func = std::function<PyObject *()>(
       [=]() {
         return fun(f_one);
       }
@@ -142,8 +139,8 @@ native(Module &m) {
   m.varargs("func", py_func);
 
   m.add("MyClass", constructor<MyClass(int)>());
-  m.add("memberdata", fun(&MyClass::memberdata));
-  m.add("method", fun(&MyClass::method));
+  m.add("memberdata", method(&MyClass::memberdata));
+  m.add("method", method(&MyClass::method));
 
   m.add("caps_int", capsule_new(std::make_shared<int>(3)));
   m.add("caps_double", capsule_new(std::make_shared<double>(3.0)));

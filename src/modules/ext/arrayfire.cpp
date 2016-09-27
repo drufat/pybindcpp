@@ -1,6 +1,6 @@
 // Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
-#include "python/module.h"
-#include "python/numpy.h"
+#include "pybindcpp/module.h"
+#include "pybindcpp/numpy.h"
 
 #include <vector>
 #include <arrayfire.h>
@@ -77,11 +77,7 @@ arrayfire(Module &m) {
 
   auto _ = [&](std::string name, array(*fn)(const array &)) {
 
-    return m.varargs(name, [fn](PyObject *self, PyObject *args) -> PyObject * {
-
-      PyObject *o;
-      if (!arg_parse_tuple(args, o))
-        return NULL;
+    return m.fun(name, [fn](PyObject *o) -> PyObject * {
 
       const auto x = (PyArrayObject *) PyArray_ContiguousFromAny(
           o,
@@ -112,11 +108,7 @@ arrayfire(Module &m) {
   _("addone", addone);
   _("erf", erf);
 
-  m.varargs("fft", [](PyObject *self, PyObject *args) -> PyObject * {
-
-    PyObject *o;
-    if (!arg_parse_tuple(args, o))
-      return NULL;
+  m.fun("fft", [](PyObject *o) -> PyObject * {
 
     auto x = (PyArrayObject *) PyArray_ContiguousFromAny(
         o,

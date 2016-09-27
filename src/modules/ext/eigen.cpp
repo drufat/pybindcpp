@@ -20,10 +20,7 @@ auto
 eigen(Module &m) {
   import_array();
 
-  m.varargs("square", [](PyObject *self, PyObject *args) -> PyObject * {
-    PyObject *o;
-    if (!arg_parse_tuple(args, o))
-      return NULL;
+  m.fun("square", [](PyObject *o) -> PyObject * {
 
     const auto x = (PyArrayObject *) PyArray_ContiguousFromAny(
         o,
