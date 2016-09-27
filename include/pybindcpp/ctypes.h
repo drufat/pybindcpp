@@ -86,7 +86,8 @@ fun(REGFUNCTYPE reg, Ret(*func)(Args...)) {
       ctype_map.at(typeid(Args))...
   };
   constexpr auto func_signature_size = 1 + sizeof...(Args);
-  return reg(reinterpret_cast<void *>(func), func_signature, func_signature_size);
+  auto obj = reg(reinterpret_cast<void *>(func), func_signature, func_signature_size);
+  return obj;
 }
 
 #endif //PYBINDCPP_CTYPES_H
