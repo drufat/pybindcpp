@@ -57,7 +57,7 @@ py_g(PyObject *self, PyObject *args) {
   return build_value(out);
 }
 
-auto
+void
 native(Module &m) {
   m.var("one", (long) 1);
   m.var("two", (ulong) 2);
@@ -147,7 +147,6 @@ native(Module &m) {
   m.add("caps_string", capsule_new(std::make_shared<std::string>("Hello!")));
   m.fun("PyCapsule_GetName", PyCapsule_GetName);
 
-  return NULL;
 }
 
 PyMODINIT_FUNC

@@ -8,10 +8,9 @@ g(int x, int y) {
   return x + y;
 }
 
-auto
+void
 simple(Module &m) {
   m.fun("g", g);
-  return NULL;
 }
 
 PyMODINIT_FUNC
