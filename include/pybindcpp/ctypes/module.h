@@ -6,7 +6,8 @@
 
 #include <functional>
 
-#include "pybindcpp/ctypes/ctypes.h"
+#include "pybindcpp/ctypes/callable.h"
+#include "pybindcpp/ctypes/capsule.h"
 
 namespace pybindcpp {
 
@@ -46,7 +47,7 @@ struct Module {
 
   template<class F>
   void fun(const char *name, F f) {
-    add(name, pybindcpp::fun(reg, f));
+    add(name, callable_traits<F>::get(reg, f));
   }
 
 };
