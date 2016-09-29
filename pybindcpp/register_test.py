@@ -20,11 +20,11 @@ def test_reg():
 def test_fun():
     '''
     >>> so = ct.PyDLL(bindctypes.__file__)
-    >>> create_string = ct.CFUNCTYPE(ct.c_int, ct.c_char, ct.c_int, ct.c_char_p)(("create_string", so))
+    >>> set_string = ct.CFUNCTYPE(ct.c_int, ct.c_char, ct.c_int, ct.c_char_p)(("set_string", so))
     >>> size = 20
 
     >>> buf = b'\\x00'*(size+1)
-    >>> create_string(b'a', size, buf)
+    >>> set_string(b'a', size, buf)
     0
     >>> buf
     b'aaaaaaaaaaaaaaaaaaaa\\x00'

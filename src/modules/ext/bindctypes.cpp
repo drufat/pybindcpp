@@ -4,7 +4,7 @@
 #include "pybindcpp/ctypes.h"
 
 extern "C"
-int create_string(char c, int size, char *buffer) {
+int set_string(char c, int size, char *buffer) {
   for (int i = 0; i < size; i++) {
     buffer[i] = c;
   }
@@ -55,7 +55,7 @@ PyInit_bindctypes(void) {
   PyModule_AddObject(m, "add", fun(reg, add));
   PyModule_AddObject(m, "minus", fun(reg, minus));
   PyModule_AddObject(m, "add_d", fun(reg, add_d));
-  PyModule_AddObject(m, "create_string", fun(reg, create_string));
+  PyModule_AddObject(m, "set_string", fun(reg, set_string));
 
   return m;
 }
