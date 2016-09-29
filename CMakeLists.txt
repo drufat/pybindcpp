@@ -23,10 +23,10 @@ set(HEADER_FILES
         include/pybindcpp/types.h
         include/pybindcpp/util.h
         include/pybindcpp/ctypes/ctypes.h
-        #        include/pybindcpp/ctypes/capsule.h
-        #        include/pybindcpp/ctypes/types.h
-        #        include/pybindcpp/ctypes/module.h
-        #        include/pybindcpp/ctypes/callable.h
+        include/pybindcpp/ctypes/types.h
+        # include/pybindcpp/ctypes/capsule.h
+        # include/pybindcpp/ctypes/module.h
+        # include/pybindcpp/ctypes/callable.h
         )
 
 add_custom_target(
