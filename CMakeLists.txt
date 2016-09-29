@@ -16,14 +16,18 @@ include_directories(/usr/local/lib/python3.5/site-packages/numpy/core/include/)
 link_directories(/usr/local/Cellar/python3/3.5.2_1/Frameworks/Python.framework/Versions/3.5/lib/)
 
 set(HEADER_FILES
-    include/pybindcpp/capsule.h
-    include/pybindcpp/ctypes.h
-    include/pybindcpp/module.h
-    include/pybindcpp/numpy.h
-    include/pybindcpp/storage.h
-    include/pybindcpp/types.h
-    include/pybindcpp/util.h
-)
+        include/pybindcpp/capsule.h
+        include/pybindcpp/module.h
+        include/pybindcpp/numpy.h
+        include/pybindcpp/storage.h
+        include/pybindcpp/types.h
+        include/pybindcpp/util.h
+        include/pybindcpp/ctypes/ctypes.h
+        #        include/pybindcpp/ctypes/capsule.h
+        #        include/pybindcpp/ctypes/types.h
+        #        include/pybindcpp/ctypes/module.h
+        #        include/pybindcpp/ctypes/callable.h
+        )
 
 add_custom_target(
         setup_py ALL python3 setup.py develop --user

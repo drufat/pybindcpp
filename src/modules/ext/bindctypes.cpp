@@ -1,7 +1,7 @@
 // Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
 #include <Python.h>
 
-#include "pybindcpp/ctypes.h"
+#include "pybindcpp/ctypes/ctypes.h"
 
 extern "C"
 int set_string(char c, int size, char *buffer) {
