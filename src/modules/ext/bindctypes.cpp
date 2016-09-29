@@ -21,7 +21,7 @@ double add_d(double x, double y) {
 
 int minus(int x, int y) {
   return x - y;
-};;
+};
 
 struct Funcs {
   REGFUNCTYPE reg;
