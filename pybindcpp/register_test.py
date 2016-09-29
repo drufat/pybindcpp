@@ -32,7 +32,7 @@ def test_fun():
     b'aaaaaaaaaaaaaaaaaaaa'
 
     >>> buf = b'\\x00'*(size+1)
-    >>> bindctypes.create_string(b'o', size, buf)
+    >>> bindctypes.set_string(b'o', size, buf)
     0
     >>> buf
     b'oooooooooooooooooooo\\x00'
