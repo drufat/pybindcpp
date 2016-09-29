@@ -34,15 +34,11 @@ struct Funcs funcs;
 }
 
 void
-module(Module& m) {
+exec(Module& m) {
   m.fun("add", add);
   m.fun("minus", minus);
   m.fun("add_d", add_d);
   m.fun("set_string", set_string);
 }
 
-extern "C"
-PyObject *
-PyInit_bindctypes(void) {
-  return module_init("bindctypes", module);
-}
+PYMODULE_INIT(bindctypes, exec)

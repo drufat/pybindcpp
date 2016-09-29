@@ -5,6 +5,7 @@
 #include <Python.h>
 
 #include <functional>
+#include <vector>
 
 #include "pybindcpp/ctypes/callable.h"
 #include "pybindcpp/ctypes/capsule.h"
@@ -12,29 +13,13 @@
 namespace pybindcpp {
 
 struct Module {
-  const char *name;
-  PyObject *self;
+  PyObject *__dict__;
   REGFUNCTYPE reg;
 
-  Module(const char *name_) :
-      name(name_) {
+  Module() {
 
-    auto moduledef = new PyModuleDef(
-        {
-            PyModuleDef_HEAD_INIT,
-            name,     // m_name
-            nullptr,  // m_doc
-            0,        // m_size
-            nullptr,  // m_methods
-            nullptr,  // m_slots
-            nullptr,  // m_traverse
-            nullptr,  // m_clear
-            nullptr,  // m_free
-        }
-    );
-
-    self = PyModule_Create(moduledef);
-    if (!self) throw;
+    __dict__ = PyDict_New();
+    if (!__dict__) throw;
 
     reg = cap<REGFUNCTYPE>("pybindcpp.register", "c_register_cap");
     if (!reg) throw;
@@ -42,7 +27,7 @@ struct Module {
   }
 
   void add(const char *name, PyObject *obj) {
-    PyModule_AddObject(self, name, obj);
+    PyDict_SetItemString(__dict__, name, obj);
   }
 
   template<class F>
@@ -52,17 +37,70 @@ struct Module {
 
 };
 
-PyObject *
-module_init(const char *name, std::function<void(Module &)> exec) {
+static
+std::function<void(Module &)> __exec;
+
+static
+int
+__module_exec(PyObject *module) {
   try {
-    Module m(name);
-    exec(m);
-    return m.self;
+    Module m;
+    __exec(m);
+    PyDict_Update(PyModule_GetDict(module), m.__dict__);
+    return 0;
   } catch (...) {
-    return nullptr;
+    return -1;
   };
 }
 
+static PyModuleDef moduledef = {
+    PyModuleDef_HEAD_INIT,
+    nullptr,  // m_name
+    nullptr,  // m_doc
+    0,        // m_size
+    nullptr,  // m_methods
+    nullptr,  // m_slots
+    nullptr,  // m_traverse
+    nullptr,  // m_clear
+    nullptr,  // m_free
+};
+
+#ifdef Py_mod_exec
+static PyModuleDef_Slot __module_slots[] = {
+    {Py_mod_exec, (void *) __module_exec},
+    {0, NULL}
+};
+#endif
+
+static
+PyObject *
+__module_init(const char *name) {
+
+  moduledef.m_name = name;
+#ifdef Py_mod_exec
+  moduledef.m_slots = __module_slots;
+  return PyModuleDef_Init(&moduledef);
+#else
+  auto module = PyModule_Create(&moduledef);
+  if (!module) return nullptr;
+
+  if (__module_exec(module) != 0) {
+    Py_DECREF(module);
+    return nullptr;
+  }
+  return module;
+#endif
+
 }
+
+}
+
+#define PYMODULE_INIT(name, exec)   \
+extern "C" PyObject *               \
+PyInit_##name() {                   \
+  __exec = exec;                    \
+  return __module_init(#name);      \
+}                                   \
+
 
 #endif // MODULE_H
