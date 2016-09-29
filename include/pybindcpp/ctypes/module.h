@@ -63,7 +63,6 @@ module_init(const char *name, std::function<void(Module &)> exec) {
   };
 }
 
-
 }
 
 #endif // MODULE_H
