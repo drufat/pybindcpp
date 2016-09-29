@@ -34,31 +34,59 @@ extern "C" {
 struct Funcs funcs;
 }
 
-static struct PyModuleDef moduledef =
-    {
-        PyModuleDef_HEAD_INIT,
-        "bindctypes", // m_name
-        nullptr,      // m_doc
-        0,            // m_size
-        nullptr,      // m_methods
-        nullptr,      // m_slots
-        nullptr,      // m_traverse
-        nullptr,      // m_clear
-        nullptr,      // m_free
-    };
+struct Module {
+  const char *name;
+  PyObject *self;
+  REGFUNCTYPE reg;
+
+  Module(const char *name_) :
+      name(name_) {
+
+    auto moduledef = new PyModuleDef(
+        {
+            PyModuleDef_HEAD_INIT,
+            name,     // m_name
+            nullptr,  // m_doc
+            0,        // m_size
+            nullptr,  // m_methods
+            nullptr,  // m_slots
+            nullptr,  // m_traverse
+            nullptr,  // m_clear
+            nullptr,  // m_free
+        }
+    );
+
+    self = PyModule_Create(moduledef);
+    if (!self) throw;
+
+    reg = cap<REGFUNCTYPE>("pybindcpp.register", "c_register_cap");
+    if (!reg) throw;
+
+  }
+
+  void add(const char *name, PyObject *obj) {
+    PyModule_AddObject(self, name, obj);
+  }
+
+  template<class F>
+  void fun(const char *name, F f) {
+    add(name, pybindcpp::fun(reg, f));
+  }
+
+};
 
 extern "C"
 PyObject *
 PyInit_bindctypes(void) {
-  auto m = PyModule_Create(&moduledef);
 
-  auto reg = cap<REGFUNCTYPE>("pybindcpp.register", "c_register_cap");
-  if (!reg) return NULL;
-
-  PyModule_AddObject(m, "add", fun(reg, add));
-  PyModule_AddObject(m, "minus", fun(reg, minus));
-  PyModule_AddObject(m, "add_d", fun(reg, add_d));
-  PyModule_AddObject(m, "set_string", fun(reg, set_string));
-
-  return m;
+  try {
+    auto m = Module("bindctypes");
+    m.fun("add", add);
+    m.fun("minus", minus);
+    m.fun("add_d", add_d);
+    m.fun("set_string", set_string);
+    return m.self;
+  } catch (...) {
+    return nullptr;
+  }
 }
