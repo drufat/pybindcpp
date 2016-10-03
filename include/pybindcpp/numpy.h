@@ -123,7 +123,7 @@ make_ufunc(std::string name, F f) {
 
 inline
 void
-ufunc_raw(Module &m,
+ufunc_raw(ExtModule &m,
           std::string name,
           std::vector<ftype> funcs,
           std::vector<char> types,
@@ -133,7 +133,7 @@ ufunc_raw(Module &m,
 
 template<class O, class F, class... I>
 void
-ufunc(Module &m, std::string name, F f) {
+ufunc(ExtModule &m, std::string name, F f) {
   m.var(name, make_ufunc<O, F, I...>(name, f));
 }
 

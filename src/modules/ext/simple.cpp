@@ -9,7 +9,7 @@ g(int x, int y) {
 }
 
 void
-simple(Module &m) {
+simple(ExtModule &m) {
   m.fun("g", g);
 }
 

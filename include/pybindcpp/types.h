@@ -166,15 +166,15 @@ fun_ptr(std::shared_ptr<std::function<Ret(Args...)>> f) {
 }
 
 template<class F>
-struct callable_traits;
+struct callable_trait;
 
 template<class F>
-struct callable_traits
-    : public callable_traits<decltype(&F::operator())> {
+struct callable_trait
+    : public callable_trait<decltype(&F::operator())> {
 };
 
 template<class F, class Ret, class... Args>
-struct callable_traits<Ret(F::*)(Args...) const> {
+struct callable_trait<Ret(F::*)(Args...) const> {
   static
   PyObject *
   obj(F f) {
@@ -184,7 +184,7 @@ struct callable_traits<Ret(F::*)(Args...) const> {
 };
 
 template<class Ret, class... Args>
-struct callable_traits<Ret(*)(Args...)> {
+struct callable_trait<Ret(*)(Args...)> {
   static
   PyObject *
   obj(Ret(*f)(Args...)) {
@@ -196,7 +196,7 @@ struct callable_traits<Ret(*)(Args...)> {
 
 template<class T>
 PyObject *fun(T t) {
-  return callable_traits<typename std::decay<T>::type>::obj(t);
+  return callable_trait<typename std::decay<T>::type>::obj(t);
 }
 
 template<class Ret, class Class, class... Args>

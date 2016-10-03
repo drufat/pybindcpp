@@ -22,10 +22,10 @@
 
 namespace pybindcpp {
 
-struct Module {
+struct ExtModule {
   PyObject *self;
 
-  Module(PyObject *obj)
+  ExtModule(PyObject *obj)
       :
       self(obj) {
   }
@@ -73,7 +73,7 @@ struct PyModuleDef moduledef = {
 } // end __hidden__ namespace
 
 PyObject *
-module_init(std::string name, std::function<void(Module &)> exec) {
+module_init(std::string name, std::function<void(ExtModule &)> exec) {
   using namespace __hidden__;
 
   moduledef.m_name = store(name)->c_str();
@@ -81,7 +81,7 @@ module_init(std::string name, std::function<void(Module &)> exec) {
   auto self = PyModule_Create(&moduledef);
   if (self == NULL) return NULL;
 
-  Module m(self);
+  ExtModule m(self);
 
   exec(m);
 

@@ -7,7 +7,7 @@
 using namespace pybindcpp;
 
 void
-fftw(Module &m) {
+fftw(ExtModule &m) {
 
   m.varargs("fft", [](PyObject *self, PyObject *args) -> PyObject * {
     PyObject *o;

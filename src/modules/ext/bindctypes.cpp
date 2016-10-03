@@ -34,7 +34,7 @@ struct Funcs funcs;
 }
 
 void
-exec(Module& m) {
+exec(ExtModule &m) {
   m.fun("add", add);
   m.fun("minus", minus);
   m.fun("add_d", add_d);

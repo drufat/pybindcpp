@@ -17,7 +17,7 @@ computation(const T &X, T &Y) {
 }
 
 void
-eigen(Module &m) {
+eigen(ExtModule &m) {
   m.fun("square", [](PyObject *o) -> PyObject * {
 
     const auto x = (PyArrayObject *) PyArray_ContiguousFromAny(

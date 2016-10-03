@@ -58,7 +58,7 @@ py_g(PyObject *self, PyObject *args) {
 }
 
 void
-native(Module &m) {
+native(ExtModule &m) {
   m.var("one", (long) 1);
   m.var("two", (ulong) 2);
   m.var("true", true);

@@ -12,16 +12,16 @@
 
 namespace pybindcpp {
 
-struct Module {
+struct ExtModule {
   PyObject *__dict__;
   REGFUNCTYPE reg;
 
-  Module() {
+  ExtModule() {
 
     __dict__ = PyDict_New();
     if (!__dict__) throw;
 
-    reg = cap<REGFUNCTYPE>("pybindcpp.register", "c_register_cap");
+    reg = capsule<REGFUNCTYPE>("pybindcpp.register", "c_register_cap");
     if (!reg) throw;
 
   }
@@ -32,19 +32,19 @@ struct Module {
 
   template<class F>
   void fun(const char *name, F f) {
-    add(name, callable_traits<F>::get(reg, f));
+    add(name, callable_trait<F>::get(reg, f));
   }
 
 };
 
 static
-std::function<void(Module &)> __exec;
+std::function<void(ExtModule &)> __exec;
 
 static
 int
 __module_exec(PyObject *module) {
   try {
-    Module m;
+    ExtModule m;
     __exec(m);
     PyDict_Update(PyModule_GetDict(module), m.__dict__);
     return 0;

@@ -45,7 +45,7 @@ loop1d_ii_o(F func) {
 }
 
 void
-numpymodule(Module &m) {
+numpymodule(ExtModule &m) {
 
   ufunc_raw(m, "fn_ufunc1", {
       loop1d_ii_o<decltype(fn), int, double, double>(fn),
