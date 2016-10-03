@@ -84,9 +84,8 @@ struct callable_trait<Ret(*)(Args...)> {
     auto sign = func_trait<decltype(func)>::str();
 
     auto func_type = func_trait<decltype(func)>::pyctype();
+    auto o = reg((void *) (func), func_type);
     Py_DecRef(func_type);
-
-    auto o = reg((void *) (func), sign.c_str());
     return o;
   }
 };

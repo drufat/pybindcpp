@@ -35,7 +35,7 @@ const std::map<std::type_index, const char *> ctype_map = {
 };
 
 using VOIDFUNCTYPE = void (*)();
-using REGFUNCTYPE = PyObject *(*)(void *, const char *);
+using REGFUNCTYPE = PyObject *(*)(void *, PyObject*);
 using INIFUNCTYPE = PyObject *(*)();
 
 }

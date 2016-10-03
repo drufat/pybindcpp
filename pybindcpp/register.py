@@ -3,7 +3,7 @@ import types
 import importlib
 
 VOIDFUNCTYPE = ct.CFUNCTYPE(None)
-REGFUNCTYPE = ct.CFUNCTYPE(ct.py_object, ct.c_void_p, ct.c_char_p)
+REGFUNCTYPE = ct.CFUNCTYPE(ct.py_object, ct.c_void_p, ct.py_object)
 
 PyCapsule_Destructor = ct.CFUNCTYPE(
     None,
@@ -46,13 +46,12 @@ c_cfunctype = ct.CFUNCTYPE(ct.py_object, ct.c_char_p)(cfunctype)
 c_cfunctype_cap = capsule(c_cfunctype)
 
 
-def register(func, signature):
-    fn_type = cfunctype(signature)
-    f = ct.cast(func, fn_type)
+def register(func, func_type):
+    f = ct.cast(func, func_type)
     return f
 
 
-c_register = ct.CFUNCTYPE(ct.py_object, ct.c_void_p, ct.c_char_p)(register)
+c_register = ct.CFUNCTYPE(ct.py_object, ct.c_void_p, ct.py_object)(register)
 c_register_cap = capsule(c_register)
 
 
