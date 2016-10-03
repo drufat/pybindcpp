@@ -31,6 +31,10 @@ def add(x, y):
     return x + y
 
 
+def id(_):
+    return _
+
+
 def capsule(cfunc):
     return PyCapsule_New(ct.cast(cfunc, ct.c_void_p), None, None)
 
@@ -68,13 +72,16 @@ c_new_module = ct.CFUNCTYPE(ct.py_object, ct.c_char_p)(new_module)
 c_new_module_cap = capsule(c_new_module)
 
 
-def cfuncify(module, name, signature):
-    module = module.value.decode()
-    mod = importlib.import_module(module)
-    name = name.value.decode()
-    func = getattr(mod, name)
-    return cfunctype(signature)(func)
+def cfuncify(module, name, func_type, cfunc, cptr):
+    mod = importlib.import_module(module.decode())
+    func = getattr(mod, name.decode())
+    cfunc[0] = func_type(func)
+    cptr[0] = ct.cast(cfunc[0], ct.c_void_p)
 
 
-c_cfuncify = ct.CFUNCTYPE(ct.py_object, ct.c_char_p, ct.c_char_p, ct.POINTER(ct.c_int))(cfuncify)
+c_cfuncify = ct.CFUNCTYPE(
+    None,
+    ct.c_char_p, ct.c_char_p, ct.py_object,
+    ct.POINTER(ct.py_object), ct.POINTER(ct.c_void_p)
+)(cfuncify)
 c_cfuncify_cap = capsule(c_cfuncify)

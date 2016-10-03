@@ -26,25 +26,33 @@ capsule(const char *module, const char *attr) {
   return reg;
 }
 
+template<class F>
+struct py_function;
+
 template<class Ret, class ...Args>
-struct py_function {
+struct py_function<Ret(Args...)> {
 
   PyObject *m_ptr;
+  PyObject *func_type;
   Ret (*f_ptr)(Args...);
 
   py_function(const char *module, const char *name) {
-
     using F = func_trait<decltype(f_ptr)>;
-    auto sign = F::value();
-    auto size = F::size;
 
-//    auto cfuncify = capsule<PyObject *(*)(const char *, const char *, int *, size_t)>("pybindcpp.register", "c_cfuncify_cap");
-//    m_ptr = cfuncify(module, name, _signature, size);
+    func_type = F::pyctype();
 
+    using FUNCIFY = void (*)(
+        const char *, const char *, PyObject *,
+        PyObject **, void **
+    );
+    auto funcify = capsule<FUNCIFY>("pybindcpp.register", "c_cfuncify_cap");
+    void *v_ptr;
+    funcify(module, name, func_type, &m_ptr, &v_ptr);
+    f_ptr = (decltype(f_ptr)) v_ptr;
   }
 
   Ret operator()(Args... args) {
-
+    return f_ptr(args...);
   }
 };
 

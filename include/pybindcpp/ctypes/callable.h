@@ -33,8 +33,7 @@ struct func_trait<Ret(*)(Args...)> {
   }
 
   static auto pystr() {
-    auto s = str();
-    return PyBytes_FromString(s.c_str());
+    return PyBytes_FromString(str().c_str());
   }
 
   static auto pyctype() {
@@ -81,9 +80,9 @@ struct callable_trait<Ret(*)(Args...)> {
   static
   PyObject *
   get(REGFUNCTYPE reg, Ret(*func)(Args...)) {
-    auto sign = func_trait<decltype(func)>::str();
+    using F = func_trait<decltype(func)>;
 
-    auto func_type = func_trait<decltype(func)>::pyctype();
+    auto func_type = F::pyctype();
     auto o = reg((void *) (func), func_type);
     Py_DecRef(func_type);
     return o;
