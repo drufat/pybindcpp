@@ -35,6 +35,7 @@ struct Funcs funcs;
 
 void
 exec(ExtModule &m) {
+  m.add("add_trait", func_trait<decltype(&add)>::pyctype());
   m.fun("add", add);
   m.fun("minus", minus);
   m.fun("add_d", add_d);
