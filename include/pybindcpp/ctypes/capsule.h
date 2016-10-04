@@ -10,13 +10,13 @@ T
 capsule(const char *module, const char *attr) {
 
   auto mod = PyImport_ImportModule(module);
-  if (!mod) throw;
+  if (!mod) throw std::runtime_error("Cannot load module.");
 
   auto cap = PyObject_GetAttrString(mod, attr);
-  if (!cap) throw;
+  if (!cap) throw std::runtime_error("Cannot load attribute.");
 
   auto pnt = PyCapsule_GetPointer(cap, nullptr);
-  if (!pnt) throw;
+  if (!pnt) throw std::runtime_error("Cannot read capsule pointer.");
 
   T reg = reinterpret_cast<T>(pnt);
 
@@ -38,16 +38,20 @@ struct py_function<Ret(Args...)> {
   py_function(const char *module, const char *name) {
     using F = func_trait<decltype(f_ptr)>;
 
-    auto func_type = F::pyctype();
+    PyObject *func_type = F::pyctype();
 
     using FUNCIFY = void (*)(
         const char *, const char *, PyObject *,
         PyObject **, void **
     );
-    auto funcify = capsule<FUNCIFY>("pybindcpp.register", "c_cfuncify_cap");
+    auto funcify = capsule<FUNCIFY>("pybindcpp.bind", "c_cfuncify_cap");
     void *v_ptr;
     funcify(module, name, func_type, &m_ptr, &v_ptr);
     f_ptr = (decltype(f_ptr)) v_ptr;
+  }
+
+  ~py_function() {
+    Py_DecRef(m_ptr);
   }
 
   Ret operator()(Args... args) {

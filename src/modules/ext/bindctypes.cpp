@@ -39,8 +39,13 @@ struct Funcs funcs;
 
 void
 exec(ExtModule &m) {
-//  py_function<int(int)>("pybindcpp.register", "id")(3);
+//  py_function<int(int)>("pybindcpp.register", "id");
+
+  m.add("id_type", func_trait<decltype(&id)>::pyctype());
   m.add("add_type", func_trait<decltype(&add)>::pyctype());
+  m.add("minus_type", func_trait<decltype(&minus)>::pyctype());
+  m.add("set_string_type", func_trait<decltype(&set_string)>::pyctype());
+
   m.fun("id", id);
   m.fun("add", add);
   m.fun("minus", minus);

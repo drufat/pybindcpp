@@ -1,7 +1,8 @@
 import ctypes as ct
 from pybindcpp import bindctypes
 
-from pybindcpp.register import REGFUNCTYPE, Funcs, register, PyCapsule_New, PyCapsule_GetPointer
+from pybindcpp.bind import register, PyCapsule_New, PyCapsule_GetPointer
+from pybindcpp.sample import REGFUNCTYPE, Funcs
 
 
 def test_assign():
@@ -11,6 +12,15 @@ def test_assign():
 
 
 def test_reg():
+    '''
+    >>> t = lambda _: (_._restype_,) + _._argtypes_
+    >>> t(bindctypes.id_type)
+    (<class 'ctypes.py_object'>, <class 'ctypes.py_object'>)
+    >>> t(bindctypes.add_type)
+    (<class 'ctypes.c_int'>, <class 'ctypes.c_int'>, <class 'ctypes.c_int'>)
+    >>> t(bindctypes.set_string_type)
+    (<class 'ctypes.c_int'>, <class 'ctypes.c_char'>, <class 'ctypes.c_int'>, <class 'ctypes.c_char_p'>)
+    '''
     assert bindctypes.id(1) == 1
     assert bindctypes.add(1, 2) == 3
     assert bindctypes.add(100, 2) == 102

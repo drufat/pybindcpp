@@ -21,8 +21,7 @@ struct ExtModule {
     __dict__ = PyDict_New();
     if (!__dict__) throw;
 
-    reg = capsule<REGFUNCTYPE>("pybindcpp.register", "c_register_cap");
-    if (!reg) throw;
+    reg = capsule<REGFUNCTYPE>("pybindcpp.bind", "c_register_cap");
 
   }
 
@@ -48,7 +47,11 @@ __module_exec(PyObject *module) {
     __exec(m);
     PyDict_Update(PyModule_GetDict(module), m.__dict__);
     return 0;
+  } catch (const std::runtime_error &ex) {
+    PyErr_SetString(PyExc_RuntimeError, ex.what());
+    return -1;
   } catch (...) {
+    PyErr_SetString(PyExc_RuntimeError, "Unknown internal error.");
     return -1;
   };
 }

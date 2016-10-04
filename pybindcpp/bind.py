@@ -1,10 +1,10 @@
 import ctypes as ct
-import types
 import importlib
+import types
 
-VOIDFUNCTYPE = ct.CFUNCTYPE(None)
-REGFUNCTYPE = ct.CFUNCTYPE(ct.py_object, ct.c_void_p, ct.py_object)
-
+################
+# Python.h API #
+################
 PyCapsule_Destructor = ct.CFUNCTYPE(
     None,
     ct.py_object
@@ -19,20 +19,6 @@ PyCapsule_GetPointer = ct.CFUNCTYPE(
     ct.c_void_p,
     ct.py_object, ct.c_char_p
 )(('PyCapsule_GetPointer', ct.pythonapi))
-
-
-class Funcs(ct.Structure):
-    _fields_ = [
-        ('reg', REGFUNCTYPE),
-    ]
-
-
-def add(x, y):
-    return x + y
-
-
-def id(_):
-    return _
 
 
 def capsule(cfunc):
@@ -57,19 +43,6 @@ def register(func, func_type):
 
 c_register = ct.CFUNCTYPE(ct.py_object, ct.c_void_p, ct.py_object)(register)
 c_register_cap = capsule(c_register)
-
-
-def new_module(name):
-    '''
-    >>> m = new_module(b'abc')
-    >>> type(m)
-    <class 'module'>
-    '''
-    return types.ModuleType(name.decode())
-
-
-c_new_module = ct.CFUNCTYPE(ct.py_object, ct.c_char_p)(new_module)
-c_new_module_cap = capsule(c_new_module)
 
 
 def cfuncify(module, name, func_type, cfunc, cptr):
