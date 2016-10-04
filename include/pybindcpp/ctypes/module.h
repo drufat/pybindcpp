@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "pybindcpp/ctypes/callable.h"
-#include "pybindcpp/ctypes/capsule.h"
+#include "pybindcpp/ctypes/pyfunction.h"
 
 namespace pybindcpp {
 
@@ -21,7 +21,9 @@ struct ExtModule {
     __dict__ = PyDict_New();
     if (!__dict__) throw;
 
-    reg = capsule<REGFUNCTYPE>("pybindcpp.bind", "c_register_cap");
+//    reg = capsule<PyObject *(*)(void *, PyObject *)>("pybindcpp.bind", "register_cap");
+//    reg = c_function<PyObject *(*)(void *, PyObject *)>("pybindcpp.bind", "c_register");
+    reg = py_function<PyObject *(void *, PyObject *)>("pybindcpp.bind", "register");
 
   }
 

@@ -25,7 +25,7 @@ set(HEADER_FILES
         include/pybindcpp/ctypes/types.h
         include/pybindcpp/ctypes/module.h
         include/pybindcpp/ctypes/callable.h
-        include/pybindcpp/ctypes/capsule.h
+        include/pybindcpp/ctypes/pyfunction.h
         )
 
 add_custom_target(

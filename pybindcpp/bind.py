@@ -20,11 +20,17 @@ PyCapsule_GetPointer = ct.CFUNCTYPE(
     ct.py_object, ct.c_char_p
 )(('PyCapsule_GetPointer', ct.pythonapi))
 
+PyLong_AsVoidPtr = ct.CFUNCTYPE(
+    ct.c_void_p,
+    ct.py_object
+)(('PyLong_AsVoidPtr', ct.pythonapi))
+
 
 def capsule(cfunc):
-    return PyCapsule_New(ct.cast(cfunc, ct.c_void_p), None, None)
+    return PyCapsule_New(ct.cast(ct.pointer(cfunc), ct.c_void_p), None, None)
 
 
+@ct.CFUNCTYPE(ct.py_object, ct.c_char_p)
 def cfunctype(signature):
     signature = signature.decode()
     types = tuple(getattr(ct, _) for _ in signature.split(","))
@@ -32,8 +38,7 @@ def cfunctype(signature):
     return fn_type
 
 
-c_cfunctype = ct.CFUNCTYPE(ct.py_object, ct.c_char_p)(cfunctype)
-c_cfunctype_cap = capsule(c_cfunctype)
+cfunctype_cap = capsule(cfunctype)
 
 
 def register(func, func_type):
@@ -42,13 +47,5 @@ def register(func, func_type):
 
 
 c_register = ct.CFUNCTYPE(ct.py_object, ct.c_void_p, ct.py_object)(register)
-c_register_cap = capsule(c_register)
 
-
-def tovoid(obj):
-    return ct.cast(obj, ct.c_void_p)
-
-
-c_tovoid_t = ct.CFUNCTYPE(ct.c_void_p, ct.py_object)
-c_tovoid = c_tovoid_t(tovoid)
-c_tovoid_cap = capsule(c_tovoid)
+register_cap = capsule(c_register)
