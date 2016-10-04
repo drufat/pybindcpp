@@ -68,14 +68,14 @@ struct py_function<Ret(Args...)> {
   PyObject *m_ptr;
   Ret (*f_ptr)(Args...);
 
-  py_function(const py_function& other) {
+  py_function(const py_function &other) {
     f_ptr = other.f_ptr;
     m_ptr = other.m_ptr;
     Py_IncRef(m_ptr);
   };
 
-  py_function& operator=(const py_function& other) = delete;
-  py_function& operator=(py_function&& other) = delete;
+  py_function &operator=(const py_function &other) = delete;
+  py_function &operator=(py_function &&other) = delete;
 
   py_function(const char *module, const char *attr) {
     using F = decltype(f_ptr);
