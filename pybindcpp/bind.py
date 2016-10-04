@@ -42,7 +42,8 @@ cfunctype_cap = capsule(cfunctype)
 
 
 def register(func, func_type):
-    f = ct.cast(func, func_type)
+    p = ct.cast(func, ct.POINTER(ct.c_void_p))
+    f = ct.cast(p[0], func_type)
     return f
 
 

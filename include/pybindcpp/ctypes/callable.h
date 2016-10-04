@@ -33,7 +33,7 @@ struct callable_trait<Ret(*)(Args...)> {
 
     using F = func_trait<decltype(func)>;
     auto func_type = F::pyctype();
-    auto o = reg(reinterpret_cast<void *>(func), func_type);
+    auto o = reg(static_cast<void *>(&func), func_type);
     Py_DecRef(func_type);
     return o;
   }
