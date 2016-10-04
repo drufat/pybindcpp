@@ -32,6 +32,7 @@ struct py_function;
 template<class Ret, class ...Args>
 struct py_function<Ret(Args...)> {
 
+  PyObject *func_type;
   PyObject *m_ptr;
   Ret (*f_ptr)(Args...);
 
@@ -40,18 +41,24 @@ struct py_function<Ret(Args...)> {
 
     PyObject *func_type = F::pyctype();
 
-    using FUNCIFY = void (*)(
-        const char *, const char *, PyObject *,
-        PyObject **, void **
-    );
-    auto funcify = capsule<FUNCIFY>("pybindcpp.bind", "c_cfuncify_cap");
-    void *v_ptr;
-    funcify(module, name, func_type, &m_ptr, &v_ptr);
-    f_ptr = (decltype(f_ptr)) v_ptr;
+    auto mod = PyImport_ImportModule(module);
+    if (!mod) throw;
+
+    auto func = PyObject_GetAttrString(mod, name);
+    if (!func) throw;
+
+    auto cfunc = PyObject_CallFunctionObjArgs(func_type, func, nullptr);
+    if (!cfunc) throw;
+
+    m_ptr = cfunc;
+
+    auto tovoid = capsule<void *(*)(PyObject *)>("pybindcpp.bind", "c_tovoid_cap");
+    f_ptr = (decltype(f_ptr)) tovoid(cfunc);
+
   }
 
   ~py_function() {
-    Py_DecRef(m_ptr);
+//    Py_DecRef(m_ptr);
   }
 
   Ret operator()(Args... args) {

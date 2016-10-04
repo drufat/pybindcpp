@@ -45,16 +45,10 @@ c_register = ct.CFUNCTYPE(ct.py_object, ct.c_void_p, ct.py_object)(register)
 c_register_cap = capsule(c_register)
 
 
-def cfuncify(module, name, func_type, cfunc, cptr):
-    mod = importlib.import_module(module.decode())
-    func = getattr(mod, name.decode())
-    cfunc[0] = func_type(func)
-    cptr[0] = ct.cast(cfunc[0], ct.c_void_p)
+def tovoid(obj):
+    return ct.cast(obj, ct.c_void_p)
 
 
-c_cfuncify = ct.CFUNCTYPE(
-    None,
-    ct.c_char_p, ct.c_char_p, ct.py_object,
-    ct.POINTER(ct.py_object), ct.POINTER(ct.c_void_p)
-)(cfuncify)
-c_cfuncify_cap = capsule(c_cfuncify)
+c_tovoid_t = ct.CFUNCTYPE(ct.c_void_p, ct.py_object)
+c_tovoid = c_tovoid_t(tovoid)
+c_tovoid_cap = capsule(c_tovoid)
