@@ -26,7 +26,7 @@ set(HEADER_FILES
         include/pybindcpp/ctypes/module.h
         include/pybindcpp/ctypes/callable.h
         include/pybindcpp/ctypes/pyfunction.h
-        )
+        include/pybindcpp/ctypes/func_trait.h)
 
 add_custom_target(
         setup_py ALL python3 setup.py develop --user

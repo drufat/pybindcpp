@@ -2,6 +2,7 @@
 #define PYBINDCPP_CAPSULE_H
 
 #include "pybindcpp/ctypes/types.h"
+#include "pybindcpp/ctypes/func_trait.h"
 
 namespace pybindcpp {
 
