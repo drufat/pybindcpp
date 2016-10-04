@@ -13,6 +13,10 @@ int set_string(char c, int size, char *buffer) {
   return 0;
 }
 
+auto id(PyObject *o) {
+  return o;
+}
+
 int add(int x, int y) {
   return x + y;
 }
@@ -35,8 +39,9 @@ struct Funcs funcs;
 
 void
 exec(ExtModule &m) {
-//  py_function<int(int)>("pybindcpp.register", "id");
-  m.add("add_trait", func_trait<decltype(&add)>::pyctype());
+//  py_function<int(int)>("pybindcpp.register", "id")(3);
+  m.add("add_type", func_trait<decltype(&add)>::pyctype());
+  m.fun("id", id);
   m.fun("add", add);
   m.fun("minus", minus);
   m.fun("add_d", add_d);

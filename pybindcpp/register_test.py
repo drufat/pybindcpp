@@ -11,6 +11,7 @@ def test_assign():
 
 
 def test_reg():
+    assert bindctypes.id(1) == 1
     assert bindctypes.add(1, 2) == 3
     assert bindctypes.add(100, 2) == 102
     assert bindctypes.minus(2, 1) == 1

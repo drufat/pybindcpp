@@ -4,6 +4,7 @@
 #include <Python.h>
 #include <string>
 #include <sstream>
+#include <array>
 
 #include "pybindcpp/ctypes/types.h"
 

@@ -31,11 +31,12 @@ const std::map<std::type_index, const char *> ctype_map = {
     {typeid(char *), "c_char_p"},
     {typeid(wchar_t *), "c_wchar_p"},
     {typeid(void *), "c_void_p"},
+    {typeid(PyObject *), "py_object"},
 
 };
 
 using VOIDFUNCTYPE = void (*)();
-using REGFUNCTYPE = PyObject *(*)(void *, PyObject*);
+using REGFUNCTYPE = PyObject *(*)(void *, PyObject *);
 using INIFUNCTYPE = PyObject *(*)();
 
 }

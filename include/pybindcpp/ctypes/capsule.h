@@ -33,13 +33,12 @@ template<class Ret, class ...Args>
 struct py_function<Ret(Args...)> {
 
   PyObject *m_ptr;
-  PyObject *func_type;
   Ret (*f_ptr)(Args...);
 
   py_function(const char *module, const char *name) {
     using F = func_trait<decltype(f_ptr)>;
 
-    func_type = F::pyctype();
+    auto func_type = F::pyctype();
 
     using FUNCIFY = void (*)(
         const char *, const char *, PyObject *,
