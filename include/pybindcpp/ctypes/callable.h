@@ -27,14 +27,13 @@ struct callable_trait<Ret(*)(Args...)> {
   static
   PyObject *
   get(Ret(*func)(Args...)) {
-    using F = func_trait<decltype(func)>;
-    auto func_type = F::pyctype();
-
 //  auto reg = capsule<PyObject *(*)(void *, PyObject *)>("pybindcpp.bind", "register_cap");
 //  auto reg = c_function<PyObject *(*)(void *, PyObject *)>("pybindcpp.bind", "c_register");
     auto reg = py_function<PyObject *(void *, PyObject *)>("pybindcpp.bind", "register");
 
-    auto o = reg((void *) (func), func_type);
+    using F = func_trait<decltype(func)>;
+    auto func_type = F::pyctype();
+    auto o = reg(reinterpret_cast<void *>(func), func_type);
     Py_DecRef(func_type);
     return o;
   }
