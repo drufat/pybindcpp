@@ -1,7 +1,7 @@
 #ifndef PYBINDCPP_FUNC_TRAIT_H
 #define PYBINDCPP_FUNC_TRAIT_H
 
-#include <string>
+#include <array>
 #include <sstream>
 
 #include "pybindcpp/ctypes/types.h"
