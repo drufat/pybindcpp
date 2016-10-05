@@ -83,7 +83,7 @@ make_ufunc_imp(
     auto t = f.target<PyUFuncGenericFunction>();
     if (t) {
       cfuncs->push_back(*t);
-      cdata->push_back(NULL);
+      cdata->push_back(nullptr);
     } else {
       cfuncs->push_back(dispatch);
       cdata->push_back((void *) &f);

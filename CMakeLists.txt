@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.6)
 project(pybindcpp)
 
-find_package(PythonLibs)
-
 add_compile_options(-std=c++1z)
 
 # Linux
@@ -43,5 +41,3 @@ add_executable(meta src/meta.cpp)
 
 set(CMAKE_CXX_STANDARD_LIBRARIES -lpython3.5m)
 add_library(bindctypes MODULE src/modules/ext/bindctypes.cpp ${HEADER_FILES})
-add_library(dispatch MODULE src/modules/ext/dispatch.cpp ${HEADER_FILES})
-add_library(numpy MODULE src/modules/ext/numpy.cpp ${HEADER_FILES})
