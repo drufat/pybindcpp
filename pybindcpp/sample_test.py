@@ -1,7 +1,8 @@
 import ctypes as ct
 from pybindcpp import bindctypes
 
-from pybindcpp.bind import register, PyCapsule_New, PyCapsule_GetPointer
+from pybindcpp.bind import register
+from pybindcpp.api import PyCapsule_New, PyCapsule_GetPointer
 from pybindcpp.sample import REGFUNCTYPE, Funcs
 
 

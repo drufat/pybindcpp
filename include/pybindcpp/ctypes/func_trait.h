@@ -5,6 +5,7 @@
 #include <sstream>
 
 #include "pybindcpp/ctypes/types.h"
+#include "pybindcpp/ctypes/api.h"
 
 namespace pybindcpp {
 
@@ -36,24 +37,8 @@ struct func_trait<Ret(*)(Args...)> {
   }
 
   static auto pyctype() {
-    auto sign = value();
-
-    auto ctypes = PyImport_ImportModule("ctypes");
-    auto attr = [ctypes](const char *name) {
-      return PyObject_GetAttrString(ctypes, name);
-    };
-    auto tup = PyTuple_New(size);
-    for (size_t i = 0; i < size; i++) {
-      PyTuple_SetItem(tup, i, attr(ctype_map.at(sign[i])));
-    }
-    auto CFUNCTYPE = attr("CFUNCTYPE");
-    auto rslt = PyObject_Call(CFUNCTYPE, tup, nullptr);
-
-    Py_DecRef(CFUNCTYPE);
-    Py_DecRef(ctypes);
-    Py_DecRef(tup);
-
-    return rslt;
+    auto s = str();
+    return api.get_type(s.c_str());
   }
 };
 

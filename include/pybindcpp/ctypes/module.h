@@ -7,6 +7,7 @@
 #include <functional>
 #include <vector>
 
+#include "pybindcpp/ctypes/api.h"
 #include "pybindcpp/ctypes/callable.h"
 #include "pybindcpp/ctypes/pyfunction.h"
 
@@ -39,6 +40,7 @@ static
 int
 __module_exec(PyObject *module) {
   try {
+    import_pybindcpp();
     ExtModule m;
     __exec(m);
     PyDict_Update(PyModule_GetDict(module), m.__dict__);

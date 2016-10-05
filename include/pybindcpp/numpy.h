@@ -105,7 +105,7 @@ make_ufunc_imp(
       PyUFunc_None,
       name, NULL, 0
   );
-  // store the objs for as long as o lives
+  // store the __objs for as long as __func lives
   auto __objs = capsule_new(objs);
 
   PyObject *o;

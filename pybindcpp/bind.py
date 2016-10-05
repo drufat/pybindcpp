@@ -1,29 +1,5 @@
 import ctypes as ct
-import importlib
-import types
-
-################
-# Python.h API #
-################
-PyCapsule_Destructor = ct.CFUNCTYPE(
-    None,
-    ct.py_object
-)
-
-PyCapsule_New = ct.CFUNCTYPE(
-    ct.py_object,
-    ct.c_void_p, ct.c_char_p, ct.c_void_p
-)(('PyCapsule_New', ct.pythonapi))
-
-PyCapsule_GetPointer = ct.CFUNCTYPE(
-    ct.c_void_p,
-    ct.py_object, ct.c_char_p
-)(('PyCapsule_GetPointer', ct.pythonapi))
-
-PyLong_AsVoidPtr = ct.CFUNCTYPE(
-    ct.c_void_p,
-    ct.py_object
-)(('PyLong_AsVoidPtr', ct.pythonapi))
+from pybindcpp.api import PyCapsule_New
 
 
 def capsule(cfunc):
