@@ -31,6 +31,10 @@ struct ExtModule {
 
   }
 
+  ~ExtModule() {
+    Py_DecRef(__dict__);
+  }
+
   void add(const char *name, PyObject *obj) {
     PyDict_SetItemString(__dict__, name, obj);
     Py_DecRef(obj);
