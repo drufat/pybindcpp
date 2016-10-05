@@ -36,7 +36,7 @@ struct func_trait<Ret(*)(Args...)> {
     return PyBytes_FromString(str().c_str());
   }
 
-  static auto pyctype() {
+  static auto pyctype(const API& api) {
     auto s = str();
     return api.get_type(s.c_str());
   }

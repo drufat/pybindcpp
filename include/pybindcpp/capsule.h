@@ -12,7 +12,7 @@ void
 capsule_destructor(PyObject *o) {
   auto p = PyCapsule_GetPointer(o, typeid(T).name());
   //decrement reference
-  delete (std::shared_ptr<T> *) p;
+  delete static_cast<std::shared_ptr<T> *>(p);
 }
 
 template<class T>
@@ -31,7 +31,7 @@ capsule_get(PyObject *o) {
     PyErr_SetString(PyExc_TypeError, "Capsule is of incorrect type.");
     return NULL;
   }
-  return *(std::shared_ptr<T> *) p;
+  return *static_cast<std::shared_ptr<T> *>(p);
 }
 
 }

@@ -6,7 +6,9 @@
 
 #include <functional>
 #include <vector>
+#include <memory>
 
+#include "pybindcpp/capsule.h"
 #include "pybindcpp/ctypes/api.h"
 #include "pybindcpp/ctypes/callable.h"
 #include "pybindcpp/ctypes/pyfunction.h"
@@ -15,20 +17,28 @@ namespace pybindcpp {
 
 struct ExtModule {
   PyObject *__dict__;
-  ExtModule() {
+  std::shared_ptr<API> api;
+
+  ExtModule()  {
+
+    api = std::make_shared<API>();
+    import_pybindcpp(*api);
 
     __dict__ = PyDict_New();
-    if (!__dict__) throw;
+    if (!__dict__) throw "Cannot create dictionary.";
+
+    add("__pybindcpp_api__", capsule_new(api));
 
   }
 
   void add(const char *name, PyObject *obj) {
     PyDict_SetItemString(__dict__, name, obj);
+    Py_DecRef(obj);
   }
 
   template<class F>
   void fun(const char *name, F f) {
-    add(name, callable_trait<F>::get(f));
+    add(name, callable_trait<F>::get(*api, f));
   }
 
 };
@@ -40,17 +50,22 @@ static
 int
 __module_exec(PyObject *module) {
   try {
-    import_pybindcpp();
     ExtModule m;
     __exec(m);
-    PyDict_Update(PyModule_GetDict(module), m.__dict__);
+    auto d = PyModule_GetDict(module);
+    PyDict_Update(d, m.__dict__);
     return 0;
-  } catch (const std::runtime_error &ex) {
-    PyErr_SetString(PyExc_RuntimeError, ex.what());
+
+  } catch (const char *&ex) {
+
+    PyErr_SetString(PyExc_RuntimeError, ex);
     return -1;
+
   } catch (...) {
+
     PyErr_SetString(PyExc_RuntimeError, "Unknown internal error.");
     return -1;
+
   };
 }
 

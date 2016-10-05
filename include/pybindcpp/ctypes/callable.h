@@ -26,7 +26,7 @@ template<class Ret, class... Args>
 struct callable_trait<Ret(*)(Args...)> {
   static
   PyObject *
-  get(Ret(*func)(Args...)) {
+  get(const API& api, Ret(*func)(Args...)) {
 
 //    auto reg = capsule<PyObject *(*)(void *, PyObject *)>("pybindcpp.bind", "register_cap");
 //    auto reg = c_function<PyObject *(*)(void *, PyObject *)>("pybindcpp.bind", "c_register");
@@ -34,7 +34,7 @@ struct callable_trait<Ret(*)(Args...)> {
     auto reg = api.register_;
 
     using F = func_trait<decltype(func)>;
-    auto func_type = F::pyctype();
+    auto func_type = F::pyctype(api);
     auto o = reg(static_cast<void *>(&func), func_type);
     Py_DecRef(func_type);
     return o;

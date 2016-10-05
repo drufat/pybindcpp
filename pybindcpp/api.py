@@ -10,17 +10,17 @@ PyCapsule_Destructor = ct.CFUNCTYPE(
     ct.py_object
 )
 
-PyCapsule_New = ct.CFUNCTYPE(
+PyCapsule_New = ct.PYFUNCTYPE(
     ct.py_object,
     ct.c_void_p, ct.c_char_p, ct.c_void_p
 )(('PyCapsule_New', ct.pythonapi))
 
-PyCapsule_GetPointer = ct.CFUNCTYPE(
+PyCapsule_GetPointer = ct.PYFUNCTYPE(
     ct.c_void_p,
     ct.py_object, ct.c_char_p
 )(('PyCapsule_GetPointer', ct.pythonapi))
 
-PyLong_AsVoidPtr = ct.CFUNCTYPE(
+PyLong_AsVoidPtr = ct.PYFUNCTYPE(
     ct.c_void_p,
     ct.py_object
 )(('PyLong_AsVoidPtr', ct.pythonapi))
@@ -31,14 +31,15 @@ PyLong_AsVoidPtr = ct.CFUNCTYPE(
 ###############
 
 
-@ct.CFUNCTYPE(ct.py_object, ct.c_char_p)
+@ct.PYFUNCTYPE(ct.py_object, ct.c_char_p)
 def get_type(typ):
     s = typ.decode()
+
     t = tuple(getattr(ct, _) for _ in s.split(','))
     return ct.CFUNCTYPE(*t)
 
 
-@ct.CFUNCTYPE(ct.c_void_p, ct.c_char_p, ct.c_char_p)
+@ct.PYFUNCTYPE(ct.c_void_p, ct.c_char_p, ct.c_char_p)
 def get_capsule(module, attr):
     module = module.decode()
     attr = attr.decode()
@@ -48,7 +49,7 @@ def get_capsule(module, attr):
     return PyCapsule_GetPointer(cap, None)
 
 
-@ct.CFUNCTYPE(ct.c_void_p, ct.c_char_p, ct.c_char_p)
+@ct.PYFUNCTYPE(ct.c_void_p, ct.c_char_p, ct.c_char_p)
 def get_cfunction(module, attr):
     module = module.decode()
     attr = attr.decode()
@@ -59,7 +60,7 @@ def get_cfunction(module, attr):
     return PyLong_AsVoidPtr(addr)
 
 
-@ct.CFUNCTYPE(ct.py_object, ct.c_char_p, ct.c_char_p, ct.py_object)
+@ct.PYFUNCTYPE(ct.py_object, ct.c_char_p, ct.c_char_p, ct.py_object)
 def get_pyfunction(module, attr, cfunctype):
     module = module.decode()
     attr = attr.decode()
@@ -70,17 +71,22 @@ def get_pyfunction(module, attr, cfunctype):
     return cfunc
 
 
-@ct.CFUNCTYPE(ct.c_void_p, ct.py_object)
+@ct.PYFUNCTYPE(ct.c_void_p, ct.py_object)
 def get_addr(cfunc):
     addr = ct.addressof(cfunc)
     return PyLong_AsVoidPtr(addr)
 
 
-@ct.CFUNCTYPE(ct.py_object, ct.c_void_p, ct.py_object)
+@ct.PYFUNCTYPE(ct.py_object, ct.c_void_p, ct.py_object)
 def register_(func, func_type):
     p = ct.cast(func, ct.POINTER(ct.c_void_p))
     f = ct.cast(p[0], func_type)
     return f
+
+
+@ct.PYFUNCTYPE(None)
+def error():
+    raise RuntimeError('RuntimeError')
 
 
 def api_test():
@@ -103,6 +109,7 @@ class API(ct.Structure):
         ('get_pyfunction', type(get_pyfunction)),
         ('get_addr', type(get_addr)),
         ('register_', type(register_)),
+        ('error', type(error)),
     ]
 
 
@@ -115,6 +122,7 @@ def init(ptr):
         get_pyfunction,
         get_addr,
         register_,
+        error,
     )
 
 
