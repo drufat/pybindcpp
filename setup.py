@@ -33,7 +33,7 @@ extra_compile_args = [
 
 libraries = []
 
-OPENMP = True
+OPENMP = False
 if OPENMP:
     extra_compile_args += ['-fopenmp']
     if 'darwin' not in sys.platform:

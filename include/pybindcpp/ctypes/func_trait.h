@@ -17,7 +17,7 @@ struct func_trait<Ret(*)(Args...)> {
   static constexpr size_t size = 1 + sizeof...(Args);
 
   static auto value() {
-    const std::array<std::type_index, size> a = {typeid(Ret), typeid(Args)...};
+    const std::array<std::type_index, size> a = {{typeid(Ret), typeid(Args)...}};
     return a;
   }
 
