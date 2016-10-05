@@ -19,7 +19,7 @@ const std::map<std::type_index, char> NumpyTypes = {
     {typeid(uint), NPY_UINT},
     {typeid(long), NPY_LONG},
     {typeid(ulong), NPY_ULONG},
-    {typeid(PyObject * ), NPY_OBJECT},
+    {typeid(PyObject *), NPY_OBJECT},
 
 };
 
@@ -60,9 +60,16 @@ dispatch(char **args,
   return f(args, dimensions, steps, NULL);
 }
 
+struct UFuncObjects {
+  std::vector<ftype> funcs;
+  std::vector<char> types;
+  std::vector<PyUFuncGenericFunction> cfuncs;
+  std::vector<void *> cdata;
+};
+
 PyObject *
 make_ufunc_imp(
-    std::string name_,
+    const char *name,
     std::vector<ftype> funcs_,
     std::vector<char> types_,
     int nin,
@@ -71,7 +78,10 @@ make_ufunc_imp(
   auto ntypes = funcs_.size();
   assert(types_.size() == ntypes * (nin + nout));
 
-  auto name = store(name_);
+  auto objs = std::make_shared<UFuncObjects>();
+  objs->funcs = funcs_;
+  objs->types = types_;
+
   auto funcs = store(funcs_);
   auto types = store(types_);
 
@@ -91,20 +101,24 @@ make_ufunc_imp(
   }
   assert(cdata->size() == ntypes == cfuncs->size());
 
-  return PyUFunc_FromFuncAndData(
+  PyObject *o = PyUFunc_FromFuncAndData(
       cfuncs->data(),
       cdata->data(),
       types->data(),
       ntypes,
       nin, nout,
       PyUFunc_None,
-      name->c_str(), NULL, 0);
+      name, NULL, 0);
+
+  PyObject_SetAttrString(o, "__pybind11_objects__", capsule_new(objs));
+
+  return o;
 
 }
 
 template<class O, class F, class... I>
 PyObject *
-make_ufunc(std::string name, F f) {
+make_ufunc(const char *name, F f) {
   constexpr auto nin = sizeof...(I);
   constexpr auto nout = 1;
   return make_ufunc_imp(
@@ -124,7 +138,7 @@ make_ufunc(std::string name, F f) {
 inline
 void
 ufunc_raw(ExtModule &m,
-          std::string name,
+          const char *name,
           std::vector<ftype> funcs,
           std::vector<char> types,
           int nin, int nout) {
@@ -133,7 +147,7 @@ ufunc_raw(ExtModule &m,
 
 template<class O, class F, class... I>
 void
-ufunc(ExtModule &m, std::string name, F f) {
+ufunc(ExtModule &m, const char *name, F f) {
   m.var(name, make_ufunc<O, F, I...>(name, f));
 }
 

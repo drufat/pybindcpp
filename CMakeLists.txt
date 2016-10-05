@@ -3,8 +3,9 @@ project(pybindcpp)
 
 add_compile_options(-std=c++1z)
 
-# Linux
 include_directories(include)
+
+# Linux
 include_directories(/usr/include/python3.5m/)
 include_directories(/usr/lib/python3.5/site-packages/numpy/core/include/)
 
@@ -41,3 +42,4 @@ add_executable(meta src/meta.cpp)
 
 set(CMAKE_CXX_STANDARD_LIBRARIES -lpython3.5m)
 add_library(bindctypes MODULE src/modules/ext/bindctypes.cpp ${HEADER_FILES})
+add_library(numpy MODULE src/modules/ext/numpy.cpp ${HEADER_FILES})
