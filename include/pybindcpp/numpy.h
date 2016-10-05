@@ -3,10 +3,11 @@
 #define NUMPY_H
 
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+
 #include "numpy/ndarrayobject.h"
 #include "numpy/ufuncobject.h"
 
-#include "pybindcpp/module.h"
+#include "pybindcpp/capsule.h"
 
 namespace pybindcpp {
 namespace {
@@ -26,18 +27,18 @@ const std::map<std::type_index, char> NumpyTypes = {
 template<typename Out, typename F, typename... In, std::size_t... Is>
 decltype(auto)
 loop1d_imp(F func, std::index_sequence<Is...>) {
-  return [func](char **args,
-                npy_intp *dimensions,
-                npy_intp *steps,
-                void *data) {
-
+  return [func](
+      char **args,
+      npy_intp *dimensions,
+      npy_intp *steps,
+      void *data
+  ) {
     constexpr size_t nin = sizeof...(In);
-    //constexpr size_t nout = 1;
 
     const auto N = dimensions[0];
     for (auto i = 0; i < N; i++) {
-      auto &out = (*(Out * )(args[nin] + i * steps[nin]));
-      out = func(*(In * )(args[Is] + i * steps[Is])...);
+      auto &out = (*reinterpret_cast<Out * >(args[nin] + i * steps[nin]));
+      out = func(*reinterpret_cast<In * >(args[Is] + i * steps[Is])...);
     }
   };
 }
@@ -52,11 +53,11 @@ loop1d(F func) {
 using ftype = std::function<void(char **, npy_intp *, npy_intp *, void *)>;
 
 void
-dispatch(char **args,
-         npy_intp *dimensions,
-         npy_intp *steps,
-         void *data) {
-  auto f = *(ftype *) data;
+generic_target(char **args,
+               npy_intp *dimensions,
+               npy_intp *steps,
+               void *data) {
+  auto f = *static_cast<ftype *>(data);
   return f(args, dimensions, steps, NULL);
 }
 
@@ -70,46 +71,41 @@ struct UFuncObjects {
 PyObject *
 make_ufunc_imp(
     const char *name,
-    std::vector<ftype> funcs_,
-    std::vector<char> types_,
+    std::vector<ftype> funcs,
+    std::vector<char> types,
     int nin,
     int nout
 ) {
-  auto ntypes = funcs_.size();
-  assert(types_.size() == ntypes * (nin + nout));
+  auto ntypes = funcs.size();
+  assert(types.size() == ntypes * (nin + nout));
 
   auto objs = std::make_shared<UFuncObjects>();
-  objs->funcs = funcs_;
-  objs->types = types_;
+  objs->funcs = funcs;
+  objs->types = types;
 
-  auto funcs = store(funcs_);
-  auto types = store(types_);
-
-  auto cfuncs = store(std::vector<PyUFuncGenericFunction>());
-  auto cdata = store(std::vector<void *>());
-
-  for (auto &f : *funcs) {
+  for (auto &f : objs->funcs) {
 
     auto t = f.target<PyUFuncGenericFunction>();
     if (t) {
-      cfuncs->push_back(*t);
-      cdata->push_back(nullptr);
+      objs->cfuncs.push_back(*t);
+      objs->cdata.push_back(nullptr);
     } else {
-      cfuncs->push_back(dispatch);
-      cdata->push_back((void *) &f);
+      objs->cfuncs.push_back(generic_target);
+      objs->cdata.push_back((void *) &f);
     }
   }
-  assert(cdata->size() == ntypes == cfuncs->size());
+  assert(objs->cdata.size() == ntypes == objs->cfuncs.size());
 
   PyObject *o = PyUFunc_FromFuncAndData(
-      cfuncs->data(),
-      cdata->data(),
-      types->data(),
+      objs->cfuncs.data(),
+      objs->cdata.data(),
+      objs->types.data(),
       ntypes,
       nin, nout,
       PyUFunc_None,
       name, NULL, 0);
 
+  // store the objs for as long as o lives
   PyObject_SetAttrString(o, "__pybind11_objects__", capsule_new(objs));
 
   return o;

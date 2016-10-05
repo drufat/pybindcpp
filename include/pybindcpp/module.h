@@ -18,7 +18,6 @@
 
 #include "pybindcpp/types.h"
 #include "pybindcpp/capsule.h"
-#include "pybindcpp/storage.h"
 
 namespace pybindcpp {
 
