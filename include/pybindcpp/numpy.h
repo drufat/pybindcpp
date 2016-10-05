@@ -106,7 +106,8 @@ make_ufunc_imp(
       name, NULL, 0);
 
   // store the objs for as long as o lives
-  PyObject_SetAttrString(o, "__pybind11_objects__", capsule_new(objs));
+  capsule_new(objs);
+//  PyObject_SetAttrString(o, "__pybind11_objects__", capsule_new(objs));
 
   return o;
 
