@@ -96,21 +96,30 @@ make_ufunc_imp(
   }
   assert(objs->cdata.size() == ntypes == objs->cfuncs.size());
 
-  PyObject *o = PyUFunc_FromFuncAndData(
+  auto __func = PyUFunc_FromFuncAndData(
       objs->cfuncs.data(),
       objs->cdata.data(),
       objs->types.data(),
       ntypes,
       nin, nout,
       PyUFunc_None,
-      name, NULL, 0);
-
+      name, NULL, 0
+  );
   // store the objs for as long as o lives
-  capsule_new(objs);
-//  PyObject_SetAttrString(o, "__pybind11_objects__", capsule_new(objs));
+  auto __objs = capsule_new(objs);
 
+  PyObject *o;
+  {
+    auto mod = PyImport_ImportModule("pybindcpp.function");
+    auto ufunc = PyObject_GetAttrString(mod, "ufunc");
+    o = PyObject_CallFunctionObjArgs(ufunc, __func, __objs, nullptr);
+    Py_DecRef(ufunc);
+    Py_DecRef(mod);
+  }
+
+  Py_DecRef(__objs);
+  Py_DecRef(__func);
   return o;
-
 }
 
 template<class O, class F, class... I>
