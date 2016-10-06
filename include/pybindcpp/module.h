@@ -16,8 +16,8 @@
 #include <iostream>
 #include <memory>
 
-#include "pybindcpp/types.h"
-#include "pybindcpp/capsule.h"
+#include "types.h"
+#include "capsule.h"
 
 namespace pybindcpp {
 

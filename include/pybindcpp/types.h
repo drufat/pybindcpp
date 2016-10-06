@@ -5,8 +5,8 @@
 #include <map>
 #include <memory>
 
-#include "pybindcpp/util.h"
-#include "pybindcpp/capsule.h"
+#include "util.h"
+#include "capsule.h"
 
 namespace pybindcpp {
 

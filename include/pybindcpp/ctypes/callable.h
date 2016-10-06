@@ -1,7 +1,7 @@
 #ifndef PYBINDCPP_CALLABLE_H
 #define PYBINDCPP_CALLABLE_H
 
-#include "pybindcpp/ctypes/pyfunction.h"
+#include "pyfunction.h"
 
 namespace pybindcpp {
 

@@ -8,10 +8,10 @@
 #include <vector>
 #include <memory>
 
-#include "pybindcpp/capsule.h"
-#include "pybindcpp/ctypes/api.h"
-#include "pybindcpp/ctypes/callable.h"
-#include "pybindcpp/ctypes/pyfunction.h"
+#include "../capsule.h"
+#include "api.h"
+#include "callable.h"
+#include "pyfunction.h"
 
 namespace pybindcpp {
 

@@ -1,9 +1,9 @@
 #ifndef PYBINDCPP_CAPSULE_H
 #define PYBINDCPP_CAPSULE_H
 
-#include "pybindcpp/ctypes/types.h"
-#include "pybindcpp/ctypes/api.h"
-#include "pybindcpp/ctypes/func_trait.h"
+#include "types.h"
+#include "api.h"
+#include "func_trait.h"
 
 namespace pybindcpp {
 

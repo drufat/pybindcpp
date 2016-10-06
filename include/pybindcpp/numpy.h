@@ -7,7 +7,7 @@
 #include "numpy/ndarrayobject.h"
 #include "numpy/ufuncobject.h"
 
-#include "pybindcpp/capsule.h"
+#include "capsule.h"
 
 namespace pybindcpp {
 namespace {
