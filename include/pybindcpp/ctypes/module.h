@@ -21,7 +21,9 @@ struct ExtModule {
 
   ExtModule(PyObject *m) {
     this->m = m;
-    this->api = import_pybindcpp();
+    auto __api__ = import_pybindcpp(&api);
+    // keep a reference so the API struct is not garbage collected
+    add("__pybindcpp_api__", __api__);
   }
 
   void add(const char *name, PyObject *obj) {

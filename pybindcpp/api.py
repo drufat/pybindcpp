@@ -134,9 +134,10 @@ api = API(
 )
 
 
-@ct.PYFUNCTYPE(None, ct.POINTER(ct.POINTER(API)))
+@ct.PYFUNCTYPE(ct.py_object, ct.POINTER(ct.POINTER(API)))
 def init(ptr):
     ptr[0] = ct.pointer(api)
+    return api
 
 
 init_addr = ct.addressof(init)
