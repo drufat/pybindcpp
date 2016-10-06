@@ -16,7 +16,7 @@ struct API {
   void (*error)();
 };
 
-static void import_pybindcpp(API &api) {
+static API *import_pybindcpp() {
 
   auto mod = PyImport_ImportModule("pybindcpp.api");
   if (!mod) throw "Cannot import";
@@ -25,12 +25,15 @@ static void import_pybindcpp(API &api) {
   if (!init_addr) throw "Cannot access attribute.";
 
   void *ptr = PyLong_AsVoidPtr(init_addr);
-  auto init = *static_cast<void (**)(API *)>(ptr);
+  auto init = *static_cast<void (**)(API **)>(ptr);
 
+  API *api;
   init(&api);
 
   Py_DecRef(init_addr);
   Py_DecRef(mod);
+
+  return api;
 
 }
 

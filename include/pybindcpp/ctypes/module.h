@@ -17,17 +17,11 @@ namespace pybindcpp {
 
 struct ExtModule {
   PyObject *m;
-  std::shared_ptr<API> api;
+  API *api;
 
   ExtModule(PyObject *m) {
-
     this->m = m;
-
-    api = std::make_shared<API>();
-    import_pybindcpp(*api);
-
-    add("__pybindcpp_api__", capsule_new(api));
-
+    this->api = import_pybindcpp();
   }
 
   void add(const char *name, PyObject *obj) {

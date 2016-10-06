@@ -122,18 +122,21 @@ class API(ct.Structure):
     ]
 
 
-@ct.CFUNCTYPE(None, ct.POINTER(API))
+api = API(
+    get_type,
+    get_capsule,
+    get_cfunction,
+    get_pyfunction,
+    get_addr,
+    register_,
+    apply,
+    error,
+)
+
+
+@ct.PYFUNCTYPE(None, ct.POINTER(ct.POINTER(API)))
 def init(ptr):
-    ptr[0] = API(
-        get_type,
-        get_capsule,
-        get_cfunction,
-        get_pyfunction,
-        get_addr,
-        register_,
-        apply,
-        error,
-    )
+    ptr[0] = ct.pointer(api)
 
 
 init_addr = ct.addressof(init)
