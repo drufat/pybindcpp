@@ -16,28 +16,22 @@
 namespace pybindcpp {
 
 struct ExtModule {
-  PyObject *__dict__;
+  PyObject *m;
   std::shared_ptr<API> api;
 
-  ExtModule() {
+  ExtModule(PyObject *m) {
+
+    this->m = m;
 
     api = std::make_shared<API>();
     import_pybindcpp(*api);
-
-    __dict__ = PyDict_New();
-    if (!__dict__) throw "Cannot create dictionary.";
 
     add("__pybindcpp_api__", capsule_new(api));
 
   }
 
-  ~ExtModule() {
-    Py_DecRef(__dict__);
-  }
-
   void add(const char *name, PyObject *obj) {
-    PyDict_SetItemString(__dict__, name, obj);
-    Py_DecRef(obj);
+    PyModule_AddObject(m, name, obj);
   }
 
   template<class V>
@@ -62,10 +56,8 @@ static
 int
 __module_exec(PyObject *module) {
   try {
-    ExtModule m;
+    ExtModule m(module);
     __exec(m);
-    auto d = PyModule_GetDict(module);
-    PyDict_Update(d, m.__dict__);
     return 0;
 
   } catch (const char *&ex) {
