@@ -13,6 +13,7 @@ struct API {
   void *(*get_addr)(PyObject *);
   PyObject *(*register_)(void *, PyObject *);
   PyObject *(*apply)(PyObject *, PyObject *);
+  PyObject *(*vararg)(PyObject *);
   void (*error)();
 };
 

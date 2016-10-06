@@ -57,6 +57,12 @@ struct callable_trait<Ret(F::*)(Args...) const> {
   }
 };
 
-};
+template<class F>
+PyObject *varargs(const API &api, F func) {
+  auto v = callable_trait<F>::get(api, func);
+  return api.vararg(v);
+}
+
+}
 
 #endif //PYBINDCPP_CALLABLE_H

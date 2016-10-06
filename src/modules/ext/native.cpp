@@ -70,12 +70,11 @@ native(ExtModule &m) {
 
   static int N, n, x;
 
-  m.varargs("f", [&](PyObject *self, PyObject *args) {
-
-    arg_parse_tuple(args, N, n, x);
-    auto out = f(N, n, x);
-    return build_value(out);
-
+  m.fun("f", [&](int N_, int n_, int x_) {
+    N = N_;
+    n = n_;
+    x = x_;
+    return f(N, n, x);
   });
 
   m.fun("closure", [&]() {

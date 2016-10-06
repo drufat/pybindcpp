@@ -34,7 +34,6 @@ loop1d_ii_o(F func) {
                 void *data) {
 
     const auto len = dimensions[0];
-
     for (auto i = 0; i < len; i++) {
       auto &n = *(I0 * )(args[0] + i * steps[0]);
       auto &x = *(I1 * )(args[1] + i * steps[1]);

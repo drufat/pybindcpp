@@ -9,10 +9,7 @@ using namespace pybindcpp;
 void
 fftw(ExtModule &m) {
 
-  m.varargs("fft", [](PyObject *self, PyObject *args) -> PyObject * {
-    PyObject *o;
-    if (!pybindcpp::arg_parse_tuple(args, o))
-      return NULL;
+  m.fun("fft", [](PyObject *o) -> PyObject * {
 
     const auto x = (PyArrayObject *) PyArray_ContiguousFromAny(
         o,
@@ -43,20 +40,20 @@ fftw(ExtModule &m) {
     return (PyObject *) y;
   });
 
-  m.varargs("fft2", [](PyObject *self, PyObject *args) -> PyObject * {
-    PyObject *o;
-    if (!pybindcpp::arg_parse_tuple(args, o))
-      return NULL;
-
-    const auto x = (PyArrayObject *) PyArray_ContiguousFromAny(o,
-                                                               NPY_CDOUBLE,
-                                                               1, 2);
+  m.fun("fft2", [](PyObject *o) -> PyObject * {
+    const auto x = (PyArrayObject *) PyArray_ContiguousFromAny(
+        o,
+        NPY_CDOUBLE,
+        1, 2
+    );
     if (!x) return NULL;
 
-    auto y = (PyArrayObject *) PyArray_EMPTY(PyArray_NDIM(x),
-                                             PyArray_DIMS(x),
-                                             NPY_CDOUBLE,
-                                             0);
+    auto y = (PyArrayObject *) PyArray_EMPTY(
+        PyArray_NDIM(x),
+        PyArray_DIMS(x),
+        NPY_CDOUBLE,
+        0
+    );
     if (!y) return NULL;
 
     int N;
@@ -73,8 +70,8 @@ fftw(ExtModule &m) {
     fftw_complex *in;
     fftw_complex *out;
     for (int i = 0; i < M; i++) {
-      in = (fftw_complex *) PyArray_GETPTR1(x, i);
-      out = (fftw_complex *) PyArray_GETPTR1(y, i);
+      in = (fftw_complex * )PyArray_GETPTR1(x, i);
+      out = (fftw_complex * )PyArray_GETPTR1(y, i);
       fftw_execute_dft(p, in, out);
     }
     fftw_destroy_plan(p);

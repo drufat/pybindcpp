@@ -92,6 +92,14 @@ def apply(callable, capsule):
     return func
 
 
+@ct.PYFUNCTYPE(ct.py_object, ct.py_object)
+def vararg(f):
+    def v(*args):
+        return f(None, args)
+
+    return v
+
+
 @ct.PYFUNCTYPE(None)
 def error():
     raise RuntimeError('RuntimeError')
@@ -118,6 +126,7 @@ class API(ct.Structure):
         ('get_addr', type(get_addr)),
         ('register_', type(register_)),
         ('apply', type(apply)),
+        ('vararg', type(vararg)),
         ('error', type(error)),
     ]
 
@@ -130,6 +139,7 @@ api = API(
     get_addr,
     register_,
     apply,
+    vararg,
     error,
 )
 

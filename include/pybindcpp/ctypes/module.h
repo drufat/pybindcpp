@@ -30,17 +30,22 @@ struct ExtModule {
     PyModule_AddObject(m, name, obj);
   }
 
-  template<class V>
-  void var(const char *name, V v) {
-    auto build_value = py_function<PyObject *(V)>(
+  template<class T>
+  void var(const char *name, T t) {
+    auto build_value = py_function<PyObject *(T)>(
         *api, "pybindcpp.bind", "id"
     );
-    add(name, build_value(v));
+    add(name, build_value(t));
   }
 
   template<class F>
   void fun(const char *name, F f) {
     add(name, callable_trait<F>::get(*api, f));
+  }
+
+  template<class F>
+  void varargs(const char *name, F f) {
+    add(name, pybindcpp::varargs(*api, f));
   }
 
 };
