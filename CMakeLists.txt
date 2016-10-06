@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.6)
 project(pybindcpp)
 
-add_compile_options(-std=c++1z)
+add_compile_options(-std=c++14)
 
 include_directories(include)
 
