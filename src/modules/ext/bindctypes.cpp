@@ -49,6 +49,10 @@ exec(ExtModule &m) {
 
   py_function<int(int)>(*m.api, "pybindcpp.sample", "id")(3);
 
+  m.var("one", 1);
+  m.var("two", 2.0);
+  m.var("greet", "Hello, World!");
+
   m.add("id_type", func_trait<decltype(&id)>::pyctype(*m.api));
   m.add("add_type", func_trait<decltype(&add)>::pyctype(*m.api));
   m.add("minus_type", func_trait<decltype(&minus)>::pyctype(*m.api));
@@ -59,6 +63,7 @@ exec(ExtModule &m) {
   m.fun("minus", minus);
   m.fun("add_d", add_d);
   m.fun("set_string", set_string);
+  m.fun("mul", [](int x, int y) { return x * y; });
 }
 
 PYMODULE_INIT(bindctypes, exec)

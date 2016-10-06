@@ -12,10 +12,11 @@ struct API {
   PyObject *(*get_pyfunction)(const char *, const char *, PyObject *);
   void *(*get_addr)(PyObject *);
   PyObject *(*register_)(void *, PyObject *);
+  PyObject *(*apply)(PyObject *, PyObject *);
   void (*error)();
 };
 
-static void import_pybindcpp(API& api) {
+static void import_pybindcpp(API &api) {
 
   auto mod = PyImport_ImportModule("pybindcpp.api");
   if (!mod) throw "Cannot import";

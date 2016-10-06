@@ -19,7 +19,7 @@ struct ExtModule {
   PyObject *__dict__;
   std::shared_ptr<API> api;
 
-  ExtModule()  {
+  ExtModule() {
 
     api = std::make_shared<API>();
     import_pybindcpp(*api);
@@ -38,6 +38,14 @@ struct ExtModule {
   void add(const char *name, PyObject *obj) {
     PyDict_SetItemString(__dict__, name, obj);
     Py_DecRef(obj);
+  }
+
+  template<class V>
+  void var(const char *name, V v) {
+    auto build_value = py_function<PyObject *(V)>(
+        *api, "pybindcpp.bind", "id"
+    );
+    add(name, build_value(v));
   }
 
   template<class F>
@@ -63,6 +71,11 @@ __module_exec(PyObject *module) {
   } catch (const char *&ex) {
 
     PyErr_SetString(PyExc_RuntimeError, ex);
+    return -1;
+
+  } catch (const std::exception &ex) {
+
+    PyErr_SetString(PyExc_RuntimeError, ex.what());
     return -1;
 
   } catch (...) {

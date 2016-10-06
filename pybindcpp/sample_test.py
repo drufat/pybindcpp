@@ -27,6 +27,7 @@ def test_reg():
     assert bindctypes.add(100, 2) == 102
     assert bindctypes.minus(2, 1) == 1
     assert bindctypes.add_d(1., 2.) == 3.
+    assert bindctypes.mul(2, 3) == 6
 
 
 def test_fun():

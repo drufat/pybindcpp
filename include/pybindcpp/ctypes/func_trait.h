@@ -18,16 +18,21 @@ struct func_trait<Ret(*)(Args...)> {
   static constexpr size_t size = 1 + sizeof...(Args);
 
   static auto value() {
-    const std::array<std::type_index, size> a = {{typeid(Ret), typeid(Args)...}};
+    const std::array<std::type_index, size> a = {
+        {
+            typeid(typename std::decay<Ret>::type),
+            typeid(typename std::decay<Args>::type)...
+        }
+    };
     return a;
   }
 
   static auto str() {
-    auto sign = value();
+    auto val = value();
     std::stringstream ss;
     for (size_t i = 0; i < size; i++) {
       if (i) { ss << ","; }
-      ss << ctype_map.at(sign[i]);
+      ss << ctype_map.at(val[i]);
     }
     return ss.str();
   }
@@ -36,7 +41,7 @@ struct func_trait<Ret(*)(Args...)> {
     return PyBytes_FromString(str().c_str());
   }
 
-  static auto pyctype(const API& api) {
+  static auto pyctype(const API &api) {
     auto s = str();
     return api.get_type(s.c_str());
   }

@@ -2,6 +2,10 @@ import ctypes as ct
 from pybindcpp.api import PyCapsule_New
 
 
+def id(arg):
+    return arg
+
+
 def capsule(cfunc):
     return PyCapsule_New(ct.cast(ct.pointer(cfunc), ct.c_void_p), None, None)
 

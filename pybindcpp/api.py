@@ -84,6 +84,14 @@ def register_(func, func_type):
     return f
 
 
+@ct.PYFUNCTYPE(ct.py_object, ct.py_object, ct.py_object)
+def apply(callable, capsule):
+    def func(*args):
+        return callable(capsule, *args)
+
+    return func
+
+
 @ct.PYFUNCTYPE(None)
 def error():
     raise RuntimeError('RuntimeError')
@@ -109,6 +117,7 @@ class API(ct.Structure):
         ('get_pyfunction', type(get_pyfunction)),
         ('get_addr', type(get_addr)),
         ('register_', type(register_)),
+        ('apply', type(apply)),
         ('error', type(error)),
     ]
 
@@ -122,6 +131,7 @@ def init(ptr):
         get_pyfunction,
         get_addr,
         register_,
+        apply,
         error,
     )
 
