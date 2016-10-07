@@ -54,9 +54,9 @@ ext_modules = [
     ),
 
     Extension(
-        'pybindcpp.bindctypes',
+        'pybindcpp.ext.bindctypes',
         sources=[
-            'pybindcpp/bindctypes.cpp',
+            'pybindcpp/ext/bindctypes.cpp',
         ],
         depends=depends,
         include_dirs=include_dirs,
