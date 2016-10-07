@@ -6,15 +6,25 @@
 namespace pybindcpp {
 
 struct API {
+
   PyObject *(*get_type)(const char *);
+
   void *(*get_capsule)(const char *, const char *);
+
   void *(*get_cfunction)(const char *, const char *);
+
   PyObject *(*get_pyfunction)(const char *, const char *, PyObject *);
+
   void *(*get_addr)(PyObject *);
+
   PyObject *(*register_)(void *, PyObject *);
+
   PyObject *(*apply)(PyObject *, PyObject *);
+
   PyObject *(*vararg)(PyObject *);
+
   void (*error)();
+
 };
 
 static PyObject *import_pybindcpp(API **api_p) {

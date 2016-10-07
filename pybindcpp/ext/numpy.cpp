@@ -35,9 +35,9 @@ loop1d_ii_o(F func) {
 
     const auto len = dimensions[0];
     for (auto i = 0; i < len; i++) {
-      auto &n = *(I0 * )(args[0] + i * steps[0]);
-      auto &x = *(I1 * )(args[1] + i * steps[1]);
-      auto &y = *(O * )(args[2] + i * steps[2]);
+      auto &n = *(I0 *) (args[0] + i * steps[0]);
+      auto &x = *(I1 *) (args[1] + i * steps[1]);
+      auto &y = *(O *) (args[2] + i * steps[2]);
       y = func(n, x);
     }
   };

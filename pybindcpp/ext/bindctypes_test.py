@@ -1,5 +1,5 @@
 import ctypes as ct
-from pybindcpp import bindctypes
+from pybindcpp.ext import bindctypes
 from pybindcpp.api import PyCapsule_New, PyCapsule_GetPointer
 from pybindcpp.bind import register
 

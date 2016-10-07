@@ -29,6 +29,10 @@ int minus(int x, int y) {
   return x - y;
 };
 
+PyObject *error() {
+  Py_RETURN_NONE;
+}
+
 void
 exec(ExtModule &m) {
 
@@ -46,8 +50,9 @@ exec(ExtModule &m) {
   m.var("greet", "Hello, World!");
 
   m.varargs("func", [](PyObject *data, PyObject *args) -> PyObject * {
-    Py_RETURN_NONE;
+    return PyLong_FromLong(1);
   });
+  m.fun("error", error);
 
   m.fun_type("id_type", id);
   m.fun_type("add_type", add);
