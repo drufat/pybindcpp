@@ -122,35 +122,28 @@ numpymodule(ExtModule &m) {
 
   });
 
-  m.varargs("fn_array2", [](PyObject *self, PyObject *args) -> PyObject * {
+  m.fun("fn_array2", [](int N, PyObject *o) -> PyObject * {
 
-    {
-      int N;
-      double x;
-      if (pybindcpp::arg_parse_tuple(args, N, x)) {
-        auto out = fn(N, x);
-        return pybindcpp::build_value(out);
-      }
+    if (PyFloat_Check(o)) {
+
+      double x = PyFloat_AsDouble(o);
+      auto out = fn(N, x);
+      return PyFloat_FromDouble(out);
+
+    } else {
+
+      auto xa = numpy::array_view<double, 1>(o);
+      auto len = xa.dim(0);
+      npy_intp shape[] = {len};
+      auto out = numpy::array_view<double, 1>(shape);
+
+      for (npy_intp i = 0; i < len; i++) {
+        out[i] = fn(N, xa[i]);
+      };
+      return out.pyobj();
+
     }
-    PyErr_Clear();
-    {
-      int N;
-      PyObject *x;
-      if (pybindcpp::arg_parse_tuple(args, N, x)) {
 
-        auto xa = numpy::array_view<double, 1>(x);
-        auto len = xa.dim(0);
-        npy_intp shape[] = {len};
-        auto out = numpy::array_view<double, 1>(shape);
-
-        for (npy_intp i = 0; i < len; i++) {
-          out[i] = fn(N, xa[i]);
-        };
-
-        return out.pyobj();
-      }
-    }
-    return NULL;
   });
 }
 

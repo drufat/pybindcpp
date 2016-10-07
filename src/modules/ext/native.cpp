@@ -69,27 +69,14 @@ native(ExtModule &m) {
   m.varargs("parsing", py_parsing);
   m.varargs("func", py_func);
 
-  m.varargs("manytypes", [](PyObject *self, PyObject *args) -> PyObject * {
-    {
-      uint N;
-      double i;
-      if (arg_parse_tuple(args, N, i)) {
-        auto out = N + (int) i;
-        return build_value(out);
-      }
+  m.fun("manytypes", [](uint N, PyObject *o) -> PyObject * {
+    if (PyLong_Check(o)) {
+      int i = PyLong_AsLong(o);
+      auto out = N + i;
+      return PyLong_FromLong(out);
+    } else {
+      return o;
     }
-
-    PyErr_Clear();
-
-    {
-      uint N;
-      PyObject *i;
-      if (arg_parse_tuple(args, N, i)) {
-        auto out = i;
-        return build_value(out);
-      }
-    }
-    return nullptr;
   });
 
   m.fun("S", [](PyObject *o) {
