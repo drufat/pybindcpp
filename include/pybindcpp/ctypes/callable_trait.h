@@ -5,12 +5,6 @@
 
 namespace pybindcpp {
 
-template<class F, class Ret, class... Args>
-Ret apply(PyObject *capsule, Args... args) {
-  auto f = capsule_get<F>(capsule);
-  return (*f)(args...);
-};
-
 template<class F>
 struct callable_trait;
 
@@ -19,17 +13,13 @@ struct callable_trait<Ret(*)(Args...)> {
   static
   PyObject *
   get(const API &api, Ret(*func)(Args...)) {
-
-//    auto reg = capsule<PyObject *(*)(void *, PyObject *)>("pybindcpp.bind", "register_cap");
-//    auto reg = c_function<PyObject *(*)(void *, PyObject *)>("pybindcpp.bind", "c_register");
-//    auto reg = py_function<PyObject *(void *, PyObject *)>("pybindcpp.bind", "register");
-    auto reg = api.register_;
-
     using F = func_trait<decltype(func)>;
+
     auto func_type = F::pyctype(api);
-    auto o = reg(static_cast<void *>(&func), func_type);
+    auto rslt = api.register_(static_cast<void *>(&func), func_type);
+
     Py_DecRef(func_type);
-    return o;
+    return rslt;
   }
 };
 
@@ -45,8 +35,8 @@ struct callable_trait<Ret(F::*)(Args...) const> {
   get(const API &api, F func) {
     auto capsule = capsule_new(std::make_shared<F>(func));
 
-    auto a = &apply<F, Ret, Args...>;
-    auto callable = callable_trait<decltype(a)>::get(api, a);
+    auto c = &capsule_call<F, Ret, Args...>;
+    auto callable = callable_trait<decltype(c)>::get(api, c);
 
     auto rslt = api.apply(callable, capsule);
 
@@ -59,7 +49,7 @@ struct callable_trait<Ret(F::*)(Args...) const> {
 
 template<class F>
 PyObject *varargs(const API &api, F func) {
-  auto v = callable_trait<F>::get(api, func);
+  PyObject* v = callable_trait<F>::get(api, func);
   return api.vararg(v);
 }
 

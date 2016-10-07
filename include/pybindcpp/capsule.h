@@ -34,6 +34,12 @@ capsule_get(PyObject *o) {
   return *static_cast<std::shared_ptr<T> *>(p);
 }
 
+template<class F, class Ret, class... Args>
+Ret capsule_call(PyObject *o, Args... args) {
+  auto f = capsule_get<F>(o);
+  return (*f)(args...);
+};
+
 }
 
 #endif // CAPSULE_H

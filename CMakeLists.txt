@@ -19,13 +19,15 @@ set(HEADER_FILES
         include/pybindcpp/module.h
         include/pybindcpp/numpy.h
         include/pybindcpp/storage.h
-        include/pybindcpp/types.h
+        include/pybindcpp/cpp.h
         include/pybindcpp/util.h
+        include/pybindcpp/ctypes/api.h
         include/pybindcpp/ctypes/types.h
         include/pybindcpp/ctypes/module.h
-        include/pybindcpp/ctypes/callable.h
+        include/pybindcpp/ctypes/callable_trait.h
         include/pybindcpp/ctypes/pyfunction.h
-        include/pybindcpp/ctypes/func_trait.h include/pybindcpp/ctypes/api.h)
+        include/pybindcpp/ctypes/func_trait.h 
+)
 
 add_custom_target(
         setup_py ALL python3 setup.py develop --user
@@ -43,3 +45,6 @@ add_executable(meta src/meta.cpp)
 set(CMAKE_CXX_STANDARD_LIBRARIES -lpython3.5m)
 add_library(bindctypes MODULE src/modules/ext/bindctypes.cpp ${HEADER_FILES})
 add_library(numpy MODULE src/modules/ext/numpy.cpp ${HEADER_FILES})
+#add_library(eigen MODULE src/modules/ext/eigen.cpp ${HEADER_FILES})
+#add_library(fftw MODULE src/modules/ext/fftw.cpp ${HEADER_FILES})
+add_library(native MODULE src/modules/ext/native.cpp ${HEADER_FILES})

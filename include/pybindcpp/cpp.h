@@ -97,12 +97,10 @@ varargs(std::shared_ptr<VarArg> func) {
   auto caps = capsule_new(func);
   auto dmod = PyImport_ImportModule("pybindcpp.function");
   auto dfun = PyObject_GetAttrString(dmod, "function");
-  auto args = Py_BuildValue("(O)", caps);
-  auto obj = PyObject_Call(dfun, args, NULL);
-  Py_DECREF(args);
-  Py_DECREF(dfun);
-  Py_DECREF(dmod);
-  Py_DECREF(caps);
+  auto obj = PyObject_CallFunctionObjArgs(dfun, caps, nullptr);
+  Py_DecRef(dfun);
+  Py_DecRef(dmod);
+  Py_DecRef(caps);
 
   PyGILState_Release(gil);
   return obj;

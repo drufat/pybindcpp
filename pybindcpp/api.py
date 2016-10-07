@@ -85,9 +85,9 @@ def register_(func, func_type):
 
 
 @ct.PYFUNCTYPE(ct.py_object, ct.py_object, ct.py_object)
-def apply(callable, capsule):
+def apply(capsule_call, capsule):
     def func(*args):
-        return callable(capsule, *args)
+        return capsule_call(capsule, *args)
 
     return func
 

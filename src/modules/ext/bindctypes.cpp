@@ -1,7 +1,7 @@
 // Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
 #include <Python.h>
 
-#include "pybindcpp/ctypes/module.h"
+#include <pybindcpp/ctypes/module.h>
 
 using namespace pybindcpp;
 
@@ -53,10 +53,14 @@ exec(ExtModule &m) {
   m.var("two", 2.0);
   m.var("greet", "Hello, World!");
 
-  m.add("id_type", func_trait<decltype(&id)>::pyctype(*m.api));
-  m.add("add_type", func_trait<decltype(&add)>::pyctype(*m.api));
-  m.add("minus_type", func_trait<decltype(&minus)>::pyctype(*m.api));
-  m.add("set_string_type", func_trait<decltype(&set_string)>::pyctype(*m.api));
+  m.varargs("func", [](PyObject *data, PyObject *args) -> PyObject * {
+    Py_RETURN_NONE;
+  });
+
+  m.fun_type("id_type", id);
+  m.fun_type("add_type", add);
+  m.fun_type("minus_type", minus);
+  m.fun_type("set_string_type", set_string);
 
   m.fun("id", id);
   m.fun("add", add);

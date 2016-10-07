@@ -10,42 +10,47 @@
 
 #include "../capsule.h"
 #include "api.h"
-#include "callable.h"
+#include "callable_trait.h"
 #include "pyfunction.h"
 
 namespace pybindcpp {
 
 struct ExtModule {
-  PyObject *m;
+  PyObject *self;
   API *api;
 
-  ExtModule(PyObject *m) {
-    this->m = m;
+  ExtModule(PyObject *m) : self(m) {
     auto __api__ = import_pybindcpp(&api);
-    // keep a reference so the API struct is not garbage collected
+    // keep a reference so that the API struct is not garbage collected
     add("__pybindcpp_api__", __api__);
   }
 
   void add(const char *name, PyObject *obj) {
-    PyModule_AddObject(m, name, obj);
+    PyModule_AddObject(self, name, obj);
   }
 
   template<class T>
   void var(const char *name, T t) {
-    auto build_value = py_function<PyObject *(T)>(
-        *api, "pybindcpp.bind", "id"
-    );
-    add(name, build_value(t));
+    add(name,
+        py_function<PyObject *(T)>(*api, "pybindcpp.bind", "id")(t));
   }
 
   template<class F>
   void fun(const char *name, F f) {
-    add(name, callable_trait<F>::get(*api, f));
+    add(name,
+        callable_trait<F>::get(*api, f));
+  }
+
+  template<class F>
+  void fun_type(const char *name, F f) {
+    add(name,
+        func_trait<F>::pyctype(*api));
   }
 
   template<class F>
   void varargs(const char *name, F f) {
-    add(name, pybindcpp::varargs(*api, f));
+    add(name,
+        pybindcpp::varargs(*api, f));
   }
 
 };
@@ -57,6 +62,7 @@ static
 int
 __module_exec(PyObject *module) {
   try {
+
     ExtModule m(module);
     __exec(m);
     return 0;
