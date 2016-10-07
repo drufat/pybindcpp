@@ -44,7 +44,7 @@ ext_modules = [
     Extension(
         'pybindcpp.dispatch',
         sources=[
-            'src/modules/ext/dispatch.cpp',
+            'pybindcpp/dispatch.cpp',
         ],
         depends=depends,
         include_dirs=include_dirs,
@@ -56,7 +56,7 @@ ext_modules = [
     Extension(
         'pybindcpp.bindctypes',
         sources=[
-            'src/modules/ext/bindctypes.cpp',
+            'pybindcpp/bindctypes.cpp',
         ],
         depends=depends,
         include_dirs=include_dirs,
@@ -68,7 +68,7 @@ ext_modules = [
     Extension(
         'pybindcpp.ext.simple',
         sources=[
-            'src/modules/ext/simple.cpp',
+            'pybindcpp/ext/simple.cpp',
         ],
         depends=depends,
         include_dirs=include_dirs,
@@ -80,7 +80,7 @@ ext_modules = [
     Extension(
         'pybindcpp.ext.native',
         sources=[
-            'src/modules/ext/native.cpp',
+            'pybindcpp/ext/native.cpp',
         ],
         depends=depends,
         include_dirs=include_dirs,
@@ -92,7 +92,7 @@ ext_modules = [
     Extension(
         'pybindcpp.ext.numpy',
         sources=[
-            'src/modules/ext/numpy.cpp',
+            'pybindcpp/ext/numpy.cpp',
         ],
         depends=depends,
         include_dirs=include_dirs,
@@ -104,7 +104,7 @@ ext_modules = [
     Extension(
         'pybindcpp.ext.eigen',
         sources=[
-            'src/modules/ext/eigen.cpp',
+            'pybindcpp/ext/eigen.cpp',
         ],
         depends=depends,
         include_dirs=include_dirs,
@@ -116,7 +116,7 @@ ext_modules = [
     Extension(
         'pybindcpp.ext.fftw',
         sources=[
-            'src/modules/ext/fftw.cpp',
+            'pybindcpp/ext/fftw.cpp',
         ],
         depends=depends,
         include_dirs=include_dirs,
@@ -128,7 +128,7 @@ ext_modules = [
     # Extension(
     #     'pybindcpp.ext.arrayfire',
     #     sources=[
-    #         'src/modules/ext/arrayfire.cpp',
+    #         'pybindcpp/ext/arrayfire.cpp',
     #     ],
     #     depends=depends,
     #     include_dirs=include_dirs,

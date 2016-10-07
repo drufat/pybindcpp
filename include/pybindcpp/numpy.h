@@ -17,9 +17,9 @@ const std::map<std::type_index, char> NumpyTypes = {
     {typeid(double), NPY_DOUBLE},
     {typeid(float), NPY_FLOAT},
     {typeid(int), NPY_INT},
-    {typeid(uint), NPY_UINT},
+    {typeid(unsigned int), NPY_UINT},
     {typeid(long), NPY_LONG},
-    {typeid(ulong), NPY_ULONG},
+    {typeid(unsigned long), NPY_ULONG},
     {typeid(PyObject *), NPY_OBJECT},
 
 };

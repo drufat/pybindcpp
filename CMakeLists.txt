@@ -43,8 +43,8 @@ add_custom_target(
 add_executable(meta src/meta.cpp)
 
 set(CMAKE_CXX_STANDARD_LIBRARIES -lpython3.5m)
-add_library(bindctypes MODULE src/modules/ext/bindctypes.cpp ${HEADER_FILES})
-add_library(numpy MODULE src/modules/ext/numpy.cpp ${HEADER_FILES})
-#add_library(eigen MODULE src/modules/ext/eigen.cpp ${HEADER_FILES})
-#add_library(fftw MODULE src/modules/ext/fftw.cpp ${HEADER_FILES})
-add_library(native MODULE src/modules/ext/native.cpp ${HEADER_FILES})
+add_library(bindctypes MODULE pybindcpp/bindctypes.cpp ${HEADER_FILES})
+add_library(numpy MODULE pybindcpp/ext/numpy.cpp ${HEADER_FILES})
+#add_library(eigen MODULE pybindcpp/ext/eigen.cpp ${HEADER_FILES})
+#add_library(fftw MODULE pybindcpp/ext/fftw.cpp ${HEADER_FILES})
+add_library(native MODULE pybindcpp/ext/native.cpp ${HEADER_FILES})
