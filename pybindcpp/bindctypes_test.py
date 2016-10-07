@@ -1,15 +1,7 @@
 import ctypes as ct
 from pybindcpp import bindctypes
-
-from pybindcpp.bind import register
 from pybindcpp.api import PyCapsule_New, PyCapsule_GetPointer
-from pybindcpp.sample import REGFUNCTYPE, Funcs
-
-
-def test_assign():
-    so = ct.PyDLL(bindctypes.__file__)
-    funcs = Funcs.in_dll(so, "funcs")
-    funcs.reg = REGFUNCTYPE(register)
+from pybindcpp.bind import register
 
 
 def test_reg():
@@ -30,7 +22,7 @@ def test_reg():
     assert bindctypes.mul(2, 3) == 6
 
 
-def test_fun():
+def test_extern_c():
     '''
     >>> so = ct.PyDLL(bindctypes.__file__)
     >>> set_string = ct.CFUNCTYPE(ct.c_int, ct.c_char, ct.c_int, ct.c_char_p)(("set_string", so))
@@ -52,17 +44,6 @@ def test_fun():
     '''
     pass
 
-
-def test_module():
-    '''
-    >>> bindctypes.__dict__.update({'one':1, 'two':2})
-    >>> bindctypes.one
-    1
-    >>> setattr(bindctypes, 'three', 3)
-    >>> bindctypes.three
-    3
-    '''
-    pass
 
 
 def test_capsule():

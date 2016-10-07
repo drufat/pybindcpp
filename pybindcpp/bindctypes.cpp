@@ -29,14 +29,6 @@ int minus(int x, int y) {
   return x - y;
 };
 
-struct Funcs {
-  REGFUNCTYPE reg;
-};
-
-extern "C" {
-struct Funcs funcs;
-}
-
 void
 exec(ExtModule &m) {
 
@@ -47,7 +39,7 @@ exec(ExtModule &m) {
 //    throw "Error!";
 //  }
 
-  py_function<int(int)>(*m.api, "pybindcpp.sample", "id")(3);
+  py_function<int(int)>(*m.api, "pybindcpp.bind", "id")(3);
 
   m.var("one", 1);
   m.var("two", 2.0);

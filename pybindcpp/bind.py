@@ -21,12 +21,11 @@ def cfunctype(signature):
 cfunctype_cap = capsule(cfunctype)
 
 
+@ct.CFUNCTYPE(ct.py_object, ct.c_void_p, ct.py_object)
 def register(func, func_type):
     p = ct.cast(func, ct.POINTER(ct.c_void_p))
     f = ct.cast(p[0], func_type)
     return f
 
 
-c_register = ct.CFUNCTYPE(ct.py_object, ct.c_void_p, ct.py_object)(register)
-
-register_cap = capsule(c_register)
+register_cap = capsule(register)
