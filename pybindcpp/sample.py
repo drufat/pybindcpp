@@ -1,13 +1,13 @@
-import ctypes as ct
+import ctypes
 import types
 
 from pybindcpp.bind import capsule
 
-VOIDFUNCTYPE = ct.CFUNCTYPE(None)
-REGFUNCTYPE = ct.CFUNCTYPE(ct.py_object, ct.c_void_p, ct.py_object)
+VOIDFUNCTYPE = ctypes.CFUNCTYPE(None)
+REGFUNCTYPE = ctypes.CFUNCTYPE(ctypes.py_object, ctypes.c_void_p, ctypes.py_object)
 
 
-class Funcs(ct.Structure):
+class Funcs(ctypes.Structure):
     _fields_ = [
         ('reg', REGFUNCTYPE),
     ]
@@ -30,5 +30,5 @@ def new_module(name):
     return types.ModuleType(name.decode())
 
 
-c_new_module = ct.CFUNCTYPE(ct.py_object, ct.c_char_p)(new_module)
+c_new_module = ctypes.CFUNCTYPE(ctypes.py_object, ctypes.c_char_p)(new_module)
 c_new_module_cap = capsule(c_new_module)

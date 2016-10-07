@@ -1,14 +1,9 @@
 import ctypes as ct
 import importlib
-import types
 
 ################
 # Python.h API #
 ################
-PyCapsule_Destructor = ct.CFUNCTYPE(
-    None,
-    ct.py_object
-)
 
 PyCapsule_New = ct.PYFUNCTYPE(
     ct.py_object,
@@ -31,7 +26,7 @@ PyLong_AsVoidPtr = ct.PYFUNCTYPE(
 ###############
 
 
-@ct.PYFUNCTYPE(ct.py_object, ct.c_char_p)
+@ct.CFUNCTYPE(ct.py_object, ct.c_char_p)
 def get_type(typ):
     s = typ.decode()
 
@@ -39,7 +34,7 @@ def get_type(typ):
     return ct.CFUNCTYPE(*t)
 
 
-@ct.PYFUNCTYPE(ct.c_void_p, ct.c_char_p, ct.c_char_p)
+@ct.CFUNCTYPE(ct.c_void_p, ct.c_char_p, ct.c_char_p)
 def get_capsule(module, attr):
     module = module.decode()
     attr = attr.decode()
@@ -49,7 +44,7 @@ def get_capsule(module, attr):
     return PyCapsule_GetPointer(cap, None)
 
 
-@ct.PYFUNCTYPE(ct.c_void_p, ct.c_char_p, ct.c_char_p)
+@ct.CFUNCTYPE(ct.c_void_p, ct.c_char_p, ct.c_char_p)
 def get_cfunction(module, attr):
     module = module.decode()
     attr = attr.decode()
@@ -60,7 +55,7 @@ def get_cfunction(module, attr):
     return PyLong_AsVoidPtr(addr)
 
 
-@ct.PYFUNCTYPE(ct.py_object, ct.c_char_p, ct.c_char_p, ct.py_object)
+@ct.CFUNCTYPE(ct.py_object, ct.c_char_p, ct.c_char_p, ct.py_object)
 def get_pyfunction(module, attr, cfunctype):
     module = module.decode()
     attr = attr.decode()
@@ -71,20 +66,20 @@ def get_pyfunction(module, attr, cfunctype):
     return cfunc
 
 
-@ct.PYFUNCTYPE(ct.c_void_p, ct.py_object)
+@ct.CFUNCTYPE(ct.c_void_p, ct.py_object)
 def get_addr(cfunc):
     addr = ct.addressof(cfunc)
     return PyLong_AsVoidPtr(addr)
 
 
-@ct.PYFUNCTYPE(ct.py_object, ct.c_void_p, ct.py_object)
+@ct.CFUNCTYPE(ct.py_object, ct.c_void_p, ct.py_object)
 def register_(func, func_type):
     p = ct.cast(func, ct.POINTER(ct.c_void_p))
     f = ct.cast(p[0], func_type)
     return f
 
 
-@ct.PYFUNCTYPE(ct.py_object, ct.py_object, ct.py_object)
+@ct.CFUNCTYPE(ct.py_object, ct.py_object, ct.py_object)
 def apply(capsule_call, capsule):
     def func(*args):
         return capsule_call(capsule, *args)
@@ -92,7 +87,7 @@ def apply(capsule_call, capsule):
     return func
 
 
-@ct.PYFUNCTYPE(ct.py_object, ct.py_object)
+@ct.CFUNCTYPE(ct.py_object, ct.py_object)
 def vararg(f):
     def v(*args):
         return f(None, args)
@@ -100,7 +95,7 @@ def vararg(f):
     return v
 
 
-@ct.PYFUNCTYPE(None)
+@ct.CFUNCTYPE(None)
 def error():
     raise RuntimeError('RuntimeError')
 
@@ -108,10 +103,8 @@ def error():
 def api_test():
     '''
     >>> s = ct.c_char_p(b'c_char_p,c_int,c_double')
-    >>> get_type(s)._argtypes_
-    (<class 'ctypes.c_int'>, <class 'ctypes.c_double'>)
-    >>> get_type(s)._restype_
-    <class 'ctypes.c_char_p'>
+    >>> assert get_type(s)._restype_ == ct.c_char_p
+    >>> assert get_type(s)._argtypes_ == tuple([ct.c_int, ct.c_double])
     >>> p = get_capsule(b'pybindcpp.bind', b'register_cap')
     '''
     pass
@@ -144,7 +137,7 @@ api = API(
 )
 
 
-@ct.PYFUNCTYPE(ct.py_object, ct.POINTER(ct.POINTER(API)))
+@ct.CFUNCTYPE(ct.py_object, ct.POINTER(ct.POINTER(API)))
 def init(ptr):
     ptr[0] = ct.pointer(api)
     return api

@@ -45,9 +45,8 @@ struct py_function<Ret(Args...)> {
 
   py_function(const API &api, const char *module, const char *attr) {
     using F = decltype(f_ptr);
-    using trait = func_trait<F>;
 
-    auto cfunctype = trait::pyctype(api);
+    auto cfunctype = func_trait<F>::pyctype(api);
 
     auto cfunc = api.get_pyfunction(module, attr, cfunctype);
 
