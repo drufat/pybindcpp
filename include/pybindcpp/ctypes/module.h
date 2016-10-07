@@ -106,9 +106,9 @@ static PyModuleDef_Slot __module_slots[] = {
 
 static
 PyObject *
-__module_init(const char *name) {
-
+module_init(const char *name, std::function<void(ExtModule &)> exec) {
   moduledef.m_name = name;
+  __exec = exec;
 #ifdef Py_mod_exec
   moduledef.m_slots = __module_slots;
   return PyModuleDef_Init(&moduledef);
@@ -127,12 +127,11 @@ __module_init(const char *name) {
 
 }
 
-#define PYMODULE_INIT(name, exec)   \
-extern "C" PyObject *               \
-PyInit_##name() {                   \
-  __exec = exec;                    \
-  return __module_init(#name);      \
-}                                   \
+#define PYMODULE_INIT(name, exec)             \
+PyMODINIT_FUNC                                \
+PyInit_##name() {                             \
+  return pybindcpp::module_init(#name, exec); \
+}                                             \
 
 
 #endif // MODULE_H

@@ -70,8 +70,8 @@ fftw(ExtModule &m) {
     fftw_complex *in;
     fftw_complex *out;
     for (int i = 0; i < M; i++) {
-      in = (fftw_complex * )PyArray_GETPTR1(x, i);
-      out = (fftw_complex * )PyArray_GETPTR1(y, i);
+      in = (fftw_complex *) PyArray_GETPTR1(x, i);
+      out = (fftw_complex *) PyArray_GETPTR1(y, i);
       fftw_execute_dft(p, in, out);
     }
     fftw_destroy_plan(p);

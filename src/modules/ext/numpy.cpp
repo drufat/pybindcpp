@@ -159,5 +159,4 @@ PyInit_numpy(void) {
   import_array();
   import_ufunc();
   return module_init("numpy", numpymodule);
-
 }

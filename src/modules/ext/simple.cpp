@@ -13,4 +13,7 @@ simple(ExtModule &m) {
   m.fun("g", g);
 }
 
-PYMODULE_INIT(simple, simple)
+PyMODINIT_FUNC
+PyInit_simple(void) {
+  return module_init("simple", simple);
+}

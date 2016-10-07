@@ -3,23 +3,6 @@
 
 using namespace pybindcpp;
 
-struct MyClass {
-
-  int memberdata;
-
-  MyClass(int a) {
-    memberdata = a;
-  }
-
-  void method() {
-    memberdata++;
-  }
-
-  void method1(int a) {
-    memberdata = a;
-  }
-};
-
 int
 f(int N, int n, int x) {
   return N + n + x;
@@ -66,8 +49,6 @@ native(ExtModule &m) {
   m.var("name", "native");
   m.var("name1", std::string("native"));
 
-  m.varargs("h", py_g);
-
   static int N, n, x;
 
   m.fun("f", [&](int N_, int n_, int x_) {
@@ -82,6 +63,11 @@ native(ExtModule &m) {
     return build_value(N, n, x);
 
   });
+
+  m.varargs("h", py_g);
+
+  m.varargs("parsing", py_parsing);
+  m.varargs("func", py_func);
 
   m.varargs("manytypes", [](PyObject *self, PyObject *args) -> PyObject * {
     {
@@ -103,7 +89,7 @@ native(ExtModule &m) {
         return build_value(out);
       }
     }
-    return NULL;
+    return nullptr;
   });
 
   m.fun("S", [](PyObject *o) {
@@ -133,13 +119,6 @@ native(ExtModule &m) {
       }
   );
   m.fun("f_func", f_func);
-
-  m.varargs("parsing", py_parsing);
-  m.varargs("func", py_func);
-
-  m.add("MyClass", constructor<MyClass(int)>());
-  m.add("memberdata", method(&MyClass::memberdata));
-  m.add("method", method(&MyClass::method));
 
   m.add("caps_int", capsule_new(std::make_shared<int>(3)));
   m.add("caps_double", capsule_new(std::make_shared<double>(3.0)));
