@@ -1,7 +1,8 @@
 // Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
-#include "pybindcpp/module_cpp.h"
-#include "pybindcpp/numpy.h"
-#include "numpy_cpp.h"
+#include <pybindcpp/module.h>
+#include <pybindcpp/cpython_types.h>
+#include <pybindcpp/numpy.h>
+#include <numpy_cpp.h>
 
 using namespace pybindcpp;
 
