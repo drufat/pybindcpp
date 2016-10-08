@@ -71,11 +71,11 @@ addone(const array &X) {
 }
 
 void
-arrayfire(Module &m) {
+arrayfire(ExtModule &m) {
   m.fun("test", test);
   m.fun("set_backend", set_backend);
 
-  auto _ = [&](std::string name, array(*fn)(const array &)) {
+  auto _ = [&](const char* name, array(*fn)(const array &)) {
 
     return m.fun(name, [fn](PyObject *o) -> PyObject * {
 

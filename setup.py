@@ -125,17 +125,17 @@ ext_modules = [
         libraries=libraries + ['fftw3'],
     ),
 
-    # Extension(
-    #     'pybindcpp.ext.arrayfire',
-    #     sources=[
-    #         'pybindcpp/ext/arrayfire.cpp',
-    #     ],
-    #     depends=depends,
-    #     include_dirs=include_dirs,
-    #     extra_compile_args=extra_compile_args,
-    #     language="c++",
-    #     libraries=libraries + ['af'],
-    # ),
+    Extension(
+        'pybindcpp.ext.arrayfire',
+        sources=[
+            'pybindcpp/ext/arrayfire.cpp',
+        ],
+        depends=depends,
+        include_dirs=include_dirs,
+        extra_compile_args=extra_compile_args,
+        language="c++",
+        libraries=libraries + ['af'],
+    ),
 
 ]
 
