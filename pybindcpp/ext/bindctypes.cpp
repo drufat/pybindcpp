@@ -30,29 +30,18 @@ int minus(int x, int y) {
 };
 
 PyObject *error() {
-  Py_RETURN_NONE;
+  PyErr_SetString(PyExc_RuntimeError, "Called error().");
+  return NULL;
 }
 
 void
 exec(ExtModule &m) {
-
-//  api.error();
-//  throw "Error!";
-//  if (PyErr_Occurred()) {
-//    PyErr_Clear();
-//    throw "Error!";
-//  }
 
   py_function<int(int)>(*m.api, "pybindcpp.bind", "id")(3);
 
   m.var("one", 1);
   m.var("two", 2.0);
   m.var("greet", "Hello, World!");
-
-  m.varargs("func", [](PyObject *data, PyObject *args) -> PyObject * {
-    return PyLong_FromLong(1);
-  });
-  m.fun("error", error);
 
   m.fun_type("id_type", id);
   m.fun_type("add_type", add);
@@ -65,6 +54,13 @@ exec(ExtModule &m) {
   m.fun("add_d", add_d);
   m.fun("set_string", set_string);
   m.fun("mul", [](int x, int y) { return x * y; });
+
+  m.fun("error", error);
+  m.varargs("func", [](PyObject *data, PyObject *args) -> PyObject * {
+    PyErr_SetString(PyExc_RuntimeError, "Another error.");
+    return NULL;
+  });
+
 }
 
 PYMODULE_INIT(bindctypes, exec)

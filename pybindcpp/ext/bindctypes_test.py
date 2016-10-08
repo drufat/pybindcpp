@@ -13,6 +13,14 @@ def test_reg():
     (<class 'ctypes.c_int'>, <class 'ctypes.c_int'>, <class 'ctypes.c_int'>)
     >>> t(bindctypes.set_string_type)
     (<class 'ctypes.c_int'>, <class 'ctypes.c_char'>, <class 'ctypes.c_int'>, <class 'ctypes.c_char_p'>)
+    >>> bindctypes.error()
+    Traceback (most recent call last):
+    ...
+    RuntimeError: Called error().
+    >>> bindctypes.func()
+    Traceback (most recent call last):
+    ...
+    RuntimeError: Another error.
     '''
     assert bindctypes.id(1) == 1
     assert bindctypes.add(1, 2) == 3
@@ -43,7 +51,6 @@ def test_extern_c():
     b'oooooooooooooooooooo\\x00'
     '''
     pass
-
 
 
 def test_capsule():

@@ -10,11 +10,11 @@ def capsule(cfunc):
     return PyCapsule_New(ct.cast(ct.pointer(cfunc), ct.c_void_p), None, None)
 
 
-@ct.CFUNCTYPE(ct.py_object, ct.c_char_p)
+@ct.PYFUNCTYPE(ct.py_object, ct.c_char_p)
 def cfunctype(signature):
     signature = signature.decode()
     types = tuple(getattr(ct, _) for _ in signature.split(","))
-    fn_type = ct.CFUNCTYPE(*types)
+    fn_type = ct.PYFUNCTYPE(*types)
     return fn_type
 
 

@@ -26,15 +26,15 @@ PyLong_AsVoidPtr = ct.PYFUNCTYPE(
 ###############
 
 
-@ct.CFUNCTYPE(ct.py_object, ct.c_char_p)
+@ct.PYFUNCTYPE(ct.py_object, ct.c_char_p)
 def get_type(typ):
     s = typ.decode()
 
     t = tuple(getattr(ct, _) for _ in s.split(','))
-    return ct.CFUNCTYPE(*t)
+    return ct.PYFUNCTYPE(*t)
 
 
-@ct.CFUNCTYPE(ct.c_void_p, ct.c_char_p, ct.c_char_p)
+@ct.PYFUNCTYPE(ct.c_void_p, ct.c_char_p, ct.c_char_p)
 def get_capsule(module, attr):
     module = module.decode()
     attr = attr.decode()
@@ -44,7 +44,7 @@ def get_capsule(module, attr):
     return PyCapsule_GetPointer(cap, None)
 
 
-@ct.CFUNCTYPE(ct.c_void_p, ct.c_char_p, ct.c_char_p)
+@ct.PYFUNCTYPE(ct.c_void_p, ct.c_char_p, ct.c_char_p)
 def get_cfunction(module, attr):
     module = module.decode()
     attr = attr.decode()
@@ -55,7 +55,7 @@ def get_cfunction(module, attr):
     return PyLong_AsVoidPtr(addr)
 
 
-@ct.CFUNCTYPE(ct.py_object, ct.c_char_p, ct.c_char_p, ct.py_object)
+@ct.PYFUNCTYPE(ct.py_object, ct.c_char_p, ct.c_char_p, ct.py_object)
 def get_pyfunction(module, attr, cfunctype):
     module = module.decode()
     attr = attr.decode()
@@ -66,20 +66,20 @@ def get_pyfunction(module, attr, cfunctype):
     return cfunc
 
 
-@ct.CFUNCTYPE(ct.c_void_p, ct.py_object)
+@ct.PYFUNCTYPE(ct.c_void_p, ct.py_object)
 def get_addr(cfunc):
     addr = ct.addressof(cfunc)
     return PyLong_AsVoidPtr(addr)
 
 
-@ct.CFUNCTYPE(ct.py_object, ct.c_void_p, ct.py_object)
+@ct.PYFUNCTYPE(ct.py_object, ct.c_void_p, ct.py_object)
 def register_(func, func_type):
     p = ct.cast(func, ct.POINTER(ct.c_void_p))
     f = ct.cast(p[0], func_type)
     return f
 
 
-@ct.CFUNCTYPE(ct.py_object, ct.py_object, ct.py_object)
+@ct.PYFUNCTYPE(ct.py_object, ct.py_object, ct.py_object)
 def apply(capsule_call, capsule):
     def func(*args):
         return capsule_call(capsule, *args)
@@ -87,7 +87,7 @@ def apply(capsule_call, capsule):
     return func
 
 
-@ct.CFUNCTYPE(ct.py_object, ct.py_object)
+@ct.PYFUNCTYPE(ct.py_object, ct.py_object)
 def vararg(f):
     def v(*args):
         return f(None, args)
@@ -95,12 +95,12 @@ def vararg(f):
     return v
 
 
-@ct.CFUNCTYPE(None)
+@ct.PYFUNCTYPE(None)
 def error():
     raise RuntimeError('RuntimeError')
 
 
-@ct.CFUNCTYPE(ct.py_object)
+@ct.PYFUNCTYPE(ct.py_object)
 def error1():
     return ct.py_object()
 
@@ -142,7 +142,7 @@ api = API(
 )
 
 
-@ct.CFUNCTYPE(ct.py_object, ct.POINTER(ct.POINTER(API)))
+@ct.PYFUNCTYPE(ct.py_object, ct.POINTER(ct.POINTER(API)))
 def init(ptr):
     ptr[0] = ct.pointer(api)
     return api
