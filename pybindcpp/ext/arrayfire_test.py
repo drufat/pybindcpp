@@ -3,7 +3,13 @@ import numpy as np
 import numpy.fft as fft
 from pybindcpp.helper import eq
 
+import pytest
+import os
 
+
+@pytest.mark.skipif(
+    'AF_PATH' not in os.environ,
+    reason='Requires arrayfire')
 def test_fft():
     from pybindcpp.ext import arrayfire as af
     af.set_backend('cpu')

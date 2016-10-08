@@ -12,7 +12,6 @@ addons:
       - g++-6
       - libeigen3-dev
       - libfftw3-dev
-      - libarrayfire-dev
     sources: &sources
       - ubuntu-toolchain-r-test
 

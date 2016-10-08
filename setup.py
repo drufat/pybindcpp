@@ -1,6 +1,7 @@
 # Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
 import glob
 import sys
+import os
 
 import numpy
 from setuptools import setup, Extension
@@ -124,20 +125,22 @@ ext_modules = [
         language="c++",
         libraries=libraries + ['fftw3'],
     ),
-
-    Extension(
-        'pybindcpp.ext.arrayfire',
-        sources=[
-            'pybindcpp/ext/arrayfire.cpp',
-        ],
-        depends=depends,
-        include_dirs=include_dirs,
-        extra_compile_args=extra_compile_args,
-        language="c++",
-        libraries=libraries + ['af'],
-    ),
-
 ]
+
+if 'AF_PATH' in os.environ:
+    ext_modules += [
+        Extension(
+            'pybindcpp.ext.arrayfire',
+            sources=[
+                'pybindcpp/ext/arrayfire.cpp',
+            ],
+            depends=depends,
+            include_dirs=include_dirs,
+            extra_compile_args=extra_compile_args,
+            language="c++",
+            libraries=libraries + ['af'],
+        ),
+    ]
 
 setup(
     name='pybindcpp',
