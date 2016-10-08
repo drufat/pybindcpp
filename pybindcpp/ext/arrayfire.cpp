@@ -81,7 +81,7 @@ arrayfire(ExtModule &m) {
 
       const auto x = (PyArrayObject *) PyArray_ContiguousFromAny(
           o,
-          NPY_DOUBLE,
+          NPY_FLOAT,
           1, 1
       );
       if (!x) return NULL;
@@ -89,7 +89,7 @@ arrayfire(ExtModule &m) {
       auto y = (PyArrayObject *) PyArray_EMPTY(
           PyArray_NDIM(x),
           PyArray_DIMS(x),
-          NPY_DOUBLE,
+          NPY_FLOAT,
           0
       );
       if (!y) return NULL;
