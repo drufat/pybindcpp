@@ -6,12 +6,14 @@ import pytest
 
 from pybindcpp.helper import eq
 
-
-@pytest.mark.skipif(
-    'AF_PATH' not in os.environ,
-    reason='Requires arrayfire')
-def test_fft():
+try:
     from pybindcpp.ext import arrayfire as af
+except:
+    af = None
+
+
+@pytest.mark.skipif(af is None, reason='Requires arrayfire')
+def test_fft():
     af.set_backend('cpu')
 
     x = [0, 1, 2, 3]
