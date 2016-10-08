@@ -1,7 +1,6 @@
 # Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
 import numpy as np
 import numpy.fft as fft
-import os
 import pytest
 
 from pybindcpp.helper import eq
