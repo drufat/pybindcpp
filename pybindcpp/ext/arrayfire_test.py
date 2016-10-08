@@ -10,8 +10,10 @@ try:
 except:
     af = None
 
+skip_af = pytest.mark.skipif(af is None, reason='Requires arrayfire')
 
-@pytest.mark.skipif(af is None, reason='Requires arrayfire')
+
+@skip_af
 def test_fft():
     af.set_backend('cpu')
 
