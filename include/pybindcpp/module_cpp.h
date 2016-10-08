@@ -17,18 +17,28 @@ struct ExtModule {
       self(obj) {
   }
 
+  template<class T>
+  PyObject *var2obj(T &&t) const {
+    return build_value<T>(std::forward<T>(t));
+  }
+
+  template<class T>
+  PyObject *fun2obj(T &&t) const {
+    return fun_trait<typename std::decay<T>::type>::obj(std::forward<T>(t));
+  }
+
   void add(const char *name, PyObject *obj) {
     PyModule_AddObject(self, name, obj);
   }
 
   template<class T>
   void var(const char *name, T &&t) {
-    add(name, pybindcpp::var<T>(std::forward<T>(t)));
+    add(name, var2obj<T>(std::forward<T>(t)));
   }
 
   template<class T>
   void fun(const char *name, T &&t) {
-    add(name, pybindcpp::fun<T>(std::forward<T>(t)));
+    add(name, fun2obj<T>(std::forward<T>(t)));
   }
 
   template<class T>
@@ -77,5 +87,11 @@ module_init(const char *name, std::function<void(ExtModule &)> exec) {
 } // end anonymous namespace
 
 } // end python namespace
+
+#define PYMODULE_INIT(name, exec)             \
+PyMODINIT_FUNC                                \
+PyInit_##name() {                             \
+  return pybindcpp::module_init(#name, exec); \
+}                                             \
 
 #endif // MODULE_CPP_H

@@ -25,32 +25,40 @@ struct ExtModule {
     add("__pybindcpp_api__", __api__);
   }
 
+  template<class T>
+  PyObject *var2obj(T t) const {
+    return py_function<PyObject *(T)>(*api, "pybindcpp.bind", "id")(t);
+  }
+
+  template<class T>
+  PyObject *fun2obj(T t) const {
+    return callable_trait<T>::get(*api, t);
+  }
+
   void add(const char *name, PyObject *obj) {
     PyModule_AddObject(self, name, obj);
   }
 
   template<class T>
-  void var(const char *name, T t) {
-    add(name,
-        py_function<PyObject *(T)>(*api, "pybindcpp.bind", "id")(t));
+  void var(const char *name, T &&t) {
+    add(name, var2obj<T>(std::forward<T>(t)));
   }
 
-  template<class F>
-  void fun(const char *name, F f) {
-    add(name,
-        callable_trait<F>::get(*api, f));
+  template<class T>
+  void fun(const char *name, T t) {
+    add(name, fun2obj<T>(t));
   }
 
-  template<class F>
-  void fun_type(const char *name, F f) {
+  template<class T>
+  void fun_type(const char *name, T t) {
     add(name,
-        func_trait<F>::pyctype(*api));
+        func_trait<T>::pyctype(*api));
   }
 
-  template<class F>
-  void varargs(const char *name, F f) {
+  template<class T>
+  void varargs(const char *name, T t) {
     add(name,
-        pybindcpp::varargs(*api, f));
+        pybindcpp::varargs(*api, t));
   }
 
 };

@@ -91,6 +91,18 @@ ext_modules = [
     ),
 
     Extension(
+        'pybindcpp.ext.native_cpp',
+        sources=[
+            'pybindcpp/ext/native.cpp',
+        ],
+        depends=depends,
+        include_dirs=include_dirs,
+        extra_compile_args=extra_compile_args + ['-DNATIVE_CPP'],
+        language="c++",
+        libraries=libraries,
+    ),
+
+    Extension(
         'pybindcpp.ext.numpy',
         sources=[
             'pybindcpp/ext/numpy.cpp',

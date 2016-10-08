@@ -1,5 +1,11 @@
 // Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
-#include "pybindcpp/module_cpp.h"
+
+#ifdef NATIVE_CPP
+#include <pybindcpp/module_cpp.h>
+#else
+#include <pybindcpp/module.h>
+#include <pybindcpp/cpython_types.h>
+#endif
 
 using namespace pybindcpp;
 
@@ -41,13 +47,13 @@ py_g(PyObject *self, PyObject *args) {
 }
 
 void
-native(ExtModule &m) {
+module(ExtModule &m) {
   m.var("one", (long) 1);
   m.var("two", (unsigned long) 2);
   m.var("true", true);
   m.var("false", false);
   m.var("name", "native");
-  m.var("name1", std::string("native"));
+  m.var("name1", "native");
 
   static int N, n, x;
 
@@ -69,14 +75,25 @@ native(ExtModule &m) {
   m.varargs("parsing", py_parsing);
   m.varargs("func", py_func);
 
-  m.fun("manytypes", [](uint N, PyObject *o) -> PyObject * {
-    if (PyLong_Check(o)) {
-      int i = PyLong_AsLong(o);
-      auto out = N + i;
-      return PyLong_FromLong(out);
-    } else {
-      return o;
+  m.varargs("manytypes", [](PyObject *self, PyObject *args) -> PyObject * {
+    {
+      uint N;
+      double i;
+      if (arg_parse_tuple(args, N, i)) {
+        auto out = N + (int) i;
+        return build_value(out);
+      }
     }
+    PyErr_Clear();
+    {
+      uint N;
+      PyObject *i;
+      if (arg_parse_tuple(args, N, i)) {
+        auto out = i;
+        return build_value(out);
+      }
+    }
+    return NULL;
   });
 
   m.fun("S", [](PyObject *o) {
@@ -91,7 +108,7 @@ native(ExtModule &m) {
         return g(x, y);
       }
   );
-  m.add("g_ofun", fun(g));
+  m.add("g_ofun", m.fun2obj(&g));
 
   auto f_one = std::function<int()>(
       []() {
@@ -102,7 +119,7 @@ native(ExtModule &m) {
 
   auto f_func = std::function<PyObject *()>(
       [=]() {
-        return fun(f_one);
+        return m.fun2obj(f_one);
       }
   );
   m.fun("f_func", f_func);
@@ -114,8 +131,10 @@ native(ExtModule &m) {
 
 }
 
-PyMODINIT_FUNC
-PyInit_native(void) {
-  return module_init("native", native);
-}
+#ifdef NATIVE_CPP
+PYMODULE_INIT(native_cpp, module)
+#else
+PYMODULE_INIT(native, module)
+#endif
+
 

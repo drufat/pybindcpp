@@ -6,12 +6,14 @@
 #include <typeindex>
 #include <string>
 
+#include "stringer.h"
+
 namespace pybindcpp {
 
 const std::map<std::type_index, std::string> BuildValueTypes = {
 
-    {typeid(char *), "s"},
-    {typeid(const char *), "s"},
+    {typeid(char *), "y"},
+    {typeid(const char *), "y"},
     {typeid(char), "b"},
     {typeid(double), "d"},
     {typeid(float), "f"},
@@ -51,12 +53,7 @@ auto convert<bool>(const bool &value) {
 
 template<>
 auto convert<std::string>(const std::string &value) {
-  return PyUnicode_FromString(value.c_str());
-}
-
-template<>
-auto convert<double>(const double &value) {
-  return PyFloat_FromDouble(value);
+  return value.c_str();
 }
 
 template<class... Args>

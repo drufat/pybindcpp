@@ -3,6 +3,7 @@
 #define PYBINDCPP_TYPES_H
 
 #include <Python.h>
+#include <stdbool.h>
 
 #include <string>
 #include <map>
@@ -12,6 +13,7 @@ namespace pybindcpp {
 
 const std::map<std::type_index, const char *> ctype_map = {
 
+    {typeid(bool), "c_bool"},
     {typeid(wchar_t), "c_wchar"},
     {typeid(char), "c_char"},
     {typeid(unsigned char), "c_ubyte"},

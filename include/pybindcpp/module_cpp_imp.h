@@ -5,17 +5,10 @@
 #include <memory>
 
 #include "apply.h"
-#include "stringer.h"
 #include "capsule.h"
 #include "cpython_types.h"
 
 namespace pybindcpp {
-
-template<class T>
-PyObject *
-var(T &&t) {
-  return build_value<T>(std::forward<T>(t));
-}
 
 PyObject *
 varargs(std::shared_ptr<VarArg> func) {
@@ -118,11 +111,6 @@ struct fun_trait<Ret(*)(Args...)> {
   }
 
 };
-
-template<class T>
-PyObject *fun(T t) {
-  return fun_trait<typename std::decay<T>::type>::obj(t);
-}
 
 template<class Ret, class Class, class... Args>
 PyObject *
