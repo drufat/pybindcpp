@@ -18,13 +18,13 @@ struct ExtModule {
   }
 
   template<class T>
-  PyObject *var2obj(T &&t) const {
-    return build_value<T>(std::forward<T>(t));
+  PyObject *var2obj(T t) const {
+    return build_value<T>(t);
   }
 
   template<class T>
-  PyObject *fun2obj(T &&t) const {
-    return fun_trait<typename std::decay<T>::type>::obj(std::forward<T>(t));
+  PyObject *fun2obj(T t) const {
+    return fun_trait<T>::obj(t);
   }
 
   void add(const char *name, PyObject *obj) {
@@ -32,18 +32,18 @@ struct ExtModule {
   }
 
   template<class T>
-  void var(const char *name, T &&t) {
-    add(name, var2obj<T>(std::forward<T>(t)));
+  void var(const char *name, T t) {
+    add(name, var2obj<T>(t));
   }
 
   template<class T>
-  void fun(const char *name, T &&t) {
-    add(name, fun2obj<T>(std::forward<T>(t)));
+  void fun(const char *name, T t) {
+    add(name, fun2obj<T>(t));
   }
 
   template<class T>
-  void varargs(const char *name, T &&t) {
-    add(name, pybindcpp::varargs(std::forward<T>(t)));
+  void varargs(const char *name, T t) {
+    add(name, pybindcpp::varargs(t));
   }
 
 };

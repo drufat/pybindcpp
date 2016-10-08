@@ -3,6 +3,7 @@
 #define MODULE_CPP_IMP_H
 
 #include <memory>
+#include <type_traits>
 
 #include "apply.h"
 #include "capsule.h"
@@ -28,7 +29,7 @@ varargs(std::shared_ptr<VarArg> func) {
 
 PyObject *
 varargs(VarArg func) {
-  return varargs(std::make_shared<decltype(func)>(func));
+  return varargs(std::make_shared<VarArg>(func));
 }
 
 template<class... Args>
@@ -93,9 +94,9 @@ struct fun_trait
 
 template<class F, class Ret, class... Args>
 struct fun_trait<Ret(F::*)(Args...) const> {
-  static
-  PyObject *
+  static PyObject *
   obj(F f) {
+    static_assert(std::is_class<F>::value, "Requires class.");
     auto ptr = std::make_shared<std::function<Ret(Args...)>>(f);
     return fun_ptr(ptr);
   }
@@ -103,13 +104,12 @@ struct fun_trait<Ret(F::*)(Args...) const> {
 
 template<class Ret, class... Args>
 struct fun_trait<Ret(*)(Args...)> {
-  static
-  PyObject *
+  static PyObject *
   obj(Ret(*f)(Args...)) {
+    static_assert(std::is_pointer<decltype(f)>::value, "Requires function pointer.");
     auto ptr = std::make_shared<std::function<Ret(Args...)>>(f);
     return fun_ptr(ptr);
   }
-
 };
 
 template<class Ret, class Class, class... Args>
