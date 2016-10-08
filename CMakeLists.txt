@@ -16,18 +16,20 @@ link_directories(/usr/local/Cellar/python3/3.5.2_2/Frameworks/Python.framework/V
 
 set(HEADER_FILES
         include/pybindcpp/capsule.h
-        include/pybindcpp/module.h
+        include/pybindcpp/module_cpp.h
         include/pybindcpp/numpy.h
         include/pybindcpp/storage.h
-        include/pybindcpp/cpp.h
-        include/pybindcpp/util.h
-        include/pybindcpp/ctypes/api.h
-        include/pybindcpp/ctypes/types.h
-        include/pybindcpp/ctypes/module.h
-        include/pybindcpp/ctypes/callable_trait.h
-        include/pybindcpp/ctypes/pyfunction.h
-        include/pybindcpp/ctypes/func_trait.h 
-)
+        include/pybindcpp/module_cpp_imp.h
+        include/pybindcpp/stringer.h
+        include/pybindcpp/api.h
+        include/pybindcpp/ctypes.h
+        include/pybindcpp/module.h
+        include/pybindcpp/callable_trait.h
+        include/pybindcpp/pyfunction.h
+        include/pybindcpp/func_trait.h
+        include/pybindcpp/cpython_types.h
+        include/pybindcpp/apply.h
+        )
 
 add_custom_target(
         setup_py ALL python3 setup.py develop --user

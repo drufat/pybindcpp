@@ -1,5 +1,5 @@
 // Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
-#include "pybindcpp/module.h"
+#include "pybindcpp/module_cpp.h"
 
 using namespace pybindcpp;
 
@@ -43,7 +43,7 @@ py_g(PyObject *self, PyObject *args) {
 void
 native(ExtModule &m) {
   m.var("one", (long) 1);
-  m.var("two", (ulong) 2);
+  m.var("two", (unsigned long) 2);
   m.var("true", true);
   m.var("false", false);
   m.var("name", "native");

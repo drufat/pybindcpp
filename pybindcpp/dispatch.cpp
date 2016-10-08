@@ -1,7 +1,7 @@
 // Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
 #include <Python.h>
 
-#include "pybindcpp/cpp.h"
+#include <pybindcpp/module_cpp_imp.h>
 
 namespace {
 

@@ -4,8 +4,8 @@
 #include <array>
 #include <sstream>
 
-#include "types.h"
-#include "api.h"
+#include "pybindcpp/api.h"
+#include "pybindcpp/ctypes.h"
 
 namespace pybindcpp {
 

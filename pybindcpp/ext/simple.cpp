@@ -1,5 +1,5 @@
 // Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
-#include "pybindcpp/ctypes/module.h"
+#include "pybindcpp/module.h"
 
 using namespace pybindcpp;
 

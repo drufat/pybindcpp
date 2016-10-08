@@ -4,90 +4,134 @@
 
 #include <Python.h>
 
-#include <vector>
-#include <list>
-#include <map>
-#include <tuple>
 #include <functional>
-#include <typeinfo>
-#include <typeindex>
-#include <string>
-#include <sstream>
-#include <iostream>
+#include <vector>
 #include <memory>
 
-#include "cpp.h"
 #include "capsule.h"
+#include "api.h"
+#include "callable_trait.h"
+#include "pyfunction.h"
 
 namespace pybindcpp {
 
 struct ExtModule {
   PyObject *self;
+  API *api;
 
-  ExtModule(PyObject *obj)
-      :
-      self(obj) {
+  ExtModule(PyObject *m) : self(m) {
+    auto __api__ = import_pybindcpp(&api);
+    // keep a reference so that the API struct is not garbage collected
+    add("__pybindcpp_api__", __api__);
   }
 
-  void add(const char* name, PyObject *obj) {
+  void add(const char *name, PyObject *obj) {
     PyModule_AddObject(self, name, obj);
   }
 
   template<class T>
-  void var(const char* name, T &&t) {
-    add(name, pybindcpp::var<T>(std::forward<T>(t)));
+  void var(const char *name, T t) {
+    add(name,
+        py_function<PyObject *(T)>(*api, "pybindcpp.bind", "id")(t));
   }
 
-  template<class T>
-  void fun(const char* name, T &&t) {
-    add(name, pybindcpp::fun<T>(std::forward<T>(t)));
+  template<class F>
+  void fun(const char *name, F f) {
+    add(name,
+        callable_trait<F>::get(*api, f));
   }
 
-  template<class T>
-  void varargs(const char* name, T &&t) {
-    add(name, pybindcpp::varargs(std::forward<T>(t)));
+  template<class F>
+  void fun_type(const char *name, F f) {
+    add(name,
+        func_trait<F>::pyctype(*api));
+  }
+
+  template<class F>
+  void varargs(const char *name, F f) {
+    add(name,
+        pybindcpp::varargs(*api, f));
   }
 
 };
 
-namespace {
+static
+std::function<void(ExtModule &)> __exec;
 
-namespace __hidden__ {
+static
+int
+__module_exec(PyObject *module) {
+  try {
 
-inline
-void
-print(PyObject *obj) {
-  PyObject_Print(obj, stdout, Py_PRINT_RAW);
+    ExtModule m(module);
+    __exec(m);
+    return 0;
+
+  } catch (const char *&ex) {
+
+    PyErr_SetString(PyExc_RuntimeError, ex);
+    return -1;
+
+  } catch (const std::exception &ex) {
+
+    PyErr_SetString(PyExc_RuntimeError, ex.what());
+    return -1;
+
+  } catch (...) {
+
+    PyErr_SetString(PyExc_RuntimeError, "Unknown internal error.");
+    return -1;
+
+  };
 }
 
-struct PyModuleDef moduledef = {
+static PyModuleDef moduledef = {
     PyModuleDef_HEAD_INIT,
-    "name",
-    NULL,
-    -1,
-    NULL
+    nullptr,  // m_name
+    nullptr,  // m_doc
+    0,        // m_size
+    nullptr,  // m_methods
+    nullptr,  // m_slots
+    nullptr,  // m_traverse
+    nullptr,  // m_clear
+    nullptr,  // m_free
 };
 
-} // end __hidden__ namespace
+#ifdef Py_mod_exec
+static PyModuleDef_Slot __module_slots[] = {
+    {Py_mod_exec, (void *) __module_exec},
+    {0, NULL}
+};
+#endif
 
+static
 PyObject *
-module_init(const char* name, std::function<void(ExtModule &)> exec) {
-  using namespace __hidden__;
-
+module_init(const char *name, std::function<void(ExtModule &)> exec) {
   moduledef.m_name = name;
+  __exec = exec;
+#ifdef Py_mod_exec
+  moduledef.m_slots = __module_slots;
+  return PyModuleDef_Init(&moduledef);
+#else
+  auto module = PyModule_Create(&moduledef);
+  if (!module) return nullptr;
 
-  auto self = PyModule_Create(&moduledef);
-  if (self == NULL) return NULL;
+  if (__module_exec(module) != 0) {
+    Py_DECREF(module);
+    return nullptr;
+  }
+  return module;
+#endif
 
-  ExtModule m(self);
-
-  exec(m);
-
-  return self;
 }
 
-} // end anonymous namespace
+}
 
-} // end python namespace
+#define PYMODULE_INIT(name, exec)             \
+PyMODINIT_FUNC                                \
+PyInit_##name() {                             \
+  return pybindcpp::module_init(#name, exec); \
+}                                             \
+
 
 #endif // MODULE_H
