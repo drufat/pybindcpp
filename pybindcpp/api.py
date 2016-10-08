@@ -100,11 +100,6 @@ def error():
     raise RuntimeError('RuntimeError')
 
 
-@ct.PYFUNCTYPE(ct.py_object)
-def error1():
-    return ct.py_object()
-
-
 def api_test():
     '''
     >>> s = ct.c_char_p(b'c_char_p,c_int,c_double')
