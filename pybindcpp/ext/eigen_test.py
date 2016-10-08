@@ -5,6 +5,12 @@ from pybindcpp.ext import eigen
 
 
 def test_eigen():
+    '''
+    >>> eigen.square(None)
+    Traceback (most recent call last):
+    ...
+    ValueError: object of too small depth for desired array
+    '''
     assert eq(
         eigen.square(
             [[0, 0],

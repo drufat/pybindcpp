@@ -35,7 +35,7 @@ add_custom_target(
 )
 
 add_custom_target(
-        pytest ALL py.test --doctest-modules pybindcpp
+        pytest ALL py.test -vv --doctest-modules pybindcpp
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         DEPENDS setup_py
 )
