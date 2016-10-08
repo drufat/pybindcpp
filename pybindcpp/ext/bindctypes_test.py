@@ -1,38 +1,38 @@
 import ctypes as ct
-from pybindcpp.ext import bindctypes
 from pybindcpp.api import PyCapsule_New, PyCapsule_GetPointer
 from pybindcpp.bind import register
+import pybindcpp.ext.bindctypes as bc
 
 
 def test_reg():
     '''
     >>> t = lambda _: (_._restype_,) + _._argtypes_
-    >>> t(bindctypes.id_type)
+    >>> t(bc.id_type)
     (<class 'ctypes.py_object'>, <class 'ctypes.py_object'>)
-    >>> t(bindctypes.add_type)
+    >>> t(bc.add_type)
     (<class 'ctypes.c_int'>, <class 'ctypes.c_int'>, <class 'ctypes.c_int'>)
-    >>> t(bindctypes.set_string_type)
+    >>> t(bc.set_string_type)
     (<class 'ctypes.c_int'>, <class 'ctypes.c_char'>, <class 'ctypes.c_int'>, <class 'ctypes.c_char_p'>)
-    >>> bindctypes.error()
+    >>> bc.error()
     Traceback (most recent call last):
     ...
     RuntimeError: Called error().
-    >>> bindctypes.func()
+    >>> bc.func()
     Traceback (most recent call last):
     ...
     RuntimeError: Another error.
     '''
-    assert bindctypes.id(1) == 1
-    assert bindctypes.add(1, 2) == 3
-    assert bindctypes.add(100, 2) == 102
-    assert bindctypes.minus(2, 1) == 1
-    assert bindctypes.add_d(1., 2.) == 3.
-    assert bindctypes.mul(2, 3) == 6
+    assert bc.id(1) == 1
+    assert bc.add(1, 2) == 3
+    assert bc.add(100, 2) == 102
+    assert bc.minus(2, 1) == 1
+    assert bc.add_d(1., 2.) == 3.
+    assert bc.mul(2, 3) == 6
 
 
 def test_extern_c():
     '''
-    >>> so = ct.PyDLL(bindctypes.__file__)
+    >>> so = ct.PyDLL(bc.__file__)
     >>> set_string = ct.CFUNCTYPE(ct.c_int, ct.c_char, ct.c_int, ct.c_char_p)(("set_string", so))
     >>> size = 20
 
@@ -45,7 +45,7 @@ def test_extern_c():
     b'aaaaaaaaaaaaaaaaaaaa'
 
     >>> buf = b'\\x00'*(size+1)
-    >>> bindctypes.set_string(b'o', size, buf)
+    >>> bc.set_string(b'o', size, buf)
     0
     >>> buf
     b'oooooooooooooooooooo\\x00'
