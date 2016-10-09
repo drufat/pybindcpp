@@ -9,16 +9,6 @@
 
 namespace pybindcpp {
 
-template<class T>
-PyObject *var(T t) {
-  return build_value<T>(t);
-}
-
-template<class T>
-PyObject *fun(T t) {
-  return fun_trait<T>::obj(t);
-}
-
 struct ExtModule {
   PyObject *self;
 
@@ -70,10 +60,14 @@ print(PyObject *obj) {
 
 struct PyModuleDef moduledef = {
     PyModuleDef_HEAD_INIT,
-    "name",
-    NULL,
-    -1,
-    NULL
+    nullptr,  // m_name
+    nullptr,  // m_doc
+    -1,       // m_size
+    nullptr,  // m_methods
+    nullptr,  // m_slots
+    nullptr,  // m_traverse
+    nullptr,  // m_clear
+    nullptr,  // m_free
 };
 
 } // end __hidden__ namespace
