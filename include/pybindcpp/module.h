@@ -40,8 +40,8 @@ struct ExtModule {
   }
 
   template<class T>
-  void var(const char *name, T &&t) {
-    add(name, var2obj<T>(std::forward<T>(t)));
+  void var(const char *name, T t) {
+    add(name, var2obj<T>(t));
   }
 
   template<class T>

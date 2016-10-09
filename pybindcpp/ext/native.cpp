@@ -1,5 +1,7 @@
 // Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
 
+#include <cmath>
+
 #ifdef NATIVE_CPP
 #include <pybindcpp/module_cpp.h>
 #else
@@ -46,8 +48,15 @@ py_g(PyObject *self, PyObject *args) {
   return build_value(out);
 }
 
+constexpr double pi = M_PI;
+constexpr double half = 0.5;
+
 void
 module(ExtModule &m) {
+
+  m.var("half", half);
+  m.var("pi", pi);
+
   m.var("one", (long) 1);
   m.var("two", (unsigned long) 2);
   m.var("true", true);

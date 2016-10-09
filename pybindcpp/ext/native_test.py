@@ -8,18 +8,24 @@ from pybindcpp.ext import native, native_cpp
     (native_cpp, 'pybindcpp.ext.native_cpp'),
 ])
 def test_native(m, name):
+
     assert (m.__name__ == name)
+
+    assert round(m.pi, 2) == 3.14
+    assert m.half == 0.5
+
+    assert m.one == 1
+    assert m.true == True
+    assert m.false == False
+    assert m.name == b'native'
+    assert m.name1 == b'native'
+
     assert (
         m.parsing(1, 2, 20.0, 5)
         ==
         (1, 2, 20.0, 5, b'string', b'string', True, False)
     )
     assert m.func(4, 0, 0) == 4
-    assert m.one == 1
-    assert m.true == True
-    assert m.false == False
-    assert m.name == b'native'
-    assert m.name1 == b'native'
 
     assert m.h(2, 3) == 5
 
