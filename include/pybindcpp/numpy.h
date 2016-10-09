@@ -25,7 +25,7 @@ const std::map<std::type_index, char> NumpyTypes = {
 
 };
 
-template<typename Out, typename F, typename... In, std::size_t... Is>
+template<typename Ret, typename F, typename... Args, std::size_t... Is>
 decltype(auto)
 loop1d_imp(F func, std::index_sequence<Is...>) {
   return [func](
@@ -34,12 +34,12 @@ loop1d_imp(F func, std::index_sequence<Is...>) {
       npy_intp *steps,
       void *data
   ) {
-    constexpr size_t nin = sizeof...(In);
+    constexpr size_t nin = sizeof...(Args);
 
     const auto N = dimensions[0];
     for (auto i = 0; i < N; i++) {
-      auto &out = (*reinterpret_cast<Out * >(args[nin] + i * steps[nin]));
-      out = func(*reinterpret_cast<In * >(args[Is] + i * steps[Is])...);
+      auto &out = (*reinterpret_cast<Ret * >(args[nin] + i * steps[nin]));
+      out = func(*reinterpret_cast<Args * >(args[Is] + i * steps[Is])...);
     }
   };
 }
@@ -123,19 +123,19 @@ make_ufunc_imp(
   return o;
 }
 
-template<class O, class F, class... I>
+template<class Ret, class F, class... Args>
 PyObject *
 make_ufunc(const char *name, F f) {
-  constexpr auto nin = sizeof...(I);
+  constexpr auto nin = sizeof...(Args);
   constexpr auto nout = 1;
   return make_ufunc_imp(
       name,
       {
-          loop1d<O, F, I...>(f),
+          loop1d<Ret, F, Args...>(f),
       },
       {
-          NumpyTypes.at(typeid(I))...,
-          NumpyTypes.at(typeid(O))
+          NumpyTypes.at(typeid(Args))...,
+          NumpyTypes.at(typeid(Ret))
       },
       nin,
       nout
@@ -152,10 +152,10 @@ ufunc_raw(ExtModule &m,
   m.var(name, make_ufunc_imp(name, funcs, types, nin, nout));
 }
 
-template<class O, class F, class... I>
+template<class Ret, class F, class... Args>
 void
 ufunc(ExtModule &m, const char *name, F f) {
-  m.var(name, make_ufunc<O, F, I...>(name, f));
+  m.var(name, make_ufunc<Ret, F, Args...>(name, f));
 }
 
 } // end anonymous namespace

@@ -36,12 +36,16 @@ loop1d_ii_o(F func) {
 
     const auto len = dimensions[0];
     for (auto i = 0; i < len; i++) {
-      auto &n = *(I0 *) (args[0] + i * steps[0]);
-      auto &x = *(I1 *) (args[1] + i * steps[1]);
-      auto &y = *(O *) (args[2] + i * steps[2]);
+      auto &n = *(I0 * )(args[0] + i * steps[0]);
+      auto &x = *(I1 * )(args[1] + i * steps[1]);
+      auto &y = *(O * )(args[2] + i * steps[2]);
       y = func(n, x);
     }
   };
+}
+
+int add_one(int x) {
+  return x + 1;
 }
 
 void
@@ -72,6 +76,7 @@ numpymodule(ExtModule &m) {
             }, 2, 1);
 
   ufunc<double, decltype(fn), long, double>(m, "fn_ufunc", fn);
+  ufunc<int, decltype(add_one), int>(m, "add_one", add_one);
 
   m.fun("fn", [](int N, double x) {
     auto out = fn(N, x);
