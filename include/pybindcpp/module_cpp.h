@@ -12,8 +12,7 @@ namespace pybindcpp {
 struct ExtModule {
   PyObject *self;
 
-  ExtModule(PyObject *m) : self(m) {
-  }
+  ExtModule(PyObject *m) : self(m) {}
 
   template<class T>
   PyObject *var2obj(T t) const {

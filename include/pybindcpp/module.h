@@ -16,22 +16,17 @@ namespace pybindcpp {
 
 struct ExtModule {
   PyObject *self;
-  API *api;
 
-  ExtModule(PyObject *m) : self(m) {
-    auto __api__ = import_pybindcpp(&api);
-    // keep a reference so that the API struct is not garbage collected
-    add("__pybindcpp_api__", __api__);
-  }
+  ExtModule(PyObject *m) : self(m) {}
 
   template<class T>
   PyObject *var2obj(T t) const {
-    return py_function<PyObject *(T)>(*api, "pybindcpp.bind", "id")(t);
+    return py_function<PyObject *(T)>("pybindcpp.bind", "id")(t);
   }
 
   template<class T>
   PyObject *fun2obj(T t) const {
-    return callable_trait<T>::get(*api, t);
+    return callable_trait<T>::get(t);
   }
 
   void add(const char *name, PyObject *obj) {
@@ -51,13 +46,13 @@ struct ExtModule {
   template<class T>
   void fun_type(const char *name, T t) {
     add(name,
-        func_trait<T>::pyctype(*api));
+        func_trait<T>::pyctype());
   }
 
   template<class T>
   void varargs(const char *name, T t) {
     add(name,
-        pybindcpp::varargs(*api, t));
+        pybindcpp::varargs(t));
   }
 
 };
@@ -77,6 +72,10 @@ static PyModuleDef moduledef = {
 static
 PyObject *
 module_init(const char *name, std::function<void(ExtModule &)> exec) {
+  // keep a reference so that the API struct is not garbage collected
+  auto pyapi = import_pybindcpp();
+  if (!pyapi) return nullptr;
+
   moduledef.m_name = name;
 
   auto module = PyModule_Create(&moduledef);

@@ -37,7 +37,7 @@ PyObject *error() {
 void
 exec(ExtModule &m) {
 
-  py_function<int(int)>(*m.api, "pybindcpp.bind", "id")(3);
+  py_function<int(int)>("pybindcpp.bind", "id")(3);
 
   m.var("one", 1);
   m.var("two", 2.0);

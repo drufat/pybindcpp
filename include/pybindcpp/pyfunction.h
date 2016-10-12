@@ -7,18 +7,18 @@ namespace pybindcpp {
 
 template<class F>
 F
-capsule(const API &api, const char *module, const char *attr) {
+capsule(const char *module, const char *attr) {
 
-  auto p = api.get_capsule(module, attr);
+  auto p = api->get_capsule(module, attr);
   F *f = static_cast<F *>(p);
   return *f;
 }
 
 template<class F>
 F
-c_function(const API &api, const char *module, const char *attr) {
+c_function(const char *module, const char *attr) {
 
-  auto p = api.get_cfunction(module, attr);
+  auto p = api->get_cfunction(module, attr);
   F *f = static_cast<F *>(p);
   return *f;
 }
@@ -41,16 +41,16 @@ struct py_function<Ret(Args...)> {
   py_function &operator=(const py_function &other) = delete;
   py_function &operator=(py_function &&other) = delete;
 
-  py_function(const API &api, const char *module, const char *attr) {
+  py_function(const char *module, const char *attr) {
     using F = decltype(f_ptr);
 
-    auto cfunctype = func_trait<F>::pyctype(api);
+    auto cfunctype = func_trait<F>::pyctype();
 
-    auto cfunc = api.get_pyfunction(module, attr, cfunctype);
+    auto cfunc = api->get_pyfunction(module, attr, cfunctype);
 
     Py_DecRef(cfunctype);
 
-    auto ptr = api.get_addr(cfunc);
+    auto ptr = api->get_addr(cfunc);
 
     F *f = static_cast<F *>(ptr);
     f_ptr = *f;

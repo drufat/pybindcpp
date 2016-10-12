@@ -27,7 +27,9 @@ struct API {
 
 };
 
-static PyObject *import_pybindcpp(API **api_p) {
+static API* api;
+
+static PyObject *import_pybindcpp() {
 
   auto mod = PyImport_ImportModule("pybindcpp.api");
   if (!mod) throw "Cannot import";
@@ -38,7 +40,7 @@ static PyObject *import_pybindcpp(API **api_p) {
   void *ptr = PyLong_AsVoidPtr(init_addr);
   auto init = *static_cast<PyObject *(**)(API **)>(ptr);
 
-  auto pyapi = init(api_p);
+  auto pyapi = init(&api);
 
   Py_DecRef(init_addr);
   Py_DecRef(mod);
