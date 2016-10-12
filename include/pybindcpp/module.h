@@ -3,7 +3,6 @@
 #define MODULE_H
 
 #include <Python.h>
-
 #include <functional>
 #include <vector>
 #include <memory>
@@ -63,41 +62,11 @@ struct ExtModule {
 
 };
 
-static
-std::function<void(ExtModule &)> __exec;
-
-static
-int
-__module_exec(PyObject *module) {
-  try {
-
-    ExtModule m(module);
-    __exec(m);
-    return 0;
-
-  } catch (const char *&ex) {
-
-    PyErr_SetString(PyExc_RuntimeError, ex);
-    return -1;
-
-  } catch (const std::exception &ex) {
-
-    PyErr_SetString(PyExc_RuntimeError, ex.what());
-    return -1;
-
-  } catch (...) {
-
-    PyErr_SetString(PyExc_RuntimeError, "Unknown internal error.");
-    return -1;
-
-  };
-}
-
 static PyModuleDef moduledef = {
     PyModuleDef_HEAD_INIT,
     nullptr,  // m_name
     nullptr,  // m_doc
-    0,        // m_size
+    -1,       // m_size
     nullptr,  // m_methods
     nullptr,  // m_slots
     nullptr,  // m_traverse
@@ -105,41 +74,45 @@ static PyModuleDef moduledef = {
     nullptr,  // m_free
 };
 
-#ifdef Py_mod_exec
-static PyModuleDef_Slot __module_slots[] = {
-    {Py_mod_exec, (void *) __module_exec},
-    {0, NULL}
-};
-#endif
-
 static
 PyObject *
 module_init(const char *name, std::function<void(ExtModule &)> exec) {
   moduledef.m_name = name;
-  __exec = exec;
-#ifdef Py_mod_exec
-  moduledef.m_slots = __module_slots;
-  return PyModuleDef_Init(&moduledef);
-#else
+
   auto module = PyModule_Create(&moduledef);
   if (!module) return nullptr;
 
-  if (__module_exec(module) != 0) {
-    Py_DECREF(module);
+  try {
+
+    ExtModule m(module);
+    exec(m);
+
+  } catch (const char *&ex) {
+
+    PyErr_SetString(PyExc_RuntimeError, ex);
     return nullptr;
-  }
+
+  } catch (const std::exception &ex) {
+
+    PyErr_SetString(PyExc_RuntimeError, ex.what());
+    return nullptr;
+
+  } catch (...) {
+
+    PyErr_SetString(PyExc_RuntimeError, "Unknown internal error.");
+    return nullptr;
+
+  };
+
   return module;
-#endif
-
 }
 
-}
+} // end pybindcpp namespace
 
 #define PYMODULE_INIT(name, exec)             \
 PyMODINIT_FUNC                                \
 PyInit_##name() {                             \
   return pybindcpp::module_init(#name, exec); \
 }                                             \
-
 
 #endif // MODULE_H

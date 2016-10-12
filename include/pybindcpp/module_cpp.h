@@ -12,9 +12,7 @@ namespace pybindcpp {
 struct ExtModule {
   PyObject *self;
 
-  ExtModule(PyObject *obj)
-      :
-      self(obj) {
+  ExtModule(PyObject *m) : self(m) {
   }
 
   template<class T>
@@ -48,17 +46,13 @@ struct ExtModule {
 
 };
 
-namespace {
-
-namespace __hidden__ {
-
-inline
+static
 void
 print(PyObject *obj) {
   PyObject_Print(obj, stdout, Py_PRINT_RAW);
 }
 
-struct PyModuleDef moduledef = {
+static PyModuleDef moduledef = {
     PyModuleDef_HEAD_INIT,
     nullptr,  // m_name
     nullptr,  // m_doc
@@ -70,27 +64,40 @@ struct PyModuleDef moduledef = {
     nullptr,  // m_free
 };
 
-} // end __hidden__ namespace
-
+static
 PyObject *
 module_init(const char *name, std::function<void(ExtModule &)> exec) {
-  using namespace __hidden__;
-
   moduledef.m_name = name;
 
-  auto self = PyModule_Create(&moduledef);
-  if (self == NULL) return NULL;
+  auto module = PyModule_Create(&moduledef);
+  if (!module) return nullptr;
 
-  ExtModule m(self);
+  try {
 
-  exec(m);
+    ExtModule m(module);
+    exec(m);
 
-  return self;
+  } catch (const char *&ex) {
+
+    PyErr_SetString(PyExc_RuntimeError, ex);
+    return nullptr;
+
+  } catch (const std::exception &ex) {
+
+    PyErr_SetString(PyExc_RuntimeError, ex.what());
+    return nullptr;
+
+  } catch (...) {
+
+    PyErr_SetString(PyExc_RuntimeError, "Unknown internal error.");
+    return nullptr;
+
+  };
+
+  return module;
 }
 
-} // end anonymous namespace
-
-} // end python namespace
+} // end pybindcpp namespace
 
 #define PYMODULE_INIT(name, exec)             \
 PyMODINIT_FUNC                                \
