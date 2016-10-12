@@ -33,20 +33,20 @@ set(HEADER_FILES
 
 add_custom_target(
         setup_py ALL python3 setup.py develop --user
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/..
 )
 
 add_custom_target(
         pytest ALL py.test -vv --doctest-modules pybindcpp
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/..
         DEPENDS setup_py
 )
 
-add_executable(meta src/meta.cpp)
+add_executable(main main.cpp)
 
 set(CMAKE_CXX_STANDARD_LIBRARIES -lpython3.5m)
-add_library(bindctypes MODULE pybindcpp/ext/bindctypes.cpp ${HEADER_FILES})
-add_library(numpy MODULE pybindcpp/ext/numpy.cpp ${HEADER_FILES})
-#add_library(eigen MODULE pybindcpp/ext/eigen.cpp ${HEADER_FILES})
-#add_library(fftw MODULE pybindcpp/ext/fftw.cpp ${HEADER_FILES})
-add_library(native MODULE pybindcpp/ext/native.cpp ${HEADER_FILES})
+add_library(bindctypes MODULE ../pybindcpp/ext/bindctypes.cpp ${HEADER_FILES})
+add_library(numpy MODULE ../pybindcpp/ext/numpy.cpp ${HEADER_FILES})
+#add_library(eigen MODULE ../pybindcpp/ext/eigen.cpp ${HEADER_FILES})
+#add_library(fftw MODULE ../pybindcpp/ext/fftw.cpp ${HEADER_FILES})
+add_library(native MODULE ../pybindcpp/ext/native.cpp ${HEADER_FILES})
