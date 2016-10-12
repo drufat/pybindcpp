@@ -9,20 +9,20 @@
 
 namespace pybindcpp {
 
+template<class T>
+PyObject *var2obj(T t) {
+  return build_value<T>(t);
+}
+
+template<class T>
+PyObject *fun2obj(T t) {
+  return fun_trait<T>::obj(t);
+}
+
 struct ExtModule {
   PyObject *self;
 
   ExtModule(PyObject *m) : self(m) {}
-
-  template<class T>
-  PyObject *var2obj(T t) const {
-    return build_value<T>(t);
-  }
-
-  template<class T>
-  PyObject *fun2obj(T t) const {
-    return fun_trait<T>::obj(t);
-  }
 
   void add(const char *name, PyObject *obj) {
     PyModule_AddObject(self, name, obj);

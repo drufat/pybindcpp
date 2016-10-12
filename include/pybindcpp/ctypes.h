@@ -41,6 +41,8 @@ const std::map<std::type_index, const char *> ctype_map = {
     {typeid(const void *), "c_void_p"},
     {typeid(const PyObject *), "py_object"},
 
+    {typeid(void), "c_void"},
+
 };
 
 using VOIDFUNCTYPE = std::function<void()>;

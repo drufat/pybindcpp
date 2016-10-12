@@ -117,7 +117,7 @@ module(ExtModule &m) {
         return g(x, y);
       }
   );
-  m.add("g_ofun", m.fun2obj(&g));
+  m.add("g_ofun", fun2obj(&g));
 
   auto f_one = std::function<int()>(
       []() {
@@ -128,7 +128,7 @@ module(ExtModule &m) {
 
   auto f_func = std::function<PyObject *()>(
       [=]() {
-        return m.fun2obj(f_one);
+        return fun2obj(f_one);
       }
   );
   m.fun("f_func", f_func);

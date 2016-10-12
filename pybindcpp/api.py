@@ -26,11 +26,17 @@ PyLong_AsVoidPtr = ct.PYFUNCTYPE(
 ###############
 
 
+def ctype_name(name):
+    if name == 'c_void':
+        return None
+    return getattr(ct, name)
+
+
 @ct.PYFUNCTYPE(ct.py_object, ct.c_char_p)
 def get_type(typ):
     s = typ.decode()
 
-    t = tuple(getattr(ct, _) for _ in s.split(','))
+    t = tuple(ctype_name(_) for _ in s.split(','))
     return ct.PYFUNCTYPE(*t)
 
 
@@ -105,6 +111,11 @@ def api_test():
     >>> s = ct.c_char_p(b'c_char_p,c_int,c_double')
     >>> assert get_type(s)._restype_ == ct.c_char_p
     >>> assert get_type(s)._argtypes_ == tuple([ct.c_int, ct.c_double])
+
+    >>> s = ct.c_char_p(b'c_void')
+    >>> assert get_type(s)._restype_ == None
+    >>> assert get_type(s)._argtypes_ == tuple()
+
     >>> p = get_capsule(b'pybindcpp.bind', b'register_cap')
     '''
     pass

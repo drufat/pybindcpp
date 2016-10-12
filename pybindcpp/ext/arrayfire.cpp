@@ -72,19 +72,20 @@ addone(const array &X) {
 
 void
 arrayfire(ExtModule &m) {
+  m.var("test_type", func_trait<decltype(&test)>::pystr());
   m.fun("test", test);
   m.fun("set_backend", set_backend);
 
-  auto _ = [&](const char* name, array(*fn)(const array &)) {
+  auto _ = [&](const char *name, array(*fn)(const array &)) {
 
-    return m.fun(name, [fn](PyObject *o) -> PyObject * {
+    m.fun(name, [fn](PyObject *o) -> PyObject * {
 
       const auto x = (PyArrayObject *) PyArray_ContiguousFromAny(
           o,
           NPY_FLOAT,
           1, 1
       );
-      if (!x) return NULL;
+      if (!x) return nullptr;
 
       auto y = (PyArrayObject *) PyArray_EMPTY(
           PyArray_NDIM(x),
@@ -92,7 +93,7 @@ arrayfire(ExtModule &m) {
           NPY_FLOAT,
           0
       );
-      if (!y) return NULL;
+      if (!y) return nullptr;
 
       auto X = array(PyArray_DIMS(x)[0], (double *) PyArray_DATA(x));
       Py_DECREF(x);
@@ -114,7 +115,7 @@ arrayfire(ExtModule &m) {
         o,
         NPY_CDOUBLE,
         1, 1);
-    if (!x) return NULL;
+    if (!x) return nullptr;
 
     auto y = (PyArrayObject *) PyArray_EMPTY(
         PyArray_NDIM(x),
@@ -122,7 +123,7 @@ arrayfire(ExtModule &m) {
         NPY_CDOUBLE,
         0
     );
-    if (!y) return NULL;
+    if (!y) return nullptr;
 
     auto X = array(PyArray_DIMS(x)[0], (cdouble *) PyArray_DATA(x));
     Py_DECREF(x);
