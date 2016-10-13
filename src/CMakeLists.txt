@@ -3,21 +3,25 @@ project(pybindcpp)
 
 add_compile_options(-std=c++14)
 
-include_directories(include)
-
 set(PYTHON_EXE python3)
+
+include_directories(include)
+include_directories(/usr/local/include)
+link_directories(/usr/local/lib)
+set(CMAKE_SHARED_LINKER_FLAGS "-undefined dynamic_lookup")
+
 execute_process(
         COMMAND ${PYTHON_EXE} -c "import sysconfig as s; print(s.get_path('include'))"
         OUTPUT_VARIABLE PYTHON_INCLUDE_DIR
         OUTPUT_STRIP_TRAILING_WHITESPACE
 )
+include_directories(${PYTHON_INCLUDE_DIR})
+
 execute_process(
         COMMAND ${PYTHON_EXE} -c "import numpy as np; print(np.get_include())"
         OUTPUT_VARIABLE NUMPY_INCLUDE_DIR
         OUTPUT_STRIP_TRAILING_WHITESPACE
 )
-
-include_directories(${PYTHON_INCLUDE_DIR})
 include_directories(${NUMPY_INCLUDE_DIR})
 
 set(HEADER_FILES
@@ -71,10 +75,12 @@ py_module(numpy ../pybindcpp/ext/numpy.cpp)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(EIGEN3 eigen3)
 py_module(eigen ../pybindcpp/ext/eigen.cpp)
+target_include_directories(eigen PRIVATE ${EIGEN3_INCLUDE_DIRS})
 
-include_directories(${EIGEN3_INCLUDE_DIRS})
 pkg_check_modules(FFTW3 fftw3)
+link_directories(${FFTW3_LIBRARY_DIRS})
 py_module(fftw ../pybindcpp/ext/fftw.cpp)
+target_include_directories(fftw PRIVATE ${FFTW3_INCLUDE_DIRS})
 target_link_libraries(fftw ${FFTW3_LIBRARIES})
 
 py_module(arrayfire ../pybindcpp/ext/arrayfire.cpp)
