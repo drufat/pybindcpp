@@ -5,10 +5,14 @@ add_compile_options(-std=c++14)
 
 include_directories(include)
 
-find_package(PythonInterp REQUIRED)
-find_package(PythonLibs REQUIRED)
-include_directories(${PYTHON_INCLUDE_DIRS})
-set(CMAKE_CXX_STANDARD_LIBRARIES ${PYTHON_LIBRARY})
+set(PYTHON_EXE python3)
+execute_process(
+        COMMAND ${PYTHON_EXE} -c "import sysconfig as s; print(s.get_path('include'))"
+        OUTPUT_VARIABLE PYTHON_INCLUDE_DIR
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+include_directories(${PYTHON_INCLUDE_DIR})
 
 set(HEADER_FILES
         include/pybindcpp/capsule.h
@@ -30,12 +34,12 @@ set(HEADER_FILES
 add_executable(main main.cpp)
 
 function(py_module target source)
-    python_add_module(${target} ${source} ${HEADER_FILES})
+    add_library(${target} SHARED ${source} ${HEADER_FILES})
     add_dependencies(pytest ${target})
     add_custom_command(
             TARGET ${target}
             POST_BUILD
-            COMMAND ${PYTHON_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/cmake_pyext.py"
+            COMMAND ${PYTHON_EXE} "${CMAKE_CURRENT_SOURCE_DIR}/cmake_pyext.py"
             "${target}" "$<TARGET_FILE:${target}>" "${CMAKE_SOURCE_DIR}/${source}"
     )
 endfunction(py_module)
