@@ -7,7 +7,7 @@ import numpy
 from setuptools import setup, Extension
 
 include_dirs = [
-    'src/include',
+    'include',
     numpy.get_include(),
     '/usr/include/eigen3',
     '/usr/local/include/eigen3',
