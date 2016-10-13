@@ -33,7 +33,7 @@ add_custom_target(
 )
 
 function(pymodule target)
-    py_module(${target} ${ARGN} ${HEADER_FILES})
+    py_module(${target} ${target} ${ARGN} ${HEADER_FILES})
     add_dependencies(pytest ${target}_symlink)
 endfunction(pymodule)
 

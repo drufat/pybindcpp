@@ -36,7 +36,7 @@ if __name__ == '__main__':
 
 ")
 
-function(py_module target source)
+function(py_module target name source)
     add_library(${target} SHARED ${source} ${ARGN})
     target_include_directories(${target} PRIVATE ${PYTHON_INCLUDE_DIR})
     target_include_directories(${target} PRIVATE ${NUMPY_INCLUDE_DIR})
@@ -45,7 +45,7 @@ function(py_module target source)
     endif ()
     execute_process(
             COMMAND ${PYTHON_EXE} -c "${CMAKE_PYEXT}"
-            "${target}" "${CMAKE_SOURCE_DIR}/${source}"
+            "${name}" "${CMAKE_SOURCE_DIR}/${source}"
             OUTPUT_VARIABLE OUTPUT
             OUTPUT_STRIP_TRAILING_WHITESPACE
     )
