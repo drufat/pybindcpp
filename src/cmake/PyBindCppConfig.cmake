@@ -38,8 +38,6 @@ if __name__ == '__main__':
 
 function(py_module target name source)
     add_library(${target} SHARED ${source} ${ARGN})
-    target_include_directories(${target} PRIVATE ${PYTHON_INCLUDE_DIR})
-    target_include_directories(${target} PRIVATE ${NUMPY_INCLUDE_DIR})
     if (${APPLE})
         set_target_properties(${target} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
     endif ()

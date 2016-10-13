@@ -7,6 +7,8 @@ add_compile_options(
 )
 
 find_package(PyBindCpp REQUIRED PATHS cmake)
+include_directories(${PYTHON_INCLUDE_DIR})
+include_directories(${NUMPY_INCLUDE_DIR})
 
 include_directories(include)
 
