@@ -43,7 +43,7 @@ function(py_module target name source)
     endif ()
     execute_process(
             COMMAND ${PYTHON_EXE} -c "${CMAKE_PYEXT}"
-            "${name}" "${CMAKE_SOURCE_DIR}/${source}"
+            "${name}" "${CMAKE_CURRENT_SOURCE_DIR}/${source}"
             OUTPUT_VARIABLE OUTPUT
             OUTPUT_STRIP_TRAILING_WHITESPACE
     )
@@ -54,3 +54,14 @@ function(py_module target name source)
     )
     add_custom_target("${target}_symlink" ALL DEPENDS ${OUTPUT})
 endfunction(py_module)
+
+set(TEST_STAMP "${CMAKE_CURRENT_SOURCE_DIR}/.test_stamp")
+
+function(test_command)
+    add_custom_command(
+            OUTPUT ${TEST_STAMP}
+            COMMAND ${CMAKE_COMMAND} -E touch ${TEST_STAMP}
+            COMMAND ${ARGN}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/..
+    )
+endfunction()

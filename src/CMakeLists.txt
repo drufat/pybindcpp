@@ -29,14 +29,12 @@ set(HEADER_FILES
         include/pybindcpp/apply.h
         )
 
-add_custom_target(
-        pytest ALL py.test -v --doctest-modules pybindcpp
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/..
-)
+add_custom_target(${PROJECT_NAME}_pytest ALL DEPENDS ${TEST_STAMP})
+test_command(py.test -v --doctest-modules pybindcpp)
 
 function(pymodule target)
     py_module(${target} ${target} ${ARGN} ${HEADER_FILES})
-    add_dependencies(pytest ${target}_symlink)
+    add_dependencies(${PROJECT_NAME}_pytest ${target}_symlink)
 endfunction(pymodule)
 
 add_executable(main main.cpp)
