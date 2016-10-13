@@ -15,12 +15,21 @@ namespace {
 
 const std::map<std::type_index, char> NumpyTypes = {
 
-    {typeid(double), NPY_DOUBLE},
-    {typeid(float), NPY_FLOAT},
-    {typeid(int), NPY_INT},
-    {typeid(unsigned int), NPY_UINT},
-    {typeid(long), NPY_LONG},
-    {typeid(unsigned long), NPY_ULONG},
+    {typeid(npy_bool), NPY_BOOL},
+    {typeid(npy_byte), NPY_BYTE},
+
+    {typeid(npy_double), NPY_DOUBLE},
+    {typeid(npy_float), NPY_FLOAT},
+    {typeid(npy_cdouble), NPY_CDOUBLE},
+    {typeid(npy_cfloat), NPY_CFLOAT},
+
+    {typeid(npy_short), NPY_SHORT},
+    {typeid(npy_int), NPY_INT},
+    {typeid(npy_long), NPY_LONG},
+    {typeid(npy_ushort), NPY_USHORT},
+    {typeid(npy_uint), NPY_UINT},
+    {typeid(npy_ulong), NPY_ULONG},
+
     {typeid(PyObject *), NPY_OBJECT},
 
 };
