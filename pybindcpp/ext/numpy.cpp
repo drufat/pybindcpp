@@ -51,29 +51,32 @@ int add_one(int x) {
 void
 numpymodule(ExtModule &m) {
 
-  ufunc_raw(m, "fn_ufunc1", {
-      loop1d_ii_o<decltype(fn), int, double, double>(fn),
-      loop1d_ii_o<decltype(fn), long, double, double>(fn),
-  }, {
-                NPY_INT, NPY_DOUBLE, NPY_DOUBLE,
-                NPY_LONG, NPY_DOUBLE, NPY_DOUBLE,
-            }, 2, 1);
+  ufunc_raw(
+      m, "fn_ufunc1", {
+          loop1d_ii_o<decltype(fn), int, double, double>(fn),
+          loop1d_ii_o<decltype(fn), long, double, double>(fn),
+      }, {
+          NPY_INT, NPY_DOUBLE, NPY_DOUBLE,
+          NPY_LONG, NPY_DOUBLE, NPY_DOUBLE,
+      }, 2, 1);
 
-  ufunc_raw(m, "fn_ufunc2", {
-      fn_loop<int, double, double>,
-      fn_loop<long, double, double>,
-  }, {
-                NPY_INT, NPY_DOUBLE, NPY_DOUBLE,
-                NPY_LONG, NPY_DOUBLE, NPY_DOUBLE,
-            }, 2, 1);
+  ufunc_raw(
+      m, "fn_ufunc2", {
+          fn_loop<int, double, double>,
+          fn_loop<long, double, double>,
+      }, {
+          NPY_INT, NPY_DOUBLE, NPY_DOUBLE,
+          NPY_LONG, NPY_DOUBLE, NPY_DOUBLE,
+      }, 2, 1);
 
-  ufunc_raw(m, "fn_ufunc3", {
-      loop1d<double, decltype(fn), int, double>(fn),
-      loop1d<double, decltype(fn), long, double>(fn),
-  }, {
-                NPY_INT, NPY_DOUBLE, NPY_DOUBLE,
-                NPY_LONG, NPY_DOUBLE, NPY_DOUBLE,
-            }, 2, 1);
+  ufunc_raw(
+      m, "fn_ufunc3", {
+          loop1d<double, decltype(fn), int, double>(fn),
+          loop1d<double, decltype(fn), long, double>(fn),
+      }, {
+          NPY_INT, NPY_DOUBLE, NPY_DOUBLE,
+          NPY_LONG, NPY_DOUBLE, NPY_DOUBLE,
+      }, 2, 1);
 
   ufunc<double, decltype(fn), long, double>(m, "fn_ufunc", fn);
   ufunc<int, decltype(add_one), int>(m, "add_one", add_one);

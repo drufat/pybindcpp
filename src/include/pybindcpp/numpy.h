@@ -34,7 +34,7 @@ const std::map<std::type_index, char> NumpyTypes = {
 
 };
 
-template<typename Ret, typename F, typename... Args, std::size_t... Is>
+template<class Ret, class F, class... Args, std::size_t... Is>
 decltype(auto)
 loop1d_imp(F func, std::index_sequence<Is...>) {
   return [func](
@@ -53,26 +53,35 @@ loop1d_imp(F func, std::index_sequence<Is...>) {
   };
 }
 
-template<typename Out, typename F, typename... In>
+template<class Ret, class F, class... Args>
 decltype(auto)
 loop1d(F func) {
-  using IndexIn = std::make_index_sequence<sizeof...(In)>;
-  return loop1d_imp<Out, F, In...>(func, IndexIn{});
+  using IndexIn = std::make_index_sequence<sizeof...(Args)>;
+  return loop1d_imp<Ret, F, Args...>(func, IndexIn{});
 }
 
-using ftype = std::function<void(char **, npy_intp *, npy_intp *, void *)>;
+using pyufuncgenericfuncion = std::function<
+    void(
+        char **args,
+        npy_intp *dimensions,
+        npy_intp *strides,
+        void *innerloopdata
+    )
+>;
 
 void
-generic_target(char **args,
-               npy_intp *dimensions,
-               npy_intp *steps,
-               void *data) {
-  auto f = *static_cast<ftype *>(data);
+generic_target(
+    char **args,
+    npy_intp *dimensions,
+    npy_intp *steps,
+    void *data
+) {
+  auto f = *static_cast<pyufuncgenericfuncion *>(data);
   return f(args, dimensions, steps, NULL);
 }
 
 struct UFuncObjects {
-  std::vector<ftype> funcs;
+  std::vector<pyufuncgenericfuncion> funcs;
   std::vector<char> types;
   std::vector<PyUFuncGenericFunction> cfuncs;
   std::vector<void *> cdata;
@@ -81,7 +90,7 @@ struct UFuncObjects {
 PyObject *
 make_ufunc_imp(
     const char *name,
-    std::vector<ftype> funcs,
+    std::vector<pyufuncgenericfuncion> funcs,
     std::vector<char> types,
     int nin,
     int nout
@@ -89,6 +98,7 @@ make_ufunc_imp(
   auto ntypes = funcs.size();
   assert(types.size() == ntypes * (nin + nout));
 
+  // to eventually store as a capsule
   auto objs = std::make_shared<UFuncObjects>();
   objs->funcs = funcs;
   objs->types = types;
@@ -154,11 +164,13 @@ make_ufunc(const char *name, F f) {
 
 inline
 void
-ufunc_raw(ExtModule &m,
-          const char *name,
-          std::vector<ftype> funcs,
-          std::vector<char> types,
-          int nin, int nout) {
+ufunc_raw(
+    ExtModule &m,
+    const char *name,
+    std::vector<pyufuncgenericfuncion> funcs,
+    std::vector<char> types,
+    int nin, int nout
+) {
   m.var(name, make_ufunc_imp(name, funcs, types, nin, nout));
 }
 
