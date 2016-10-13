@@ -29,15 +29,17 @@ set(HEADER_FILES
         include/pybindcpp/apply.h
         )
 
-add_custom_target(${PROJECT_NAME}_pytest ALL DEPENDS ${TEST_STAMP})
-test_command(py.test -v --doctest-modules pybindcpp)
+add_executable(main src/main.cpp)
 
+add_custom_target(
+        ${PROJECT_NAME}_pytest ALL
+        COMMAND py.test -v --doctest-modules pybindcpp
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
 function(pymodule target)
     py_module(${target} ${target} ${ARGN} ${HEADER_FILES})
-    add_dependencies(${PROJECT_NAME}_pytest ${target}_symlink)
-endfunction(pymodule)
-
-add_executable(main src/main.cpp)
+    add_dependencies(${PROJECT_NAME}_pytest ${target} ${target}_symlink)
+endfunction()
 
 pymodule(dispatch pybindcpp/dispatch.cpp)
 
@@ -69,3 +71,9 @@ if (DEFINED ENV{AF_PATH})
     pymodule(arrayfire pybindcpp/ext/arrayfire.cpp)
     target_link_libraries(arrayfire af)
 endif ()
+
+add_test(
+        NAME PY
+        COMMAND py.test -v --doctest-modules pybindcpp
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
