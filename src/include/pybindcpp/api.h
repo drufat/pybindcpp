@@ -27,7 +27,7 @@ struct API {
 
 };
 
-static API* api;
+static API *api;
 
 static PyObject *import_pybindcpp() {
 

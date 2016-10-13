@@ -15,8 +15,6 @@ include_dirs = [
 
 headers = glob.glob(
     'include/pybindcpp/*.h'
-) + glob.glob(
-    'include/pybindcpp/ctypes/*.h'
 )
 
 depends = [
