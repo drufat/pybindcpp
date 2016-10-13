@@ -8,7 +8,9 @@ set(PYTHON_EXE python3)
 include_directories(include)
 include_directories(/usr/local/include)
 link_directories(/usr/local/lib)
-set(CMAKE_SHARED_LINKER_FLAGS "-undefined dynamic_lookup")
+if (${APPLE})
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -undefined dynamic_lookup")
+endif ()
 
 execute_process(
         COMMAND ${PYTHON_EXE} -c "import sysconfig as s; print(s.get_path('include'))"
