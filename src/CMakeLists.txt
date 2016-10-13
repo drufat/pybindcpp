@@ -11,8 +11,14 @@ execute_process(
         OUTPUT_VARIABLE PYTHON_INCLUDE_DIR
         OUTPUT_STRIP_TRAILING_WHITESPACE
 )
+execute_process(
+        COMMAND ${PYTHON_EXE} -c "import numpy as np; print(np.get_include())"
+        OUTPUT_VARIABLE NUMPY_INCLUDE_DIR
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+)
 
 include_directories(${PYTHON_INCLUDE_DIR})
+include_directories(${NUMPY_INCLUDE_DIR})
 
 set(HEADER_FILES
         include/pybindcpp/capsule.h
