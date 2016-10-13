@@ -37,35 +37,35 @@ function(pymodule target)
     add_dependencies(${PROJECT_NAME}_pytest ${target}_symlink)
 endfunction(pymodule)
 
-add_executable(main main.cpp)
+add_executable(main src/main.cpp)
 
-pymodule(dispatch ../pybindcpp/dispatch.cpp)
+pymodule(dispatch pybindcpp/dispatch.cpp)
 
-pymodule(bindctypes ../pybindcpp/ext/bindctypes.cpp)
+pymodule(bindctypes pybindcpp/ext/bindctypes.cpp)
 
-pymodule(simple ../pybindcpp/ext/simple.cpp)
+pymodule(simple pybindcpp/ext/simple.cpp)
 
-pymodule(native ../pybindcpp/ext/native.cpp)
+pymodule(native pybindcpp/ext/native.cpp)
 
-pymodule(native_cpp ../pybindcpp/ext/native.cpp ${HEADER_FILES})
+pymodule(native_cpp pybindcpp/ext/native.cpp ${HEADER_FILES})
 target_compile_definitions(native_cpp PRIVATE -DNATIVE_CPP)
 
-pymodule(numpy ../pybindcpp/ext/numpy.cpp)
+pymodule(numpy pybindcpp/ext/numpy.cpp)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(EIGEN3 eigen3 REQUIRED)
-pymodule(eigen ../pybindcpp/ext/eigen.cpp)
+pymodule(eigen pybindcpp/ext/eigen.cpp)
 target_include_directories(eigen PRIVATE ${EIGEN3_INCLUDE_DIRS})
 
 pkg_check_modules(FFTW3 fftw3 REQUIRED)
 include_directories(${FFTW3_INCLUDE_DIRS})
 link_directories(${FFTW3_LIBRARY_DIRS})
-pymodule(fftw ../pybindcpp/ext/fftw.cpp)
+pymodule(fftw pybindcpp/ext/fftw.cpp)
 target_link_libraries(fftw ${FFTW3_LIBRARIES})
 
 if (DEFINED ENV{AF_PATH})
     include_directories(/usr/local/include)
     link_directories(/usr/local/lib)
-    pymodule(arrayfire ../pybindcpp/ext/arrayfire.cpp)
+    pymodule(arrayfire pybindcpp/ext/arrayfire.cpp)
     target_link_libraries(arrayfire af)
 endif ()
