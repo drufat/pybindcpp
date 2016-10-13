@@ -5,14 +5,10 @@ add_compile_options(-std=c++14)
 
 include_directories(include)
 
-# Linux
-include_directories(/usr/include/python3.5m/)
-include_directories(/usr/lib/python3.5/site-packages/numpy/core/include/)
-
-# Mac OS X
-include_directories(/usr/local/Cellar/python3/3.5.2_2/Frameworks/Python.framework/Versions/3.5/include/python3.5m/)
-include_directories(/usr/local/lib/python3.5/site-packages/numpy/core/include/)
-link_directories(/usr/local/Cellar/python3/3.5.2_2/Frameworks/Python.framework/Versions/3.5/lib/)
+find_package(PythonInterp REQUIRED)
+find_package(PythonLibs REQUIRED)
+include_directories(${PYTHON_INCLUDE_DIRS})
+set(CMAKE_CXX_STANDARD_LIBRARIES ${PYTHON_LIBRARY})
 
 set(HEADER_FILES
         include/pybindcpp/capsule.h
@@ -31,22 +27,45 @@ set(HEADER_FILES
         include/pybindcpp/apply.h
         )
 
-add_custom_target(
-        setup_py ALL python3 setup.py develop --user
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/..
-)
-
-add_custom_target(
-        pytest ALL py.test -vv --doctest-modules pybindcpp
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/..
-        DEPENDS setup_py
-)
-
 add_executable(main main.cpp)
 
-set(CMAKE_CXX_STANDARD_LIBRARIES -lpython3.5m)
-add_library(bindctypes MODULE ../pybindcpp/ext/bindctypes.cpp ${HEADER_FILES})
-add_library(numpy MODULE ../pybindcpp/ext/numpy.cpp ${HEADER_FILES})
-#add_library(eigen MODULE ../pybindcpp/ext/eigen.cpp ${HEADER_FILES})
-#add_library(fftw MODULE ../pybindcpp/ext/fftw.cpp ${HEADER_FILES})
-add_library(native MODULE ../pybindcpp/ext/native.cpp ${HEADER_FILES})
+function(py_module target source)
+    python_add_module(${target} ${source} ${HEADER_FILES})
+    add_dependencies(pytest ${target})
+    add_custom_command(
+            TARGET ${target}
+            POST_BUILD
+            COMMAND ${PYTHON_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/cmake_pyext.py"
+            "${target}" "$<TARGET_FILE:${target}>" "${CMAKE_SOURCE_DIR}/${source}"
+    )
+endfunction(py_module)
+
+add_custom_target(
+        pytest ALL py.test -v --doctest-modules ${CMAKE_PROJECT_NAME}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/..
+)
+
+py_module(dispatch ../pybindcpp/dispatch.cpp)
+
+py_module(bindctypes ../pybindcpp/ext/bindctypes.cpp)
+
+py_module(simple ../pybindcpp/ext/simple.cpp)
+
+py_module(native ../pybindcpp/ext/native.cpp)
+
+py_module(native_cpp ../pybindcpp/ext/native.cpp)
+target_compile_definitions(native_cpp PRIVATE -DNATIVE_CPP)
+
+py_module(numpy ../pybindcpp/ext/numpy.cpp)
+
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(EIGEN3 eigen3)
+py_module(eigen ../pybindcpp/ext/eigen.cpp)
+
+include_directories(${EIGEN3_INCLUDE_DIRS})
+pkg_check_modules(FFTW3 fftw3)
+py_module(fftw ../pybindcpp/ext/fftw.cpp)
+target_link_libraries(fftw ${FFTW3_LIBRARIES})
+
+py_module(arrayfire ../pybindcpp/ext/arrayfire.cpp)
+target_link_libraries(arrayfire af)

@@ -95,7 +95,8 @@ make_ufunc_imp(
       objs->cdata.push_back((void *) &f);
     }
   }
-  assert(objs->cdata.size() == ntypes == objs->cfuncs.size());
+  assert(objs->cdata.size() == ntypes);
+  assert(objs->cfuncs.size() == ntypes);
 
   auto __func = PyUFunc_FromFuncAndData(
       objs->cfuncs.data(),

@@ -168,7 +168,4 @@ setup(
     author_email='drufat@caltech.edu',
     license='GNU GPLv3',
     url='http://dzhelil.info/pybindcpp',
-    requires=[
-        'numpy',
-    ],
 )

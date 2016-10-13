@@ -1,6 +1,6 @@
 // Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
-#include "pybindcpp/module.h"
-#include "pybindcpp/numpy.h"
+#include <pybindcpp/module.h>
+#include <pybindcpp/numpy.h>
 
 #include <vector>
 #include <arrayfire.h>
