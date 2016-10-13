@@ -78,9 +78,9 @@ py_module(eigen ../pybindcpp/ext/eigen.cpp)
 target_include_directories(eigen PRIVATE ${EIGEN3_INCLUDE_DIRS})
 
 pkg_check_modules(FFTW3 fftw3)
+include_directories(${FFTW3_INCLUDE_DIRS})
 link_directories(${FFTW3_LIBRARY_DIRS})
 py_module(fftw ../pybindcpp/ext/fftw.cpp)
-target_include_directories(fftw PRIVATE ${FFTW3_INCLUDE_DIRS})
 target_link_libraries(fftw ${FFTW3_LIBRARIES})
 
 py_module(arrayfire ../pybindcpp/ext/arrayfire.cpp)
