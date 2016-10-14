@@ -1,5 +1,7 @@
+*.so
 __pycache__
 *.egg-info
 /build
 /.idea
 /.test_stamp
+
