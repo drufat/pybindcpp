@@ -94,21 +94,19 @@ struct fun_trait
 
 template<class F, class Ret, class... Args>
 struct fun_trait<Ret(F::*)(Args...) const> {
-  static PyObject *
+  static auto
   obj(F f) {
     static_assert(std::is_class<F>::value, "Requires class.");
-    auto ptr = std::make_shared<std::function<Ret(Args...)>>(f);
-    return fun_ptr(ptr);
+    return fun_ptr(std::make_shared<std::function<Ret(Args...)>>(f));
   }
 };
 
 template<class Ret, class... Args>
 struct fun_trait<Ret(*)(Args...)> {
-  static PyObject *
+  static auto
   obj(Ret(*f)(Args...)) {
     static_assert(std::is_pointer<decltype(f)>::value, "Requires function pointer.");
-    auto ptr = std::make_shared<std::function<Ret(Args...)>>(f);
-    return fun_ptr(ptr);
+    return fun_ptr(std::make_shared<std::function<Ret(Args...)>>(f));
   }
 };
 

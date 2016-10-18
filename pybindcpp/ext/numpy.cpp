@@ -7,7 +7,7 @@
 using namespace pybindcpp;
 
 double
-fn(int N, double x) {
+fn(long N, double x) {
   return N * x;
 }
 
@@ -44,7 +44,7 @@ loop1d_ii_o(F func) {
   };
 }
 
-int add_one(int x) {
+long add_one(long x) {
   return x + 1;
 }
 
@@ -71,15 +71,15 @@ numpymodule(ExtModule &m) {
 
   ufunc_raw(
       m, "fn_ufunc3", {
-          loop1d<double, decltype(fn), int, double>(fn),
-          loop1d<double, decltype(fn), long, double>(fn),
+          loop1d<double, std::function<double(int, int)>, int, double>(fn),
+          loop1d<double, std::function<double(long, int)>, long, double>(fn),
       }, {
           NPY_INT, NPY_DOUBLE, NPY_DOUBLE,
           NPY_LONG, NPY_DOUBLE, NPY_DOUBLE,
       }, 2, 1);
 
-  ufunc<double, decltype(fn), long, double>(m, "fn_ufunc", fn);
-  ufunc<int, decltype(add_one), int>(m, "add_one", add_one);
+  ufunc(m, "fn_ufunc", fn);
+  ufunc(m, "add_one", add_one);
 
   m.fun("fn", [](int N, double x) {
     auto out = fn(N, x);

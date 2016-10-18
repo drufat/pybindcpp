@@ -40,10 +40,10 @@ def test_numpy():
 
 def test_ufunc():
     assert eq(
-        nn.add_one(np.array([1, 2, 3], dtype='int32')),
-        np.array([2, 3, 4], dtype='int32')
+        nn.add_one(np.array([1, 2, 3])),
+        np.array([2, 3, 4])
     )
     assert eq(
-        nn.add_one(np.array([3, 2, 1], dtype='int32')),
-        np.array([4, 3, 2], dtype='int32')
+        nn.add_one(np.array([3, 2, 1])),
+        np.array([4, 3, 2])
     )

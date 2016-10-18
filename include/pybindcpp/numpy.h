@@ -11,8 +11,8 @@
 #include "capsule.h"
 
 namespace pybindcpp {
-namespace {
 
+static
 const std::map<std::type_index, char> NumpyTypes = {
 
     {typeid(npy_bool), NPY_BOOL},
@@ -34,18 +34,15 @@ const std::map<std::type_index, char> NumpyTypes = {
 
 };
 
+using pyufuncgenericfuncion = std::function<void(char **args, npy_intp *dims, npy_intp *steps, void *data)>;
+
 template<class Ret, class F, class... Args, std::size_t... Is>
-decltype(auto)
+pyufuncgenericfuncion
 loop1d_imp(F func, std::index_sequence<Is...>) {
-  return [func](
-      char **args,
-      npy_intp *dimensions,
-      npy_intp *steps,
-      void *data
-  ) {
+  return [func](char **args, npy_intp *dims, npy_intp *steps, void *data) {
     constexpr size_t nin = sizeof...(Args);
 
-    const auto N = dimensions[0];
+    const auto N = dims[0];
     for (auto i = 0; i < N; i++) {
       auto &out = (*reinterpret_cast<Ret * >(args[nin] + i * steps[nin]));
       out = func(*reinterpret_cast<Args * >(args[Is] + i * steps[Is])...);
@@ -54,30 +51,23 @@ loop1d_imp(F func, std::index_sequence<Is...>) {
 }
 
 template<class Ret, class F, class... Args>
-decltype(auto)
+pyufuncgenericfuncion
 loop1d(F func) {
   using IndexIn = std::make_index_sequence<sizeof...(Args)>;
-  return loop1d_imp<Ret, F, Args...>(func, IndexIn{});
+
+  auto target = func.template target<Ret(*)(Args...)>();
+  if (target) {
+    return loop1d_imp<Ret, decltype(*target), Args...>(*target, IndexIn{});
+  } else {
+    // less efficient
+    return loop1d_imp<Ret, F, Args...>(func, IndexIn{});
+  }
 }
 
-using pyufuncgenericfuncion = std::function<
-    void(
-        char **args,
-        npy_intp *dimensions,
-        npy_intp *strides,
-        void *innerloopdata
-    )
->;
-
-void
-generic_target(
-    char **args,
-    npy_intp *dimensions,
-    npy_intp *steps,
-    void *data
-) {
+static void
+generic_target(char **args, npy_intp *dims, npy_intp *steps, void *data) {
   auto f = *static_cast<pyufuncgenericfuncion *>(data);
-  return f(args, dimensions, steps, NULL);
+  return f(args, dims, steps, NULL);
 }
 
 struct UFuncObjects {
@@ -87,6 +77,7 @@ struct UFuncObjects {
   std::vector<void *> cdata;
 };
 
+static
 PyObject *
 make_ufunc_imp(
     const char *name,
@@ -143,26 +134,7 @@ make_ufunc_imp(
   return o;
 }
 
-template<class Ret, class F, class... Args>
-PyObject *
-make_ufunc(const char *name, F f) {
-  constexpr auto nin = sizeof...(Args);
-  constexpr auto nout = 1;
-  return make_ufunc_imp(
-      name,
-      {
-          loop1d<Ret, F, Args...>(f),
-      },
-      {
-          NumpyTypes.at(typeid(Args))...,
-          NumpyTypes.at(typeid(Ret))
-      },
-      nin,
-      nout
-  );
-}
-
-inline
+static
 void
 ufunc_raw(
     ExtModule &m,
@@ -174,13 +146,53 @@ ufunc_raw(
   m.var(name, make_ufunc_imp(name, funcs, types, nin, nout));
 }
 
-template<class Ret, class F, class... Args>
+template<class F>
+struct ufunc_trait;
+
+template<class Ret, class... Args>
+struct ufunc_trait<Ret(*)(Args...)> {
+  static
+  PyObject *
+  get(const char *name, Ret(*func)(Args...)) {
+    using T = ufunc_trait<std::function<Ret(Args...)>>;
+    return T::get(name, func);
+  }
+};
+
+template<class F>
+struct ufunc_trait
+    : public ufunc_trait<decltype(&F::operator())> {
+};
+
+template<class F, class Ret, class... Args>
+struct ufunc_trait<Ret(F::*)(Args...) const> {
+  static
+  PyObject *
+  get(const char *name, F func) {
+    constexpr size_t nin = sizeof...(Args);
+    constexpr size_t nout = 1;
+
+    return make_ufunc_imp(
+        name,
+        {
+            loop1d<Ret, F, Args...>(func),
+        },
+        {
+            NumpyTypes.at(typeid(Args))...,
+            NumpyTypes.at(typeid(Ret))
+        },
+        nin,
+        nout
+    );
+  }
+};
+
+template<class F>
 void
 ufunc(ExtModule &m, const char *name, F f) {
-  m.var(name, make_ufunc<Ret, F, Args...>(name, f));
+  m.var(name, ufunc_trait<F>::get(name, f));
 }
 
-} // end anonymous namespace
 } // end python namespace
 
 #endif // NUMPY_H
