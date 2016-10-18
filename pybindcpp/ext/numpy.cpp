@@ -11,6 +11,22 @@ fn(long N, double x) {
   return N * x;
 }
 
+long add_one(long x) {
+  return x + 1;
+}
+
+static
+void
+ufunc_raw(
+    ExtModule &m,
+    const char *name,
+    std::vector<pyufuncgenericfuncion> funcs,
+    std::vector<char> types,
+    int nin, int nout
+) {
+  m.var(name, make_ufunc_imp(name, funcs, types, nin, nout));
+}
+
 template<class I0, class I1, class O>
 void
 fn_loop(char **args,
@@ -42,10 +58,6 @@ loop1d_ii_o(F func) {
       y = func(n, x);
     }
   };
-}
-
-long add_one(long x) {
-  return x + 1;
 }
 
 void

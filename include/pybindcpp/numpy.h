@@ -134,18 +134,6 @@ make_ufunc_imp(
   return o;
 }
 
-static
-void
-ufunc_raw(
-    ExtModule &m,
-    const char *name,
-    std::vector<pyufuncgenericfuncion> funcs,
-    std::vector<char> types,
-    int nin, int nout
-) {
-  m.var(name, make_ufunc_imp(name, funcs, types, nin, nout));
-}
-
 template<class F>
 struct ufunc_trait;
 
