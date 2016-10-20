@@ -72,21 +72,24 @@ static PyModuleDef moduledef = {
 static
 PyObject *
 module_init(const char *name, std::function<void(ExtModule &)> exec) {
-  // keep a reference so that the API struct is not garbage collected
-  auto pyapi = import_pybindcpp();
-  if (!pyapi) return nullptr;
-
-  moduledef.m_name = name;
-
-  auto module = PyModule_Create(&moduledef);
-  if (!module) return nullptr;
 
   try {
 
-    ExtModule m(module);
-    exec(m);
+    // keep a reference so that the API struct is not garbage collected
+    import_pybindcpp();
 
-  } catch (const char *&ex) {
+    moduledef.m_name = name;
+
+    auto m = PyModule_Create(&moduledef);
+    if (!m) return nullptr;
+
+    ExtModule module(m);
+
+    exec(module);
+
+    return m;
+
+  } catch (const char *ex) {
 
     PyErr_SetString(PyExc_RuntimeError, ex);
     return nullptr;
@@ -102,8 +105,6 @@ module_init(const char *name, std::function<void(ExtModule &)> exec) {
     return nullptr;
 
   };
-
-  return module;
 }
 
 } // end pybindcpp namespace

@@ -95,7 +95,7 @@ module(ExtModule &m) {
 
   m.varargs("manytypes", [](PyObject *self, PyObject *args) -> PyObject * {
     {
-      uint N;
+      unsigned int N;
       double i;
       if (arg_parse_tuple(args, N, i)) {
         auto out = N + (int) i;
@@ -104,7 +104,7 @@ module(ExtModule &m) {
     }
     PyErr_Clear();
     {
-      uint N;
+      unsigned int N;
       PyObject *i;
       if (arg_parse_tuple(args, N, i)) {
         auto out = i;
