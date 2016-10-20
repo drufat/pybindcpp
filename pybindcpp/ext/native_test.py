@@ -1,4 +1,6 @@
 # Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
+import ctypes as ct
+
 import pytest
 from pybindcpp.ext import native, native_cpp
 
@@ -8,7 +10,6 @@ from pybindcpp.ext import native, native_cpp
     (native_cpp, 'pybindcpp.ext.native_cpp'),
 ])
 def test_native(m, name):
-
     assert (m.__name__ == name)
 
     assert round(m.pi, 2) == 3.14
@@ -66,3 +67,13 @@ def test_native(m, name):
 
     assert m.PyCapsule_GetName(m.caps_int) == b'i'
     assert m.PyCapsule_GetName(m.caps_double) == b'd'
+
+
+def test_native1():
+    N = 5
+    a = (ct.c_double * N)(*range(N))
+    assert tuple(a) == (0.0, 1.0, 2.0, 3.0, 4.0)
+    native.add_one(N, a)
+    assert tuple(a) == (1.0, 2.0, 3.0, 4.0, 5.0)
+    native.add_one(N, a)
+    assert tuple(a) == (2.0, 3.0, 4.0, 5.0, 6.0)

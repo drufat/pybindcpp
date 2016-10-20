@@ -30,10 +30,11 @@ struct func_trait<Ret(*)(Args...)> {
   static auto str() {
     auto val = value();
     std::stringstream ss;
+    ss << "(";
     for (size_t i = 0; i < size; i++) {
-      if (i) { ss << ","; }
-      ss << ctype_map.at(val[i]);
+      ss << ctype_map.at(val[i]) << ",";
     }
+    ss << ")";
     return ss.str();
   }
 

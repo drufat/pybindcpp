@@ -39,6 +39,13 @@ g(int x, int y) {
   return x + y;
 }
 
+void
+add_one(int N, double *x) {
+  for (int i = 0; i < N; i++) {
+    x[i] += 1;
+  }
+}
+
 extern "C"
 PyObject *
 py_g(PyObject *self, PyObject *args) {
@@ -78,6 +85,8 @@ module(ExtModule &m) {
     return build_value(N, n, x);
 
   });
+
+  m.fun("add_one", add_one);
 
   m.varargs("h", py_g);
 

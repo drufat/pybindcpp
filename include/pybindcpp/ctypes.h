@@ -35,13 +35,15 @@ const std::map<std::type_index, const char *> ctype_map = {
     {typeid(wchar_t *), "c_wchar_p"},
     {typeid(void *), "c_void_p"},
     {typeid(PyObject *), "py_object"},
+    {typeid(double *), "POINTER(c_double)"},
 
     {typeid(const char *), "c_char_p"},
     {typeid(const wchar_t *), "c_wchar_p"},
     {typeid(const void *), "c_void_p"},
     {typeid(const PyObject *), "py_object"},
+    {typeid(const double *), "POINTER(c_double)"},
 
-    {typeid(void), "c_void"},
+    {typeid(void), "None"},
 
 };
 
