@@ -2,20 +2,21 @@
 #ifndef PYBINDCPP_STRINGER_H
 #define PYBINDCPP_STRINGER_H
 
-#include <string>
 #include <sstream>
+#include <string>
 
 namespace pybindcpp {
 
-template<typename... Args>
-std::string stringer(Args const &... args) {
+template <typename... Args>
+std::string
+stringer(Args const&... args)
+{
   std::ostringstream stream;
-  using List= int[];
-  (void) List{0, (stream << args, 0)...};
+  using List = int[];
+  (void)List{ 0, (stream << args, 0)... };
 
   return stream.str();
 }
-
 }
 
 #endif // PYBINDCPP_STRINGER_H

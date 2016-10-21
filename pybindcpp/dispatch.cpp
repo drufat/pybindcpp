@@ -5,10 +5,11 @@
 
 namespace {
 
-PyObject *
-dispatch(PyObject *self, PyObject *args) {
-  PyObject *ofunc;
-  PyObject *rargs;
+PyObject*
+dispatch(PyObject* self, PyObject* args)
+{
+  PyObject* ofunc;
+  PyObject* rargs;
 
   auto s = PyArg_ParseTuple(args, "OO", &ofunc, &rargs);
   if (!s) {
@@ -25,21 +26,24 @@ dispatch(PyObject *self, PyObject *args) {
   return (*func)(self, rargs);
 }
 
-PyMethodDef methods[] = {
-    {"dispatch", dispatch, METH_VARARGS, NULL},
-    {NULL, NULL, 0, NULL}
-};
+static PyMethodDef methods[] = { { "dispatch", dispatch, METH_VARARGS, NULL },
+                                 { NULL, NULL, 0, NULL } };
 
-struct PyModuleDef moduledef = {
-    PyModuleDef_HEAD_INIT,
-    "dispatch",
-    NULL,
-    -1,
-    methods
+static PyModuleDef moduledef = {
+  PyModuleDef_HEAD_INIT,
+  "dispatch", // m_name
+  nullptr,    // m_doc
+  -1,         // m_size
+  methods,    // m_methods
+  nullptr,    // m_slots
+  nullptr,    // m_traverse
+  nullptr,    // m_clear
+  nullptr,    // m_free
 };
 }
 
 PyMODINIT_FUNC
-PyInit_dispatch(void) {
+PyInit_dispatch(void)
+{
   return PyModule_Create(&moduledef);
 }
