@@ -43,7 +43,8 @@ template <char... args>
 constexpr const char str<args...>::chars[sizeof...(args) + 1];
 
 template <char... S0, char... S1>
-constexpr str<S0..., S1...> operator+(str<S0...>, str<S1...>)
+constexpr str<S0..., S1...>
+operator+(str<S0...>, str<S1...>)
 {
   return {};
 }
