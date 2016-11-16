@@ -2,6 +2,6 @@
 __pycache__
 *.egg-info
 /build
+/dist
 /.idea
 /.test_stamp
-

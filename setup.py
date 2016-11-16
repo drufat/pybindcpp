@@ -6,14 +6,20 @@ import os
 import numpy
 from setuptools import setup, Extension
 
+# Read version number
+with open("pybindcpp/version.py") as f:
+    exec(f.read())
+
 include_dirs = [
     'include',
-    numpy.get_include(),
     '/usr/include/eigen3',
     '/usr/local/include/eigen3',
+    numpy.get_include(),
 ]
 
 headers = glob.glob(
+    'include/*.h'
+) + glob.glob(
     'include/pybindcpp/*.h'
 )
 
@@ -23,10 +29,6 @@ depends = [
 
 extra_compile_args = [
     '-std=c++14',
-    '-Wall',
-    '-g',
-    '-O3',
-    '-DNDEBUG',
 ]
 
 libraries = []
@@ -160,7 +162,7 @@ setup(
         'pybindcpp': 'pybindcpp'
     },
     ext_modules=ext_modules,
-    version='0.1.0',
+    version=__version__,
     description='Python Bindings from C++',
     author='Dzhelil Rufat',
     author_email='drufat@caltech.edu',
