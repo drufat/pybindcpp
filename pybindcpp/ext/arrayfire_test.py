@@ -16,6 +16,7 @@ skip_af = pytest.mark.skipif(af is None, reason='Requires arrayfire')
 @skip_af
 def test_fft():
     af.set_backend(b'cpu')
+    # af.set_backend(b'opencl')
 
     x = [0, 1, 2, 3]
     assert eq(af.fft(x), fft.fft(x))
