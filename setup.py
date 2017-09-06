@@ -11,16 +11,16 @@ with open("pybindcpp/version.py") as f:
     exec(f.read())
 
 include_dirs = [
-    'include',
+    'pybindcpp/include',
     '/usr/include/eigen3',
     '/usr/local/include/eigen3',
     numpy.get_include(),
 ]
 
 headers = glob.glob(
-    'include/*.h'
+    'pybindcpp/include/*.h'
 ) + glob.glob(
-    'include/pybindcpp/*.h'
+    'pybindcpp/include/pybindcpp/*.h'
 )
 
 depends = [
@@ -160,6 +160,9 @@ setup(
     ],
     package_dir={
         'pybindcpp': 'pybindcpp'
+    },
+    package_data={
+        'pybindcpp': ['include/*.h', 'include/pybindcpp/*.h'],
     },
     ext_modules=ext_modules,
     version=__version__,

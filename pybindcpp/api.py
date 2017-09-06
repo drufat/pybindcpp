@@ -99,7 +99,7 @@ def error():
 
 
 def api_test():
-    '''
+    """
     >>> s = ct.c_char_p(b'(c_char_p,c_int,c_double,)')
     >>> assert get_type(s)._restype_ == ct.c_char_p
     >>> assert get_type(s)._argtypes_ == tuple([ct.c_int, ct.c_double])
@@ -109,7 +109,7 @@ def api_test():
     >>> assert get_type(s)._argtypes_ == tuple()
 
     >>> p = get_capsule(b'pybindcpp.bind', b'register_cap')
-    '''
+    """
     pass
 
 

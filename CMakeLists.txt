@@ -10,23 +10,23 @@ find_package(PyBindCpp REQUIRED PATHS cmake)
 include_directories(${PYTHON_INCLUDE_DIR})
 include_directories(${NUMPY_INCLUDE_DIR})
 
-include_directories(include)
+include_directories(pybindcpp/include)
 
 set(HEADER_FILES
-        include/pybindcpp/capsule.h
-        include/pybindcpp/module_cpp.h
-        include/pybindcpp/numpy.h
-        include/pybindcpp/storage.h
-        include/pybindcpp/module_cpp_imp.h
-        include/pybindcpp/stringer.h
-        include/pybindcpp/api.h
-        include/pybindcpp/ctypes.h
-        include/pybindcpp/module.h
-        include/pybindcpp/callable_trait.h
-        include/pybindcpp/pyfunction.h
-        include/pybindcpp/func_trait.h
-        include/pybindcpp/cpython_types.h
-        include/pybindcpp/apply.h
+        pybindcpp/include/pybindcpp/capsule.h
+        pybindcpp/include/pybindcpp/module_cpp.h
+        pybindcpp/include/pybindcpp/numpy.h
+        pybindcpp/include/pybindcpp/storage.h
+        pybindcpp/include/pybindcpp/module_cpp_imp.h
+        pybindcpp/include/pybindcpp/stringer.h
+        pybindcpp/include/pybindcpp/api.h
+        pybindcpp/include/pybindcpp/ctypes.h
+        pybindcpp/include/pybindcpp/module.h
+        pybindcpp/include/pybindcpp/callable_trait.h
+        pybindcpp/include/pybindcpp/pyfunction.h
+        pybindcpp/include/pybindcpp/func_trait.h
+        pybindcpp/include/pybindcpp/cpython_types.h
+        pybindcpp/include/pybindcpp/apply.h
         )
 
 #add_executable(main src/main.cpp)
