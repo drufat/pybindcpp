@@ -14,14 +14,14 @@
 
 namespace pybindcpp {
 
-template <class T>
+template<class T>
 PyObject*
 var2obj(T t)
 {
   return py_function<PyObject*(T)>("pybindcpp.bind", "id")(t);
 }
 
-template <class T>
+template<class T>
 PyObject*
 fun2obj(T t)
 {
@@ -42,25 +42,25 @@ struct ExtModule
     PyModule_AddObject(self, name, obj);
   }
 
-  template <class T>
+  template<class T>
   void var(const char* name, T t)
   {
     add(name, var2obj<T>(t));
   }
 
-  template <class T>
+  template<class T>
   void fun(const char* name, T t)
   {
     add(name, fun2obj<T>(t));
   }
 
-  template <class T>
+  template<class T>
   void fun_type(const char* name, T t)
   {
     add(name, func_trait<T>::pyctype());
   }
 
-  template <class T>
+  template<class T>
   void varargs(const char* name, T t)
   {
     add(name, pybindcpp::varargs(t));
@@ -82,22 +82,16 @@ static PyModuleDef moduledef = {
 static PyObject*
 module_init(const char* name, std::function<void(ExtModule&)> exec)
 {
-
   try {
-
     // keep a reference so that the API struct is not garbage collected
     import_pybindcpp();
 
     moduledef.m_name = name;
-
     auto m = PyModule_Create(&moduledef);
     if (!m)
       return nullptr;
-
     ExtModule module(m);
-
     exec(module);
-
     return m;
 
   } catch (const char* ex) {

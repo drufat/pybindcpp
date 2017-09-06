@@ -19,14 +19,17 @@ add_one(long x)
 }
 
 static void
-ufunc_raw(ExtModule& m, const char* name,
-          std::vector<pyufuncgenericfuncion> funcs, std::vector<char> types,
-          int nin, int nout)
+ufunc_raw(ExtModule& m,
+          const char* name,
+          std::vector<pyufuncgenericfuncion> funcs,
+          std::vector<char> types,
+          int nin,
+          int nout)
 {
   m.var(name, make_ufunc_imp(name, funcs, types, nin, nout));
 }
 
-template <class I0, class I1, class O>
+template<class I0, class I1, class O>
 void
 fn_loop(char** args, npy_intp* dimensions, npy_intp* steps, void* data)
 {
@@ -39,7 +42,7 @@ fn_loop(char** args, npy_intp* dimensions, npy_intp* steps, void* data)
   }
 }
 
-template <class F, class I0, class I1, class O>
+template<class F, class I0, class I1, class O>
 auto
 loop1d_ii_o(F func)
 {
@@ -60,7 +63,8 @@ void
 numpymodule(ExtModule& m)
 {
 
-  ufunc_raw(m, "fn_ufunc1",
+  ufunc_raw(m,
+            "fn_ufunc1",
             {
               loop1d_ii_o<decltype(fn), int, double, double>(fn),
               loop1d_ii_o<decltype(fn), long, double, double>(fn),
@@ -68,19 +72,23 @@ numpymodule(ExtModule& m)
             {
               NPY_INT, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE, NPY_DOUBLE,
             },
-            2, 1);
+            2,
+            1);
 
-  ufunc_raw(m, "fn_ufunc2",
+  ufunc_raw(m,
+            "fn_ufunc2",
             {
               fn_loop<int, double, double>, fn_loop<long, double, double>,
             },
             {
               NPY_INT, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE, NPY_DOUBLE,
             },
-            2, 1);
+            2,
+            1);
 
   ufunc_raw(
-    m, "fn_ufunc3",
+    m,
+    "fn_ufunc3",
     {
       loop1d<double, std::function<double(int, int)>, int, double>(fn),
       loop1d<double, std::function<double(long, int)>, long, double>(fn),
@@ -88,7 +96,8 @@ numpymodule(ExtModule& m)
     {
       NPY_INT, NPY_DOUBLE, NPY_DOUBLE, NPY_LONG, NPY_DOUBLE, NPY_DOUBLE,
     },
-    2, 1);
+    2,
+    1);
 
   ufunc(m, "fn_ufunc", fn);
   ufunc(m, "add_one", add_one);
@@ -101,13 +110,19 @@ numpymodule(ExtModule& m)
   m.fun("fn_array", [](int N, PyObject* o) -> PyObject* {
 
     const auto x = (PyArrayObject*)PyArray_ContiguousFromAny( //
-      o, NPY_DOUBLE, 1, 1                                     //
+      o,
+      NPY_DOUBLE,
+      1,
+      1 
       );
     if (!x)
       return nullptr;
 
-    auto y = (PyArrayObject*)PyArray_EMPTY(           //
-      PyArray_NDIM(x), PyArray_DIMS(x), NPY_DOUBLE, 0 //
+    auto y = (PyArrayObject*)PyArray_EMPTY(
+      PyArray_NDIM(x),
+      PyArray_DIMS(x),
+      NPY_DOUBLE,
+      0 
       );
     if (!y)
       return nullptr;

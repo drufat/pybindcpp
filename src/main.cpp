@@ -3,21 +3,21 @@
 #include <memory>
 #include <tuple>
 
-template <class T>
+template<class T>
 constexpr T&
 lvalue(T&& v)
 {
   return v;
 }
 
-template <typename F, typename Tuple, size_t... I>
+template<typename F, typename Tuple, size_t... I>
 auto
 apply_impl(F&& f, Tuple&& t, std::index_sequence<I...>)
 {
   return std::forward<F>(f)(std::get<I>(std::forward<Tuple>(t))...);
 }
 
-template <typename F, typename Tuple>
+template<typename F, typename Tuple>
 auto
 apply(F&& f, Tuple&& t)
 {
@@ -33,16 +33,16 @@ multiply(int a, int b, int c)
 }
 
 namespace detail {
-template <char... args>
+template<char... args>
 struct str
 {
   static constexpr const char chars[sizeof...(args) + 1] = { args..., '\0' };
 };
 
-template <char... args>
+template<char... args>
 constexpr const char str<args...>::chars[sizeof...(args) + 1];
 
-template <char... S0, char... S1>
+template<char... S0, char... S1>
 constexpr str<S0..., S1...>
 operator+(str<S0...>, str<S1...>)
 {
@@ -56,7 +56,7 @@ struct StrConst
   const char* const str_ptr;
   const size_t str_size;
 
-  template <std::size_t N>
+  template<std::size_t N>
   constexpr StrConst(const char (&a)[N])
     : str_ptr(a)
     , str_size(N - 1)

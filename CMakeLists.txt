@@ -29,7 +29,7 @@ set(HEADER_FILES
         include/pybindcpp/apply.h
         )
 
-add_executable(main src/main.cpp)
+#add_executable(main src/main.cpp)
 
 add_custom_target(
         ${PROJECT_NAME}_pytest ALL
@@ -46,6 +46,8 @@ pymodule(dispatch pybindcpp/dispatch.cpp)
 pymodule(bindctypes pybindcpp/ext/bindctypes.cpp)
 
 pymodule(simple pybindcpp/ext/simple.cpp)
+
+pymodule(example pybindcpp/ext/example.cpp)
 
 pymodule(native pybindcpp/ext/native.cpp)
 

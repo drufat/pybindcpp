@@ -9,7 +9,7 @@
 using namespace pybindcpp;
 using namespace Eigen;
 
-template <class T>
+template<class T>
 void
 computation(const T& X, T& Y)
 {
@@ -27,15 +27,15 @@ eigen(ExtModule& m)
     if (!x)
       return NULL;
 
-    auto y = (PyArrayObject*)PyArray_EMPTY(PyArray_NDIM(x), PyArray_DIMS(x),
-                                           NPY_DOUBLE, 0);
+    auto y = (PyArrayObject*)PyArray_EMPTY(
+      PyArray_NDIM(x), PyArray_DIMS(x), NPY_DOUBLE, 0);
     if (!y)
       return NULL;
 
-    Map<ArrayXXd> X((double*)PyArray_DATA(x), PyArray_DIMS(x)[0],
-                    PyArray_DIMS(x)[1]);
-    Map<ArrayXXd> Y((double*)PyArray_DATA(y), PyArray_DIMS(y)[0],
-                    PyArray_DIMS(y)[1]);
+    Map<ArrayXXd> X(
+      (double*)PyArray_DATA(x), PyArray_DIMS(x)[0], PyArray_DIMS(x)[1]);
+    Map<ArrayXXd> Y(
+      (double*)PyArray_DATA(y), PyArray_DIMS(y)[0], PyArray_DIMS(y)[1]);
 
     computation(X, Y);
 
