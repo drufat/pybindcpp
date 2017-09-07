@@ -78,6 +78,18 @@ ext_modules = [
     ),
 
     Extension(
+        'pybindcpp.ext.example',
+        sources=[
+            'pybindcpp/ext/example.cpp',
+        ],
+        depends=depends,
+        include_dirs=include_dirs,
+        extra_compile_args=extra_compile_args,
+        language="c++",
+        libraries=libraries,
+    ),
+
+    Extension(
         'pybindcpp.ext.native',
         sources=[
             'pybindcpp/ext/native.cpp',
