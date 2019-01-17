@@ -1,14 +1,13 @@
 # Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
 import glob
-import sys
-import os
 
 import numpy
 from setuptools import setup, Extension
 
 # Read version number
+ns = {}
 with open("pybindcpp/version.py") as f:
-    exec(f.read())
+    exec(f.read(), ns)
 
 include_dirs = [
     'pybindcpp/include',
@@ -17,27 +16,14 @@ include_dirs = [
     numpy.get_include(),
 ]
 
-headers = glob.glob(
-    'pybindcpp/include/*.h'
-) + glob.glob(
-    'pybindcpp/include/pybindcpp/*.h'
-)
-
-depends = [
-              'setup.py',
-          ] + headers
-
-extra_compile_args = [
-    '-std=c++14',
+headers = [
+    *glob.glob('pybindcpp/include/*.h'),
+    *glob.glob('pybindcpp/include/pybindcpp/*.h'),
 ]
 
+depends = ['setup.py', *headers]
+extra_compile_args = ['-std=c++14']
 libraries = []
-
-OPENMP = False
-if OPENMP:
-    extra_compile_args += ['-fopenmp']
-    if 'darwin' not in sys.platform:
-        libraries += ['gomp']
 
 ext_modules = [
 
@@ -150,21 +136,6 @@ ext_modules = [
     ),
 ]
 
-if 'AF_PATH' in os.environ:
-    ext_modules += [
-        Extension(
-            'pybindcpp.ext.arrayfire',
-            sources=[
-                'pybindcpp/ext/arrayfire.cpp',
-            ],
-            depends=depends,
-            include_dirs=include_dirs,
-            extra_compile_args=extra_compile_args,
-            language="c++",
-            libraries=libraries + ['af'],
-        ),
-    ]
-
 setup(
     name='pybindcpp',
     packages=[
@@ -177,10 +148,9 @@ setup(
         'pybindcpp': ['include/*.h', 'include/pybindcpp/*.h'],
     },
     ext_modules=ext_modules,
-    version=__version__,
+    version=ns['__version__'],
     description='Python Bindings from C++',
     author='Dzhelil Rufat',
-    author_email='drufat@caltech.edu',
-    license='GNU GPLv3',
-    url='http://dzhelil.info/pybindcpp',
+    author_email='d@rufat.be',
+    license='GPLv3',
 )

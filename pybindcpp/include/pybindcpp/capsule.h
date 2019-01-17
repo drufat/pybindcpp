@@ -7,43 +7,32 @@
 
 namespace pybindcpp {
 
-template <class T>
-void
-capsule_destructor(PyObject* o)
-{
+template <class T> void capsule_destructor(PyObject *o) {
   auto p = PyCapsule_GetPointer(o, typeid(T).name());
   // decrement reference
-  delete static_cast<std::shared_ptr<T>*>(p);
+  delete static_cast<std::shared_ptr<T> *>(p);
 }
 
-template <class T>
-PyObject*
-capsule_new(std::shared_ptr<T> t)
-{
+template <class T> PyObject *capsule_new(std::shared_ptr<T> t) {
   // increment reference
   auto p = new std::shared_ptr<T>(t);
   return PyCapsule_New(p, typeid(T).name(), &capsule_destructor<T>);
 }
 
-template <class T>
-std::shared_ptr<T>
-capsule_get(PyObject* o)
-{
+template <class T> std::shared_ptr<T> capsule_get(PyObject *o) {
   auto p = PyCapsule_GetPointer(o, typeid(T).name());
   if (!p) {
     PyErr_SetString(PyExc_TypeError, "Capsule is of incorrect type.");
     return NULL;
   }
-  return *static_cast<std::shared_ptr<T>*>(p);
+  return *static_cast<std::shared_ptr<T> *>(p);
 }
 
 template <class F, class Ret, class... Args>
-Ret
-capsule_call(PyObject* o, Args... args)
-{
+Ret capsule_call(PyObject *o, Args... args) {
   auto f = capsule_get<F>(o);
   return (*f)(args...);
 };
-}
+} // namespace pybindcpp
 
 #endif // CAPSULE_H

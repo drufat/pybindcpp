@@ -2,54 +2,52 @@
 #ifndef NUMPY_H
 #define NUMPY_H
 
-#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
-
-#include <numpy/ndarrayobject.h>
-#include <numpy/ufuncobject.h>
+#include <functional>
+#include <typeindex>
 #include <unordered_map>
 #include <vector>
 
+#include <numpy/ndarrayobject.h>
+#include <numpy/ufuncobject.h>
+
 #include "capsule.h"
+#include "module.h"
 
 namespace pybindcpp {
 
-static const std::map<std::type_index, char> NumpyTypes = {
+static const std::unordered_map<std::type_index, char> NumpyTypes = {
 
-  { typeid(npy_bool), NPY_BOOL },       { typeid(npy_byte), NPY_BYTE },
+    {typeid(npy_bool), NPY_BOOL},       {typeid(npy_byte), NPY_BYTE},
 
-  { typeid(npy_double), NPY_DOUBLE },   { typeid(npy_float), NPY_FLOAT },
-  { typeid(npy_cdouble), NPY_CDOUBLE }, { typeid(npy_cfloat), NPY_CFLOAT },
+    {typeid(npy_double), NPY_DOUBLE},   {typeid(npy_float), NPY_FLOAT},
+    {typeid(npy_cdouble), NPY_CDOUBLE}, {typeid(npy_cfloat), NPY_CFLOAT},
 
-  { typeid(npy_short), NPY_SHORT },     { typeid(npy_int), NPY_INT },
-  { typeid(npy_long), NPY_LONG },       { typeid(npy_ushort), NPY_USHORT },
-  { typeid(npy_uint), NPY_UINT },       { typeid(npy_ulong), NPY_ULONG },
+    {typeid(npy_short), NPY_SHORT},     {typeid(npy_int), NPY_INT},
+    {typeid(npy_long), NPY_LONG},       {typeid(npy_ushort), NPY_USHORT},
+    {typeid(npy_uint), NPY_UINT},       {typeid(npy_ulong), NPY_ULONG},
 
-  { typeid(PyObject*), NPY_OBJECT },
+    {typeid(PyObject *), NPY_OBJECT},
 
 };
 
-using pyufuncgenericfuncion =
-  std::function<void(char** args, npy_intp* dims, npy_intp* steps, void* data)>;
+using pyufuncgenericfuncion = std::function<void(char **args, npy_intp *dims,
+                                                 npy_intp *steps, void *data)>;
 
 template <class Ret, class F, class... Args, std::size_t... Is>
-pyufuncgenericfuncion
-loop1d_imp(F func, std::index_sequence<Is...>)
-{
-  return [func](char** args, npy_intp* dims, npy_intp* steps, void* data) {
+pyufuncgenericfuncion loop1d_imp(F func, std::index_sequence<Is...>) {
+  return [func](char **args, npy_intp *dims, npy_intp *steps, void *data) {
     constexpr size_t nin = sizeof...(Args);
 
     const auto N = dims[0];
     for (auto i = 0; i < N; i++) {
-      auto& out = (*reinterpret_cast<Ret*>(args[nin] + i * steps[nin]));
-      out = func(*reinterpret_cast<Args*>(args[Is] + i * steps[Is])...);
+      auto &out = (*reinterpret_cast<Ret *>(args[nin] + i * steps[nin]));
+      out = func(*reinterpret_cast<Args *>(args[Is] + i * steps[Is])...);
     }
   };
 }
 
 template <class Ret, class F, class... Args>
-pyufuncgenericfuncion
-loop1d(F func)
-{
+pyufuncgenericfuncion loop1d(F func) {
   using IndexIn = std::make_index_sequence<sizeof...(Args)>;
 
   auto target = func.template target<Ret (*)(Args...)>();
@@ -61,25 +59,22 @@ loop1d(F func)
   }
 }
 
-static void
-generic_target(char** args, npy_intp* dims, npy_intp* steps, void* data)
-{
-  auto f = *static_cast<pyufuncgenericfuncion*>(data);
+static void generic_target(char **args, npy_intp *dims, npy_intp *steps,
+                           void *data) {
+  auto f = *static_cast<pyufuncgenericfuncion *>(data);
   return f(args, dims, steps, NULL);
 }
 
-struct UFuncObjects
-{
+struct UFuncObjects {
   std::vector<pyufuncgenericfuncion> funcs;
   std::vector<char> types;
   std::vector<PyUFuncGenericFunction> cfuncs;
-  std::vector<void*> cdata;
+  std::vector<void *> cdata;
 };
 
-static PyObject*
-make_ufunc_imp(const char* name, std::vector<pyufuncgenericfuncion> funcs,
-               std::vector<char> types, int nin, int nout)
-{
+static PyObject *make_ufunc_imp(const char *name,
+                                std::vector<pyufuncgenericfuncion> funcs,
+                                std::vector<char> types, int nin, int nout) {
   auto ntypes = funcs.size();
   assert(types.size() == ntypes * (nin + nout));
 
@@ -88,7 +83,7 @@ make_ufunc_imp(const char* name, std::vector<pyufuncgenericfuncion> funcs,
   objs->funcs = funcs;
   objs->types = types;
 
-  for (auto& f : objs->funcs) {
+  for (auto &f : objs->funcs) {
 
     auto t = f.target<PyUFuncGenericFunction>();
     if (t) {
@@ -96,7 +91,7 @@ make_ufunc_imp(const char* name, std::vector<pyufuncgenericfuncion> funcs,
       objs->cdata.push_back(nullptr);
     } else {
       objs->cfuncs.push_back(generic_target);
-      objs->cdata.push_back((void*)&f);
+      objs->cdata.push_back((void *)&f);
     }
   }
   assert(objs->cdata.size() == ntypes);
@@ -108,7 +103,7 @@ make_ufunc_imp(const char* name, std::vector<pyufuncgenericfuncion> funcs,
   // store the __objs for as long as __func lives
   auto __objs = capsule_new(objs);
 
-  PyObject* o;
+  PyObject *o;
   {
     auto mod = PyImport_ImportModule("pybindcpp.function");
     auto ufunc = PyObject_GetAttrString(mod, "ufunc");
@@ -122,49 +117,38 @@ make_ufunc_imp(const char* name, std::vector<pyufuncgenericfuncion> funcs,
   return o;
 }
 
-template <class F>
-struct ufunc_trait;
+template <class F> struct ufunc_trait;
 
-template <class Ret, class... Args>
-struct ufunc_trait<Ret (*)(Args...)>
-{
-  static PyObject* get(const char* name, Ret (*func)(Args...))
-  {
+template <class Ret, class... Args> struct ufunc_trait<Ret (*)(Args...)> {
+  static PyObject *get(const char *name, Ret (*func)(Args...)) {
     using T = ufunc_trait<std::function<Ret(Args...)>>;
     return T::get(name, func);
   }
 };
 
 template <class F>
-struct ufunc_trait : public ufunc_trait<decltype(&F::operator())>
-{
-};
+struct ufunc_trait : public ufunc_trait<decltype(&F::operator())> {};
 
 template <class F, class Ret, class... Args>
-struct ufunc_trait<Ret (F::*)(Args...) const>
-{
-  static PyObject* get(const char* name, F func)
-  {
+struct ufunc_trait<Ret (F::*)(Args...) const> {
+  static PyObject *get(const char *name, F func) {
     constexpr size_t nin = sizeof...(Args);
     constexpr size_t nout = 1;
 
     return make_ufunc_imp(
-      name,
-      {
-        loop1d<Ret, F, Args...>(func),
-      },
-      { NumpyTypes.at(typeid(Args))..., NumpyTypes.at(typeid(Ret)) }, nin,
-      nout);
+        name,
+        {
+            loop1d<Ret, F, Args...>(func),
+        },
+        {NumpyTypes.at(typeid(Args))..., NumpyTypes.at(typeid(Ret))}, nin,
+        nout);
   }
 };
 
-template <class F>
-void
-ufunc(ExtModule& m, const char* name, F f)
-{
+template <class F> void ufunc(ExtModule &m, const char *name, F f) {
   m.var(name, ufunc_trait<F>::get(name, f));
 }
 
-} // end python namespace
+} // namespace pybindcpp
 
 #endif // NUMPY_H

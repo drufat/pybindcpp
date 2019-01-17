@@ -22,9 +22,9 @@ def test_native(m, name):
     assert m.name1 == b'native'
 
     assert (
-        m.parsing(1, 2, 20.0, 5)
-        ==
-        (1, 2, 20.0, 5, b'string', b'string', True, False)
+            m.parsing(1, 2, 20.0, 5)
+            ==
+            (1, 2, 20.0, 5, b'string', b'string', True, False)
     )
     assert m.func(4, 0, 0) == 4
 

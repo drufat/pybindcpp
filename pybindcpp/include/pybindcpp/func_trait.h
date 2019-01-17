@@ -9,26 +9,20 @@
 
 namespace pybindcpp {
 
-template <class F>
-struct func_trait;
+template <class F> struct func_trait;
 
-template <class Ret, class... Args>
-struct func_trait<Ret (*)(Args...)>
-{
+template <class Ret, class... Args> struct func_trait<Ret (*)(Args...)> {
 
   static constexpr size_t size = 1 + sizeof...(Args);
 
-  static auto value()
-  {
+  static auto value() {
     const std::array<std::type_index, size> a = {
-      { typeid(typename std::decay<Ret>::type),
-        typeid(typename std::decay<Args>::type)... }
-    };
+        {typeid(typename std::decay<Ret>::type),
+         typeid(typename std::decay<Args>::type)...}};
     return a;
   }
 
-  static auto str()
-  {
+  static auto str() {
     auto val = value();
     std::stringstream ss;
     ss << "(";
@@ -41,12 +35,11 @@ struct func_trait<Ret (*)(Args...)>
 
   static auto pystr() { return PyBytes_FromString(str().c_str()); }
 
-  static auto pyctype()
-  {
+  static auto pyctype() {
     auto s = str();
     return api->get_type(s.c_str());
   }
 };
-}
+} // namespace pybindcpp
 
 #endif // PYBINDCPP_FUNC_TRAIT_H
