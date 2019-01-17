@@ -1,6 +1,6 @@
 // Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
-#ifndef MODULE_CPP_IMP_H
-#define MODULE_CPP_IMP_H
+#ifndef PYBINDCPP_CAPI_MODULE_IMP_H
+#define PYBINDCPP_CAPI_MODULE_IMP_H
 
 #include <memory>
 #include <type_traits>
@@ -117,4 +117,4 @@ template <class T> PyObject *constructor() {
 }
 } // namespace pybindcpp
 
-#endif // MODULE_CPP_IMP_H
+#endif // PYBINDCPP_CAPI_MODULE_IMP_H

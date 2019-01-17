@@ -9,7 +9,6 @@
 
 #include "api.h"
 #include "callable_trait.h"
-#include "capsule.h"
 #include "pyfunction.h"
 
 namespace pybindcpp {

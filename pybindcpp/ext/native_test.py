@@ -1,23 +1,19 @@
 # Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
 import ctypes as ct
 
+import pybindcpp.ext.native_capi as m_capi
+import pybindcpp.ext.native_ctyp as m_ctyp
 import pytest
-from pybindcpp.ext import native, native_cpp
 
 
-@pytest.mark.parametrize('m,name', [
-    (native, 'pybindcpp.ext.native'),
-    (native_cpp, 'pybindcpp.ext.native_cpp'),
-])
-def test_native(m, name):
-    assert (m.__name__ == name)
-
+@pytest.mark.parametrize('m', [m_capi, m_ctyp])
+def test_native(m):
     assert round(m.pi, 2) == 3.14
     assert m.half == 0.5
 
     assert m.one == 1
-    assert m.true == True
-    assert m.false == False
+    assert m.true is True
+    assert m.false is False
     assert m.name == b'native'
     assert m.name1 == b'native'
 
@@ -69,11 +65,13 @@ def test_native(m, name):
     assert m.PyCapsule_GetName(m.caps_double) == b'd'
 
 
-def test_native1():
+# core dumps on m_capi
+@pytest.mark.parametrize('m', [m_ctyp])
+def test_native1(m):
     N = 5
     a = (ct.c_double * N)(*range(N))
     assert tuple(a) == (0.0, 1.0, 2.0, 3.0, 4.0)
-    native.add_one(N, a)
+    m.add_one(N, a)
     assert tuple(a) == (1.0, 2.0, 3.0, 4.0, 5.0)
-    native.add_one(N, a)
+    m.add_one(N, a)
     assert tuple(a) == (2.0, 3.0, 4.0, 5.0, 6.0)

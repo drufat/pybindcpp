@@ -2,11 +2,12 @@
 
 #include <cmath>
 
-#ifdef NATIVE_CPP
-#include <pybindcpp/module_cpp.h>
+#ifdef PYBINDCPP_CAPI
+#include <capi/module.h>
 #else
-#include <pybindcpp/cpython_types.h>
-#include <pybindcpp/module.h>
+#include <capi/capsule.h>
+#include <capi/cpython_types.h>
+#include <ctyp/module.h>
 #endif
 
 using namespace pybindcpp;
@@ -118,8 +119,8 @@ void module(ExtModule &m) {
   m.fun("PyCapsule_GetName", PyCapsule_GetName);
 }
 
-#ifdef NATIVE_CPP
-PYBINDCPP_INIT(native_cpp, module)
+#ifdef PYBINDCPP_CAPI
+PYBINDCPP_INIT(native_capi, module)
 #else
-PYBINDCPP_INIT(native, module)
+PYBINDCPP_INIT(native_ctyp, module)
 #endif

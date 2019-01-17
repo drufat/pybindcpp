@@ -1,6 +1,6 @@
 // Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
-#ifndef PYBINDCPP_TYPES_H
-#define PYBINDCPP_TYPES_H
+#ifndef PYBINDCPP_CTYP_TYPES_H
+#define PYBINDCPP_CTYP_TYPES_H
 
 #include <Python.h>
 #include <stdbool.h>
@@ -52,4 +52,4 @@ static const std::map<size_t, std::string> ctype_map = {
 
 } // namespace pybindcpp
 
-#endif // PYBINDCPP_TYPES_H
+#endif // PYBINDCPP_CTYP_TYPES_H

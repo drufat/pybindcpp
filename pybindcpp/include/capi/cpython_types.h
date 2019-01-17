@@ -1,5 +1,5 @@
-#ifndef PYBINDCPP_CPYTHONTYPES_H
-#define PYBINDCPP_CPYTHONTYPES_H
+#ifndef PYBINDCPP_CAPI_CPYTHONTYPES_H
+#define PYBINDCPP_CAPI_CPYTHONTYPES_H
 
 #include <Python.h>
 #include <functional>
@@ -60,4 +60,4 @@ template <class... Args> auto arg_parse_tuple(PyObject *obj, Args &... args) {
 using VarArg = std::function<PyObject *(PyObject *, PyObject *)>;
 } // namespace pybindcpp
 
-#endif // PYBINDCPP_CPYTHONTYPES_H
+#endif // PYBINDCPP_CAPI_CPYTHONTYPES_H

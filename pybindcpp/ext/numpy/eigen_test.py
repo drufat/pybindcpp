@@ -1,7 +1,8 @@
 # Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
 import numpy as np
+
+from pybindcpp.ext.numpy import eigen
 from pybindcpp.helper import eq
-from pybindcpp.ext import eigen
 
 
 def test_eigen():

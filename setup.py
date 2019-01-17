@@ -1,5 +1,5 @@
 # Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
-import glob
+from glob import glob
 
 import numpy
 from setuptools import setup, Extension
@@ -17,13 +17,43 @@ include_dirs = [
 ]
 
 headers = [
-    *glob.glob('pybindcpp/include/*.h'),
-    *glob.glob('pybindcpp/include/pybindcpp/*.h'),
+    *glob('pybindcpp/include/*.h'),
+    *glob('pybindcpp/include/capi/*.h'),
+    *glob('pybindcpp/include/ctyp/*.h'),
 ]
 
 depends = ['setup.py', *headers]
 extra_compile_args = ['-std=c++14']
 libraries = []
+
+
+def extension_(name):
+    return [
+        Extension(
+            f'pybindcpp.ext.{name}_ctyp',
+            sources=[
+                f'pybindcpp/ext/{name}.cpp',
+            ],
+            depends=depends,
+            include_dirs=include_dirs,
+            extra_compile_args=extra_compile_args,
+            language="c++",
+            libraries=libraries,
+        ),
+
+        Extension(
+            f'pybindcpp.ext.{name}_capi',
+            sources=[
+                f'pybindcpp/ext/{name}.cpp',
+            ],
+            depends=depends,
+            include_dirs=include_dirs,
+            extra_compile_args=extra_compile_args + ['-DPYBINDCPP_CAPI'],
+            language="c++",
+            libraries=libraries,
+        ),
+    ]
+
 
 ext_modules = [
 
@@ -51,10 +81,14 @@ ext_modules = [
         libraries=libraries,
     ),
 
+    *extension_('simple'),
+    *extension_('example'),
+    *extension_('native'),
+
     Extension(
-        'pybindcpp.ext.simple',
+        'pybindcpp.ext.numpy.numpy',
         sources=[
-            'pybindcpp/ext/simple.cpp',
+            'pybindcpp/ext/numpy/numpy.cpp',
         ],
         depends=depends,
         include_dirs=include_dirs,
@@ -64,9 +98,9 @@ ext_modules = [
     ),
 
     Extension(
-        'pybindcpp.ext.example',
+        'pybindcpp.ext.numpy.eigen',
         sources=[
-            'pybindcpp/ext/example.cpp',
+            'pybindcpp/ext/numpy/eigen.cpp',
         ],
         depends=depends,
         include_dirs=include_dirs,
@@ -76,57 +110,9 @@ ext_modules = [
     ),
 
     Extension(
-        'pybindcpp.ext.native',
+        'pybindcpp.ext.numpy.fftw',
         sources=[
-            'pybindcpp/ext/native.cpp',
-        ],
-        depends=depends,
-        include_dirs=include_dirs,
-        extra_compile_args=extra_compile_args,
-        language="c++",
-        libraries=libraries,
-    ),
-
-    Extension(
-        'pybindcpp.ext.native_cpp',
-        sources=[
-            'pybindcpp/ext/native.cpp',
-        ],
-        depends=depends,
-        include_dirs=include_dirs,
-        extra_compile_args=extra_compile_args + ['-DNATIVE_CPP'],
-        language="c++",
-        libraries=libraries,
-    ),
-
-    Extension(
-        'pybindcpp.ext.numpy',
-        sources=[
-            'pybindcpp/ext/numpy.cpp',
-        ],
-        depends=depends,
-        include_dirs=include_dirs,
-        extra_compile_args=extra_compile_args,
-        language="c++",
-        libraries=libraries,
-    ),
-
-    Extension(
-        'pybindcpp.ext.eigen',
-        sources=[
-            'pybindcpp/ext/eigen.cpp',
-        ],
-        depends=depends,
-        include_dirs=include_dirs,
-        extra_compile_args=extra_compile_args,
-        language="c++",
-        libraries=libraries,
-    ),
-
-    Extension(
-        'pybindcpp.ext.fftw',
-        sources=[
-            'pybindcpp/ext/fftw.cpp',
+            'pybindcpp/ext/numpy/fftw.cpp',
         ],
         depends=depends,
         include_dirs=include_dirs,

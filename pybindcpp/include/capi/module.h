@@ -1,11 +1,11 @@
 // Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
-#ifndef MODULE_CPP_H
-#define MODULE_CPP_H
+#ifndef PYBINDCPP_CAPI_MODULE_H
+#define PYBINDCPP_CAPI_MODULE_H
 
 #include <Python.h>
 #include <functional>
 
-#include "module_cpp_imp.h"
+#include "module_imp.h"
 
 namespace pybindcpp {
 
@@ -86,4 +86,11 @@ static PyObject *module_init(const char *name,
 #define PYBINDCPP_INIT(name, exec)                                             \
   PyMODINIT_FUNC PyInit_##name() { return pybindcpp::module_init(#name, exec); }
 
-#endif // MODULE_CPP_H
+#define PYBINDCPP_INIT_NUMPY(name, exec)                                       \
+  PyMODINIT_FUNC PyInit_##name() {                                             \
+    import_array();                                                            \
+    import_ufunc();                                                            \
+    return pybindcpp::module_init(#name, exec);                                \
+  }
+
+#endif // PYBINDCPP_CAPI_MODULE_H

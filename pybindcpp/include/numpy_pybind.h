@@ -10,8 +10,7 @@
 #include <numpy/ndarrayobject.h>
 #include <numpy/ufuncobject.h>
 
-#include "capsule.h"
-#include "module.h"
+#include "capi/module.h"
 
 namespace pybindcpp {
 

@@ -2,11 +2,13 @@
 
 import math
 
-from pybindcpp.ext import example as m
+import pybindcpp.ext.example_capi as m_capi
+import pybindcpp.ext.example_ctyp as m_ctyp
+import pytest
 
 
-def test_example():
-
+@pytest.mark.parametrize('m', [m_capi, m_ctyp])
+def test_example(m):
     assert round(m.pi, 2) == 3.14
     assert m.half == 0.5
     assert m.one == 1

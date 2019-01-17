@@ -1,5 +1,5 @@
-#ifndef PYBINDCPP_APPLY_H
-#define PYBINDCPP_APPLY_H
+#ifndef PYBINDCPP_CAPI_APPLY_H
+#define PYBINDCPP_CAPI_APPLY_H
 
 #include <tuple>
 #include <utility>
@@ -18,4 +18,4 @@ template <typename F, typename Tuple> decltype(auto) apply(F &&f, Tuple &&t) {
 }
 } // namespace pybindcpp
 
-#endif // PYBINDCPP_APPLY_H
+#endif // PYBINDCPP_CAPI_APPLY_H

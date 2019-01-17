@@ -1,6 +1,6 @@
 // Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
-#ifndef CAPSULE_H
-#define CAPSULE_H
+#ifndef PYBINDCPP_CAPI_CAPSULE_H
+#define PYBINDCPP_CAPI_CAPSULE_H
 
 #include <Python.h>
 #include <memory>
@@ -35,4 +35,4 @@ Ret capsule_call(PyObject *o, Args... args) {
 };
 } // namespace pybindcpp
 
-#endif // CAPSULE_H
+#endif // PYBINDCPP_CAPI_CAPSULE_H

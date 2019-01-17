@@ -1,15 +1,23 @@
 // Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
-#include "pybindcpp/module.h"
+#ifdef PYBINDCPP_CAPI
+#include <capi/module.h>
+#else
+#include <ctyp/module.h>
+#endif
 
 using namespace pybindcpp;
 
-int g(int x, int y) { return x + y; }
-
 double f(double x, double y) { return x * y; }
 
-void simple(ExtModule &m) {
-  m.fun("g", g);
+int g(int x, int y) { return x + y; }
+
+void module(ExtModule &m) {
   m.fun("f", f);
+  m.fun("g", g);
 }
 
-PYBINDCPP_INIT(simple, simple);
+#ifdef PYBINDCPP_CAPI
+PYBINDCPP_INIT(simple_capi, module)
+#else
+PYBINDCPP_INIT(simple_ctyp, module)
+#endif

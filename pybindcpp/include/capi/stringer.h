@@ -1,6 +1,6 @@
 // Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
-#ifndef PYBINDCPP_STRINGER_H
-#define PYBINDCPP_STRINGER_H
+#ifndef PYBINDCPP_CAPI_STRINGER_H
+#define PYBINDCPP_CAPI_STRINGER_H
 
 #include <sstream>
 #include <string>
@@ -16,4 +16,4 @@ template <typename... Args> std::string stringer(Args const &... args) {
 }
 } // namespace pybindcpp
 
-#endif // PYBINDCPP_STRINGER_H
+#endif // PYBINDCPP_CAPI_STRINGER_H

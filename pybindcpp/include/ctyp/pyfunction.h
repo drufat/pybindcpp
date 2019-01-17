@@ -1,7 +1,7 @@
-#ifndef PYBINDCPP_CAPSULE_H
-#define PYBINDCPP_CAPSULE_H
+#ifndef PYBINDCPP_CTYP_CAPSULE_H
+#define PYBINDCPP_CTYP_CAPSULE_H
 
-#include "pybindcpp/func_trait.h"
+#include "func_trait.h"
 
 namespace pybindcpp {
 
@@ -37,4 +37,4 @@ template <class Ret, class... Args> struct py_function<Ret(Args...)> {
 };
 } // namespace pybindcpp
 
-#endif // PYBINDCPP_CAPSULE_H
+#endif // PYBINDCPP_CTYP_CAPSULE_H

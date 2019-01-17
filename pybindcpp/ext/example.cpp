@@ -1,32 +1,27 @@
 // Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
 
 #include <cmath>
-#include <pybindcpp/module.h>
+
+#ifdef PYBINDCPP_CAPI
+#include <capi/module.h>
+#else
+#include <ctyp/module.h>
+#endif
 
 using namespace pybindcpp;
 
 constexpr double half = 0.5;
 constexpr double pi = M_PI;
 
-int
-f(int N, int n, int x)
-{
-  return N + n + x;
-}
+int f(int N, int n, int x) { return N + n + x; }
 
-double
-mycos(double x)
-{
-  return cos(x);
-}
+double mycos(double x) { return cos(x); }
 
-void
-module(ExtModule& m)
-{
+void module(ExtModule &m) {
   m.var("half", half);
   m.var("pi", pi);
-  m.var("one", (long)1);
-  m.var("two", (unsigned long)2);
+  m.var("one", static_cast<int>(1));
+  m.var("two", static_cast<unsigned long>(2));
   m.var("true", true);
   m.var("false", false);
   m.var("name", "pybindcpp");
@@ -37,4 +32,8 @@ module(ExtModule& m)
   m.fun("sin", static_cast<double (*)(double)>(sin));
 }
 
-PYBINDCPP_INIT(example, module)
+#ifdef PYBINDCPP_CAPI
+PYBINDCPP_INIT(example_capi, module)
+#else
+PYBINDCPP_INIT(example_ctyp, module)
+#endif

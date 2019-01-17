@@ -1,11 +1,11 @@
-#ifndef PYBINDCPP_FUNC_TRAIT_H
-#define PYBINDCPP_FUNC_TRAIT_H
+#ifndef PYBINDCPP_CTYP_FUNC_TRAIT_H
+#define PYBINDCPP_CTYP_FUNC_TRAIT_H
 
 #include <array>
 #include <sstream>
 
-#include "pybindcpp/api.h"
-#include "pybindcpp/ctypes.h"
+#include "api.h"
+#include "ctypes.h"
 
 namespace pybindcpp {
 
@@ -32,4 +32,4 @@ template <class Ret, class... Args> struct func_trait<Ret (*)(Args...)> {
 }; // namespace pybindcpp
 } // namespace pybindcpp
 
-#endif // PYBINDCPP_FUNC_TRAIT_H
+#endif // PYBINDCPP_CTYP_FUNC_TRAIT_H

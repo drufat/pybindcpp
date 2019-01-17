@@ -1,5 +1,5 @@
-#ifndef PYBINDCPP_CALLABLE_H
-#define PYBINDCPP_CALLABLE_H
+#ifndef PYBINDCPP_CTYP_CALLABLE_H
+#define PYBINDCPP_CTYP_CALLABLE_H
 
 #include "pyfunction.h"
 
@@ -53,4 +53,4 @@ struct callable_trait<Ret (F::*)(Args...) const> {
 
 } // namespace pybindcpp
 
-#endif // PYBINDCPP_CALLABLE_H
+#endif // PYBINDCPP_CTYP_CALLABLE_H

@@ -1,6 +1,5 @@
 // Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
-#include "pybindcpp/module.h"
-#include "pybindcpp/numpy.h"
+#include "numpy_pybind.h"
 
 #include <fftw3.h>
 

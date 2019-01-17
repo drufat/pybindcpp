@@ -1,5 +1,5 @@
-#ifndef PYBINDCPP_API_H
-#define PYBINDCPP_API_H
+#ifndef PYBINDCPP_CTYP_API_H
+#define PYBINDCPP_CTYP_API_H
 
 #include <Python.h>
 
@@ -17,4 +17,4 @@ struct API {
 static API *api;
 
 } // namespace pybindcpp
-#endif // PYBINDCPP_API_H
+#endif // PYBINDCPP_CTYP_API_H
