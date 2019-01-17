@@ -1,45 +1,24 @@
+"""
+>>> s = ct.c_char_p(b'(c_char_p,c_int,c_double,)')
+>>> assert get_type(s)._restype_ == ct.c_char_p
+>>> assert get_type(s)._argtypes_ == tuple([ct.c_int, ct.c_double])
+
+>>> s = ct.c_char_p(b'(None,)')
+>>> assert get_type(s)._restype_ == None
+>>> assert get_type(s)._argtypes_ == tuple()
+"""
+
 import ctypes as ct
 import importlib
 
-################
-# Python.h API #
-################
+storage = {}
 
-PyCapsule_New = ct.PYFUNCTYPE(
-    ct.py_object,
-    ct.c_void_p, ct.c_char_p, ct.c_void_p
-)(('PyCapsule_New', ct.pythonapi))
-
-PyCapsule_GetPointer = ct.PYFUNCTYPE(
-    ct.c_void_p,
-    ct.py_object, ct.c_char_p
-)(('PyCapsule_GetPointer', ct.pythonapi))
-
-PyLong_AsVoidPtr = ct.PYFUNCTYPE(
-    ct.c_void_p,
-    ct.py_object
-)(('PyLong_AsVoidPtr', ct.pythonapi))
-
-
-###############
-# Struct API  #
-###############
 
 @ct.PYFUNCTYPE(ct.py_object, ct.c_char_p)
-def get_type(typ):
-    expr = typ.decode()
+def get_type(expr):
+    expr = expr.decode()
     t = eval(expr, ct.__dict__)
     return ct.PYFUNCTYPE(*t)
-
-
-@ct.PYFUNCTYPE(ct.c_void_p, ct.c_char_p, ct.c_char_p)
-def get_capsule(module, attr):
-    module = module.decode()
-    attr = attr.decode()
-
-    mod = importlib.import_module(module)
-    cap = getattr(mod, attr)
-    return PyCapsule_GetPointer(cap, None)
 
 
 @ct.PYFUNCTYPE(ct.c_void_p, ct.c_char_p, ct.c_char_p)
@@ -50,37 +29,39 @@ def get_cfunction(module, attr):
     mod = importlib.import_module(module)
     cfunc = getattr(mod, attr)
     addr = ct.addressof(cfunc)
-    return PyLong_AsVoidPtr(addr)
+    return addr
 
 
-@ct.PYFUNCTYPE(ct.py_object, ct.c_char_p, ct.c_char_p, ct.py_object)
+@ct.PYFUNCTYPE(ct.c_void_p, ct.c_char_p, ct.c_char_p, ct.c_char_p)
 def get_pyfunction(module, attr, cfunctype):
     module = module.decode()
     attr = attr.decode()
+    cfunc_type = get_type(cfunctype)
 
     mod = importlib.import_module(module)
     func = getattr(mod, attr)
-    cfunc = cfunctype(func)
-    return cfunc
+    cfunc = cfunc_type(func)
 
-
-@ct.PYFUNCTYPE(ct.c_void_p, ct.py_object)
-def get_addr(cfunc):
     addr = ct.addressof(cfunc)
-    return PyLong_AsVoidPtr(addr)
+
+    # To ensure addr does not become dangling.
+    storage[addr] = cfunc
+
+    return addr
 
 
-@ct.PYFUNCTYPE(ct.py_object, ct.c_void_p, ct.py_object)
-def register_(func, func_type):
+@ct.PYFUNCTYPE(ct.py_object, ct.c_void_p, ct.c_char_p)
+def func_c(func, func_type):
     p = ct.cast(func, ct.POINTER(ct.c_void_p))
-    f = ct.cast(p[0], func_type)
+    t = get_type(func_type)
+    f = ct.cast(p[0], t)
     return f
 
 
-@ct.PYFUNCTYPE(ct.py_object, ct.py_object, ct.py_object)
-def apply(capsule_call, capsule):
+@ct.PYFUNCTYPE(ct.py_object, ct.py_object, ct.c_void_p)
+def func_std(func_call, func_ptr):
     def func(*args):
-        return capsule_call(capsule, *args)
+        return func_call(func_ptr, *args)
 
     return func
 
@@ -98,52 +79,24 @@ def error():
     raise RuntimeError('RuntimeError')
 
 
-def api_test():
-    """
-    >>> s = ct.c_char_p(b'(c_char_p,c_int,c_double,)')
-    >>> assert get_type(s)._restype_ == ct.c_char_p
-    >>> assert get_type(s)._argtypes_ == tuple([ct.c_int, ct.c_double])
-
-    >>> s = ct.c_char_p(b'(None,)')
-    >>> assert get_type(s)._restype_ == None
-    >>> assert get_type(s)._argtypes_ == tuple()
-
-    >>> p = get_capsule(b'pybindcpp.bind', b'register_cap')
-    """
-    pass
-
-
 class API(ct.Structure):
     _fields_ = [
-        ('get_type', type(get_type)),
-        ('get_capsule', type(get_capsule)),
         ('get_cfunction', type(get_cfunction)),
         ('get_pyfunction', type(get_pyfunction)),
-        ('get_addr', type(get_addr)),
-        ('register_', type(register_)),
-        ('apply', type(apply)),
+        ('func_c', type(func_c)),
+        ('func_std', type(func_std)),
         ('vararg', type(vararg)),
         ('error', type(error)),
     ]
 
 
 api = API(
-    get_type,
-    get_capsule,
     get_cfunction,
     get_pyfunction,
-    get_addr,
-    register_,
-    apply,
+    func_c,
+    func_std,
     vararg,
     error,
 )
 
-
-@ct.PYFUNCTYPE(ct.py_object, ct.POINTER(ct.POINTER(API)))
-def init(ptr):
-    ptr[0] = ct.pointer(api)
-    return api
-
-
-init_addr = ct.addressof(init)
+api_addr = ct.addressof(api)

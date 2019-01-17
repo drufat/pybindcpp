@@ -15,31 +15,21 @@ template <class Ret, class... Args> struct func_trait<Ret (*)(Args...)> {
 
   static constexpr size_t size = 1 + sizeof...(Args);
 
-  static auto value() {
-    const std::array<std::type_index, size> a = {
-        {typeid(typename std::decay<Ret>::type),
-         typeid(typename std::decay<Args>::type)...}};
-    return a;
-  }
-
   static auto str() {
-    auto val = value();
+
+    static const size_t signature[size] = {typeid(Ret).hash_code(),
+                                           typeid(Args).hash_code()...};
+
     std::stringstream ss;
     ss << "(";
     for (size_t i = 0; i < size; i++) {
-      ss << ctype_map.at(val[i]) << ",";
+      ss << ctype_map.at(signature[i]) << ",";
     }
     ss << ")";
+
     return ss.str();
   }
-
-  static auto pystr() { return PyBytes_FromString(str().c_str()); }
-
-  static auto pyctype() {
-    auto s = str();
-    return api->get_type(s.c_str());
-  }
-};
+}; // namespace pybindcpp
 } // namespace pybindcpp
 
 #endif // PYBINDCPP_FUNC_TRAIT_H

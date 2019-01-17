@@ -11,15 +11,9 @@
 
 using namespace pybindcpp;
 
-int
-f(int N, int n, int x)
-{
-  return N + n + x;
-}
+int f(int N, int n, int x) { return N + n + x; }
 
-PyObject*
-py_parsing(PyObject* self, PyObject* args)
-{
+PyObject *py_parsing(PyObject *self, PyObject *args) {
   int i, j;
   double d;
   long l;
@@ -28,32 +22,22 @@ py_parsing(PyObject* self, PyObject* args)
   return build_value(i, j, d, l, str, str.c_str(), true, false);
 }
 
-PyObject*
-py_func(PyObject* self, PyObject* args)
-{
+PyObject *py_func(PyObject *self, PyObject *args) {
   int N, n, x;
   arg_parse_tuple(args, N, n, x);
   auto out = f(N, n, x);
   return build_value(out);
 }
 
-int
-g(int x, int y)
-{
-  return x + y;
-}
+int g(int x, int y) { return x + y; }
 
-void
-add_one(int N, double* x)
-{
+void add_one(int N, double *x) {
   for (int i = 0; i < N; i++) {
     x[i] += 1;
   }
 }
 
-extern "C" PyObject*
-py_g(PyObject* self, PyObject* args)
-{
+extern "C" PyObject *py_g(PyObject *self, PyObject *args) {
   int x, y;
   arg_parse_tuple(args, x, y);
   auto out = g(x, y);
@@ -63,9 +47,7 @@ py_g(PyObject* self, PyObject* args)
 constexpr double pi = M_PI;
 constexpr double half = 0.5;
 
-void
-module(ExtModule& m)
-{
+void module(ExtModule &m) {
 
   m.var("half", half);
   m.var("pi", pi);
@@ -86,11 +68,7 @@ module(ExtModule& m)
     return f(N, n, x);
   });
 
-  m.fun("closure", [&]() {
-
-    return build_value(N, n, x);
-
-  });
+  m.fun("closure", [&]() { return build_value(N, n, x); });
 
   m.fun("add_one", add_one);
 
@@ -99,7 +77,7 @@ module(ExtModule& m)
   m.varargs("parsing", py_parsing);
   m.varargs("func", py_func);
 
-  m.varargs("manytypes", [](PyObject* self, PyObject* args) -> PyObject* {
+  m.varargs("manytypes", [](PyObject *self, PyObject *args) -> PyObject * {
     {
       unsigned int N;
       double i;
@@ -111,7 +89,7 @@ module(ExtModule& m)
     PyErr_Clear();
     {
       unsigned int N;
-      PyObject* i;
+      PyObject *i;
       if (arg_parse_tuple(args, N, i)) {
         auto out = i;
         return build_value(out);
@@ -120,18 +98,18 @@ module(ExtModule& m)
     return NULL;
   });
 
-  m.fun("S", [](PyObject* o) { return build_value(o); });
+  m.fun("S", [](PyObject *o) { return build_value(o); });
 
   m.fun("g_cfun", g);
   m.fun("g_fun", std::function<int(int, int)>(g));
   m.fun<std::function<int(int, int)>>(
-    "g_afun", [](int x, int y) -> int { return g(x, y); });
+      "g_afun", [](int x, int y) -> int { return g(x, y); });
   m.add("g_ofun", fun2obj(&g));
 
   auto f_one = std::function<int()>([]() { return 1; });
   m.fun("f_one", f_one);
 
-  auto f_func = std::function<PyObject*()>([=]() { return fun2obj(f_one); });
+  auto f_func = std::function<PyObject *()>([=]() { return fun2obj(f_one); });
   m.fun("f_func", f_func);
 
   m.add("caps_int", capsule_new(std::make_shared<int>(3)));
@@ -141,7 +119,7 @@ module(ExtModule& m)
 }
 
 #ifdef NATIVE_CPP
-PYMODULE_INIT(native_cpp, module)
+PYBINDCPP_INIT(native_cpp, module)
 #else
-PYMODULE_INIT(native, module)
+PYBINDCPP_INIT(native, module)
 #endif

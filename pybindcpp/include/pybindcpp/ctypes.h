@@ -12,47 +12,44 @@
 
 namespace pybindcpp {
 
-const std::map<std::type_index, const char *> ctype_map = {
+static const std::map<size_t, std::string> ctype_map = {
 
-    {typeid(bool), "c_bool"},
-    {typeid(wchar_t), "c_wchar"},
-    {typeid(char), "c_char"},
-    {typeid(unsigned char), "c_ubyte"},
-    {typeid(short), "c_short"},
-    {typeid(unsigned short), "c_ushort"},
-    {typeid(int), "c_int"},
-    {typeid(unsigned int), "c_uint"},
-    {typeid(long), "c_long"},
-    {typeid(unsigned long), "c_ulong"},
-    {typeid(long long), "c_longlong"},
-    {typeid(unsigned long long), "c_ulonglong"},
-    {typeid(size_t), "c_size_t"},
-    {typeid(ssize_t), "c_ssize_t"},
-    {typeid(float), "c_float"},
-    {typeid(double), "c_double"},
-    {typeid(long double), "c_longdouble"},
+    {typeid(bool).hash_code(), "c_bool"},
+    {typeid(wchar_t).hash_code(), "c_wchar"},
+    {typeid(char).hash_code(), "c_char"},
+    {typeid(unsigned char).hash_code(), "c_ubyte"},
+    {typeid(short).hash_code(), "c_short"},
+    {typeid(unsigned short).hash_code(), "c_ushort"},
+    {typeid(int).hash_code(), "c_int"},
+    {typeid(unsigned int).hash_code(), "c_uint"},
+    {typeid(long).hash_code(), "c_long"},
+    {typeid(unsigned long).hash_code(), "c_ulong"},
+    {typeid(long long).hash_code(), "c_longlong"},
+    {typeid(unsigned long long).hash_code(), "c_ulonglong"},
+    {typeid(size_t).hash_code(), "c_size_t"},
+    {typeid(ssize_t).hash_code(), "c_ssize_t"},
+    {typeid(float).hash_code(), "c_float"},
+    {typeid(double).hash_code(), "c_double"},
+    {typeid(long double).hash_code(), "c_longdouble"},
 
-    {typeid(char *), "c_char_p"},
-    {typeid(wchar_t *), "c_wchar_p"},
-    {typeid(void *), "c_void_p"},
-    {typeid(PyObject *), "py_object"},
-    {typeid(int *), "POINTER(c_int)"},
-    {typeid(double *), "POINTER(c_double)"},
+    {typeid(char *).hash_code(), "c_char_p"},
+    {typeid(wchar_t *).hash_code(), "c_wchar_p"},
+    {typeid(void *).hash_code(), "c_void_p"},
+    {typeid(PyObject *).hash_code(), "py_object"},
+    {typeid(int *).hash_code(), "POINTER(c_int)"},
+    {typeid(double *).hash_code(), "POINTER(c_double)"},
 
-    {typeid(const char *), "c_char_p"},
-    {typeid(const wchar_t *), "c_wchar_p"},
-    {typeid(const void *), "c_void_p"},
-    {typeid(const PyObject *), "py_object"},
-    {typeid(const int *), "POINTER(c_int)"},
-    {typeid(const double *), "POINTER(c_double)"},
+    {typeid(const char *).hash_code(), "c_char_p"},
+    {typeid(const wchar_t *).hash_code(), "c_wchar_p"},
+    {typeid(const void *).hash_code(), "c_void_p"},
+    {typeid(const PyObject *).hash_code(), "py_object"},
+    {typeid(const int *).hash_code(), "POINTER(c_int)"},
+    {typeid(const double *).hash_code(), "POINTER(c_double)"},
 
-    {typeid(void), "None"},
+    {typeid(void).hash_code(), "None"},
 
 };
 
-using VOIDFUNCTYPE = std::function<void()>;
-using REGFUNCTYPE = std::function<PyObject *(void *, PyObject *)>;
-using INIFUNCTYPE = std::function<PyObject *()>;
 } // namespace pybindcpp
 
 #endif // PYBINDCPP_TYPES_H

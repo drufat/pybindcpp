@@ -83,7 +83,7 @@ static PyObject *module_init(const char *name,
 
 } // namespace pybindcpp
 
-#define PYMODULE_INIT(name, exec)                                              \
+#define PYBINDCPP_INIT(name, exec)                                             \
   PyMODINIT_FUNC PyInit_##name() { return pybindcpp::module_init(#name, exec); }
 
 #endif // MODULE_CPP_H

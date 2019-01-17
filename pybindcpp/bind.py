@@ -1,5 +1,43 @@
+"""
+>>> p = get_capsule(b'pybindcpp.bind', b'register_cap')
+
+>>> p = ct.c_char_p(b"abcdef")
+>>> name = ct.c_char_p(b"char *")
+>>> o = PyCapsule_New(p, name, None)
+>>> name1 = ct.c_char_p(b"char *")
+>>> pp = PyCapsule_GetPointer(o, name1)
+>>> ct.cast(pp, ct.c_char_p).value
+b'abcdef'
+
+"""
 import ctypes as ct
-from pybindcpp.api import PyCapsule_New
+
+import importlib
+
+PyCapsule_New = ct.PYFUNCTYPE(
+    ct.py_object,
+    ct.c_void_p, ct.c_char_p, ct.c_void_p
+)(('PyCapsule_New', ct.pythonapi))
+
+PyCapsule_GetPointer = ct.PYFUNCTYPE(
+    ct.c_void_p,
+    ct.py_object, ct.c_char_p
+)(('PyCapsule_GetPointer', ct.pythonapi))
+
+PyLong_AsVoidPtr = ct.PYFUNCTYPE(
+    ct.c_void_p,
+    ct.py_object
+)(('PyLong_AsVoidPtr', ct.pythonapi))
+
+
+@ct.PYFUNCTYPE(ct.c_void_p, ct.c_char_p, ct.c_char_p)
+def get_capsule(module, attr):
+    module = module.decode()
+    attr = attr.decode()
+
+    mod = importlib.import_module(module)
+    cap = getattr(mod, attr)
+    return PyCapsule_GetPointer(cap, None)
 
 
 def id(arg):

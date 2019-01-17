@@ -66,8 +66,8 @@ link_directories(${FFTW3_LIBRARY_DIRS})
 pymodule(fftw pybindcpp/ext/fftw.cpp)
 target_link_libraries(fftw ${FFTW3_LIBRARIES})
 
-add_test(
-    NAME PY
-    COMMAND py.test -v --doctest-modules pybindcpp
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-)
+#add_test(
+#    NAME PY
+#    COMMAND py.test -v --doctest-modules pybindcpp
+#    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+#)

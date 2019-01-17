@@ -23,11 +23,11 @@ const std::map<std::type_index, std::string> BuildValueTypes = {
 
 const std::map<std::type_index, std::string> ArgParseTypes = {
 
-    {typeid(const char *), "s"}, {typeid(unsigned char), "b"},
+    {typeid(PyObject *), "O"},   {typeid(unsigned char), "b"},
     {typeid(double), "d"},       {typeid(float), "f"},
     {typeid(int), "i"},          {typeid(unsigned int), "I"},
     {typeid(long), "l"},         {typeid(unsigned long), "k"},
-    {typeid(PyObject *), "O"},
+    {typeid(const char *), "s"},
 
 };
 

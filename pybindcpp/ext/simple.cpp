@@ -12,4 +12,4 @@ void simple(ExtModule &m) {
   m.fun("f", f);
 }
 
-PyMODINIT_FUNC PyInit_simple(void) { return module_init("simple", simple); }
+PYBINDCPP_INIT(simple, simple);

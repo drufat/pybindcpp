@@ -152,8 +152,4 @@ void numpymodule(ExtModule &m) {
   });
 }
 
-PyMODINIT_FUNC PyInit_numpy(void) {
-  import_array();
-  import_ufunc();
-  return module_init("numpy", numpymodule);
-}
+PYBINDCPP_INIT_NUMPY(numpy, numpymodule);

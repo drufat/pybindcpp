@@ -37,4 +37,4 @@ module(ExtModule& m)
   m.fun("sin", static_cast<double (*)(double)>(sin));
 }
 
-PYMODULE_INIT(example, module)
+PYBINDCPP_INIT(example, module)
