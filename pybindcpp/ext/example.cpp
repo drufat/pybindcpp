@@ -26,7 +26,7 @@ int sum(const int *x, size_t N) {
 
 template <class T> T add(T x, T y) { return x + y; }
 
-void module(ExtModule &m) {
+void example(module &m) {
   m.add("half", half);
   m.add("pi", pi);
   m.add("one", static_cast<int>(1));
@@ -69,4 +69,4 @@ void module(ExtModule &m) {
   m.add("fidentity", [](std::function<int(int)> f) { return f; });
 }
 
-PYBINDCPP_INIT(example, module)
+PYBINDCPP_INIT(example, example)

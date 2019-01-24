@@ -1,14 +1,6 @@
 import ctypes as ct
-import importlib
 
-
-class Box(ct.Structure):
-    _fields_ = [
-        ('tid', ct.c_size_t),
-        ('ptr', ct.c_void_p),
-        ('deleter', ct.CFUNCTYPE(None, ct.c_void_p)),
-    ]
-
+from pybindcpp.api import Box, TypeSystem
 
 ctypemap = {
     'bool': ct.c_bool,
@@ -39,35 +31,11 @@ ctypemap = {
 
     'void *': ct.c_void_p,
 
+    'PyObject *': ct.py_object,
+
     'void': None,
     'Box': Box,
 }
-
-
-class API(ct.Structure):
-    _fields_ = [
-        ('print_', ct.CFUNCTYPE(None, ct.c_char_p)),
-        ('error', ct.CFUNCTYPE(None)),
-
-        ('pre_init', ct.CFUNCTYPE(None)),
-        ('post_init', ct.CFUNCTYPE(None)),
-
-        ('add_type', ct.CFUNCTYPE(
-            ct.c_size_t,
-            ct.c_size_t, ct.POINTER(ct.c_size_t), ct.c_size_t, ct.c_char_p)),
-        ('add', ct.CFUNCTYPE(None, ct.c_char_p, Box)),
-        ('add_caller', ct.CFUNCTYPE(None, ct.c_size_t, Box)),
-        ('add_callback', ct.CFUNCTYPE(None, ct.c_size_t, ct.c_size_t)),
-
-        ('commit_add', ct.CFUNCTYPE(None, )),
-
-        ('get_cfunction', ct.CFUNCTYPE(ct.c_void_p, ct.c_char_p, ct.c_char_p)),
-        ('get_pyfunction', ct.CFUNCTYPE(ct.c_void_p, ct.c_char_p, ct.c_char_p, ct.c_char_p)),
-        ('func_c', ct.CFUNCTYPE(ct.py_object, ct.c_void_p, ct.c_char_p)),
-        ('func_std', ct.CFUNCTYPE(ct.py_object, ct.py_object, ct.c_void_p)),
-        ('vararg', ct.CFUNCTYPE(ct.py_object, ct.py_object)),
-    ]
-
 
 storage = {}
 
@@ -76,72 +44,6 @@ storage = {}
 def deleter(ptr):
     # print('py del', hex(ptr))
     del storage[int(ptr)]
-
-
-def is_func(f):
-    return hasattr(f, 'argtypes') and hasattr(f, 'restype')
-
-
-def print_(name):
-    print(name.decode())
-
-
-def error():
-    raise RuntimeError('RuntimeError')
-
-
-def get_type(expr):
-    expr = expr.decode()
-    t = eval(expr, ct.__dict__)
-    return ct.PYFUNCTYPE(*t)
-
-
-def get_cfunction(module, attr):
-    module = module.decode()
-    attr = attr.decode()
-
-    mod = importlib.import_module(module)
-    cfunc = getattr(mod, attr)
-    addr = ct.addressof(cfunc)
-    return addr
-
-
-def get_pyfunction(module, attr, cfunctype):
-    module = module.decode()
-    attr = attr.decode()
-    cfunc_type = get_type(cfunctype)
-
-    mod = importlib.import_module(module)
-    func = getattr(mod, attr)
-    cfunc = cfunc_type(func)
-
-    addr = ct.addressof(cfunc)
-
-    # To ensure addr does not become dangling.
-    storage[addr] = cfunc
-
-    return addr
-
-
-def func_c(func, func_type):
-    p = ct.cast(func, ct.POINTER(ct.c_void_p))
-    t = get_type(func_type)
-    f = ct.cast(p[0], t)
-    return f
-
-
-def func_std(func_call, func_ptr):
-    def func(*args):
-        return func_call(func_ptr, *args)
-
-    return func
-
-
-def vararg(f):
-    def v(*args):
-        return f(None, args)
-
-    return v
 
 
 def parse(types, typeid, top=None):
@@ -232,7 +134,14 @@ class Func:
         box.deleter(box.ptr)
 
 
-def module_api(m):
+def struct_env(struct, locals_, globals_):
+    def lookup(name):
+        return locals_.get(name, globals_.get(name))
+
+    return struct(*[ctype(lookup(name)) for name, ctype in struct._fields_])
+
+
+def type_system():
     def print_types():
         print('types:')
         for _ in types:
@@ -254,6 +163,8 @@ def module_api(m):
         # print_funcs()
         pass
 
+    # initialize type counter to zero
+    type_counter = 0
     types = {}
 
     def add_type(tid, args, nargs, name):
@@ -381,34 +292,21 @@ def module_api(m):
     def add_callback(tid, cid):
         callbacks[tid] = cid
 
-    to_add = []
+    def import_func(module, name, typeid, box_out):
+        box_out[0] = Box()
 
-    def add(name, box):
-        to_add.append((
-            name.decode(),
-            lambda: unbox(box)
-        ))
-
-    def commit_add():
-        for name, obj in to_add:
-            setattr(m, name, obj())
-
-    locals_, globals_ = locals(), globals()
-
-    def env(name):
-        return locals_.get(name, globals_.get(name))
-
-    return API(*[ctype(env(name)) for name, ctype in API._fields_])
+    return struct_env(TypeSystem, locals(), globals())
 
 
-def module_init(mod_addr, api_ret):
-    pm = ct.cast(mod_addr, ct.POINTER(ct.py_object))
-    m = pm[0]
+type_systems = {}
 
-    api = module_api(m)
 
-    api_addr = ct.addressof(api)
-    storage[api_addr] = api
+def typesystem_init(ts_out):
+    if ts_out not in type_systems:
+        ts = type_system()
+        type_systems[ts_out] = ts
 
-    pp = ct.cast(api_ret, ct.POINTER(ct.POINTER(API)))
-    pp[0] = ct.pointer(api)
+        pp = ct.cast(ts_out, ct.POINTER(ct.POINTER(TypeSystem)))
+        pp[0] = ct.pointer(ts)
+
+    return type_systems[ts_out]

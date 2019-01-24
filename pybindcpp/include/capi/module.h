@@ -35,23 +35,23 @@ struct ExtModule {
   }
 };
 
-static void print(PyObject *obj) { PyObject_Print(obj, stdout, Py_PRINT_RAW); }
-
-static PyModuleDef moduledef = {
-    PyModuleDef_HEAD_INIT,
-    nullptr, // m_name
-    nullptr, // m_doc
-    -1,      // m_size
-    nullptr, // m_methods
-    nullptr, // m_slots
-    nullptr, // m_traverse
-    nullptr, // m_clear
-    nullptr, // m_free
-};
+// static void print(PyObject *obj) { PyObject_Print(obj, stdout, Py_PRINT_RAW);
+// }
 
 static PyObject *module_init(const char *name,
                              std::function<void(ExtModule &)> exec) {
-  moduledef.m_name = name;
+
+  static PyModuleDef moduledef({
+      PyModuleDef_HEAD_INIT,
+      name,    // m_name
+      nullptr, // m_doc
+      -1,      // m_size
+      nullptr, // m_methods
+      nullptr, // m_slots
+      nullptr, // m_traverse
+      nullptr, // m_clear
+      nullptr, // m_free
+  });
 
   auto module = PyModule_Create(&moduledef);
   if (!module)
@@ -83,14 +83,9 @@ static PyObject *module_init(const char *name,
 
 } // namespace pybindcpp
 
-#define PYBINDCPP_INIT(name, exec)                                             \
-  PyMODINIT_FUNC PyInit_##name() { return pybindcpp::module_init(#name, exec); }
-
-#define PYBINDCPP_INIT_NUMPY(name, exec)                                       \
-  PyMODINIT_FUNC PyInit_##name() {                                             \
-    import_array();                                                            \
-    import_ufunc();                                                            \
-    return pybindcpp::module_init(#name, exec);                                \
+#define PYBINDCPP_INIT(NAME, INITFUNC)                                         \
+  PyMODINIT_FUNC PyInit_##NAME() {                                             \
+    return pybindcpp::module_init(#NAME, INITFUNC);                            \
   }
 
 #endif // PYBINDCPP_CAPI_MODULE_H

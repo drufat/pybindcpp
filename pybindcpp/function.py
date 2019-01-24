@@ -18,4 +18,3 @@ class ufunc(object):
 
     def __call__(self, *args, **kwargs):
         return self.__func(*args, **kwargs)
-

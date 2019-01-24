@@ -23,7 +23,11 @@ headers = [
 ]
 
 depends = ['setup.py', *headers]
-extra_compile_args = ['-std=c++14', '-g']
+extra_compile_args = [
+    '-std=c++14',
+    '-g',
+    '-DNPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION',
+]
 libraries = []
 
 ext_modules = [

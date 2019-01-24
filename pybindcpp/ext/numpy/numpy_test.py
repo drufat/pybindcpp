@@ -1,7 +1,8 @@
 # Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
 import numpy as np
-from pybindcpp.helper import eq
+
 from pybindcpp.ext.numpy import numpy as nn
+from pybindcpp.helper import eq
 
 
 def test_numpy():
@@ -34,7 +35,6 @@ def test_numpy():
         assert eq(fn(N, x),
                   nn.fn_array(N, x),
                   nn.fn_array1(N, x),
-                  nn.fn_array2(N, x),
                   )
 
 

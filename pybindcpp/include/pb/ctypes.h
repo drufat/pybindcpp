@@ -12,10 +12,10 @@
 
 namespace pybindcpp {
 
-static size_t __type_counter;
+static TypeSystem *ts;
 
 template <typename T> static size_t type_id() {
-  static const size_t id = __type_counter++;
+  static const size_t id = ts->type_counter++;
   return id;
 }
 
@@ -23,24 +23,24 @@ template <class T> struct ctype_trait;
 
 template <class T, class... Args> struct sexpr {
 
-  static size_t add(const char *fname, API *api) {
-    const size_t args[] = {ctype_trait<Args>::add(api)...};
+  static size_t add(const char *fname) {
+    const size_t args[] = {ctype_trait<Args>::add()...};
     const size_t nargs = sizeof...(Args);
     auto tid = type_id<T>();
-    return api->add_type(tid, args, nargs, fname);
+    return ts->add_type(tid, args, nargs, fname);
   }
 };
 
 template <class T> struct sexpr<T> {
 
-  static size_t add(const char *fname, API *api) {
+  static size_t add(const char *fname) {
     auto tid = type_id<T>();
-    return api->add_type(tid, nullptr, 0, fname);
+    return ts->add_type(tid, nullptr, 0, fname);
   }
 };
 
 template <> struct ctype_trait<void> {
-  static auto add(API *api) { return sexpr<void>::add("void", api); }
+  static auto add() { return sexpr<void>::add("void"); }
 };
 
 template <class T> void deleter(void *ptr) { delete static_cast<T *>(ptr); }
@@ -60,8 +60,7 @@ template <class T> struct simple_type {
 
 #define CT(T)                                                                  \
   template <> struct ctype_trait<T> : simple_type<T> {                         \
-                                                                               \
-    static auto add(API *api) { return sexpr<T>::add(#T, api); }               \
+    static auto add() { return sexpr<T>::add(#T); }                            \
   };
 
 CT(bool)
@@ -89,6 +88,8 @@ CT(wchar_t *)
 
 CT(void *)
 
+CT(PyObject *)
+
 CT(Box)
 
 // CONST - ignore for now
@@ -108,7 +109,7 @@ template <class T> struct ctype_trait<T *> {
 
   static Box box(P p) { return {type_id<P>(), p, nullptr}; }
 
-  static auto add(API *api) { return sexpr<T *, T>::add("POINTER", api); }
+  static auto add() { return sexpr<T *, T>::add("POINTER"); }
 };
 
 // CFUNCTYPE
@@ -123,8 +124,8 @@ template <class Ret, class... Args> struct ctype_trait<Ret (*)(Args...)> {
     return {type_id<F>(), reinterpret_cast<void *>(f), nullptr};
   }
 
-  static auto add(API *api) {
-    return sexpr<Ret (*)(Args...), Ret, Args...>::add("CFUNCTYPE", api);
+  static auto add() {
+    return sexpr<Ret (*)(Args...), Ret, Args...>::add("CFUNCTYPE");
   }
 };
 
@@ -201,16 +202,16 @@ struct ctype_trait<Ret (F::*)(Args...) const> {
   static B ret(F f) { return box(f); }
   static F arg(B b) { return unbox(b); }
 
-  static auto add(API *api) {
-    auto tid = sexpr<F, Ret, Args...>::add("CPPFUNCTYPE", api);
+  static auto add() {
+    auto tid = sexpr<F, Ret, Args...>::add("CPPFUNCTYPE");
 
     using pt = ctype_trait<decltype(Func<F, Ret, Args...>::callback)>;
-    api->add_callback(tid, pt::add(api));
+    ts->add_callback(tid, pt::add());
 
     auto call = Func<F, Ret, Args...>::caller;
     using ct = ctype_trait<decltype(call)>;
-    ct::add(api);
-    api->add_caller(tid, ct::box(call));
+    ct::add();
+    ts->add_caller(tid, ct::box(call));
 
     return tid;
   }
