@@ -32,7 +32,7 @@ static const std::unordered_map<std::type_index, char> NumpyTypes = {
 using pyufuncgenericfuncion = std::function<void(char **args, npy_intp *dims,
                                                  npy_intp *steps, void *data)>;
 
-template <class Ret, class F, class... Args, std::size_t... Is>
+template <class Ret, class F, class... Args, size_t... Is>
 pyufuncgenericfuncion loop1d_imp(F func, std::index_sequence<Is...>) {
   return [func](char **args, npy_intp *dims, npy_intp *steps, void *data) {
     constexpr size_t nin = sizeof...(Args);

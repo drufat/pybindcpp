@@ -2,13 +2,7 @@
 
 #include <cmath>
 
-#ifdef PYBINDCPP_CAPI
 #include <capi/module.h>
-#else
-#include <capi/capsule.h>
-#include <capi/cpython_types.h>
-#include <ctyp/module.h>
-#endif
 
 using namespace pybindcpp;
 
@@ -53,8 +47,8 @@ void module(ExtModule &m) {
   m.var("half", half);
   m.var("pi", pi);
 
-  m.var("one", (long)1);
-  m.var("two", (unsigned long)2);
+  m.var("one", static_cast<long>(1));
+  m.var("two", static_cast<unsigned long>(2));
   m.var("true", true);
   m.var("false", false);
   m.var("name", "native");
@@ -119,8 +113,4 @@ void module(ExtModule &m) {
   m.fun("PyCapsule_GetName", PyCapsule_GetName);
 }
 
-#ifdef PYBINDCPP_CAPI
-PYBINDCPP_INIT(native_capi, module)
-#else
-PYBINDCPP_INIT(native_ctyp, module)
-#endif
+PYBINDCPP_INIT(native, module)

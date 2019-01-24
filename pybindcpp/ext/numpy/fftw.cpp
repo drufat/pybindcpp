@@ -1,5 +1,5 @@
 // Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
-#include "numpy_pybind.h"
+#include "capi/numpy.h"
 
 #include <fftw3.h>
 

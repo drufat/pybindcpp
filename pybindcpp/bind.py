@@ -1,6 +1,5 @@
 """
 >>> p = get_capsule(b'pybindcpp.bind', b'register_cap')
-
 >>> p = ct.c_char_p(b"abcdef")
 >>> name = ct.c_char_p(b"char *")
 >>> o = PyCapsule_New(p, name, None)

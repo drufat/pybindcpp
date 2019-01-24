@@ -19,41 +19,12 @@ include_dirs = [
 headers = [
     *glob('pybindcpp/include/*.h'),
     *glob('pybindcpp/include/capi/*.h'),
-    *glob('pybindcpp/include/ctyp/*.h'),
+    *glob('pybindcpp/include/pb/*.h'),
 ]
 
 depends = ['setup.py', *headers]
-extra_compile_args = ['-std=c++14']
+extra_compile_args = ['-std=c++14', '-g']
 libraries = []
-
-
-def extension_(name):
-    return [
-        Extension(
-            f'pybindcpp.ext.{name}_ctyp',
-            sources=[
-                f'pybindcpp/ext/{name}.cpp',
-            ],
-            depends=depends,
-            include_dirs=include_dirs,
-            extra_compile_args=extra_compile_args,
-            language="c++",
-            libraries=libraries,
-        ),
-
-        Extension(
-            f'pybindcpp.ext.{name}_capi',
-            sources=[
-                f'pybindcpp/ext/{name}.cpp',
-            ],
-            depends=depends,
-            include_dirs=include_dirs,
-            extra_compile_args=extra_compile_args + ['-DPYBINDCPP_CAPI'],
-            language="c++",
-            libraries=libraries,
-        ),
-    ]
-
 
 ext_modules = [
 
@@ -70,9 +41,9 @@ ext_modules = [
     ),
 
     Extension(
-        'pybindcpp.ext.bindctypes',
+        f'pybindcpp.ext.native',
         sources=[
-            'pybindcpp/ext/bindctypes.cpp',
+            f'pybindcpp/ext/native.cpp',
         ],
         depends=depends,
         include_dirs=include_dirs,
@@ -80,10 +51,6 @@ ext_modules = [
         language="c++",
         libraries=libraries,
     ),
-
-    *extension_('simple'),
-    *extension_('example'),
-    *extension_('native'),
 
     Extension(
         'pybindcpp.ext.numpy.numpy',
@@ -120,6 +87,19 @@ ext_modules = [
         language="c++",
         libraries=libraries + ['fftw3'],
     ),
+
+    Extension(
+        f'pybindcpp.ext.example',
+        sources=[
+            f'pybindcpp/ext/example.cpp',
+        ],
+        depends=depends,
+        include_dirs=include_dirs,
+        extra_compile_args=extra_compile_args,
+        language="c++",
+        libraries=libraries,
+    ),
+
 ]
 
 setup(

@@ -1,13 +1,10 @@
 # Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
-import ctypes as ct
 
-import pybindcpp.ext.native_capi as m_capi
-import pybindcpp.ext.native_ctyp as m_ctyp
+import pybindcpp.ext.native as m
 import pytest
 
 
-@pytest.mark.parametrize('m', [m_capi, m_ctyp])
-def test_native(m):
+def test_native():
     assert round(m.pi, 2) == 3.14
     assert m.half == 0.5
 
@@ -63,15 +60,3 @@ def test_native(m):
 
     assert m.PyCapsule_GetName(m.caps_int) == b'i'
     assert m.PyCapsule_GetName(m.caps_double) == b'd'
-
-
-# core dumps on m_capi
-@pytest.mark.parametrize('m', [m_ctyp])
-def test_native1(m):
-    N = 5
-    a = (ct.c_double * N)(*range(N))
-    assert tuple(a) == (0.0, 1.0, 2.0, 3.0, 4.0)
-    m.add_one(N, a)
-    assert tuple(a) == (1.0, 2.0, 3.0, 4.0, 5.0)
-    m.add_one(N, a)
-    assert tuple(a) == (2.0, 3.0, 4.0, 5.0, 6.0)
