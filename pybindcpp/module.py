@@ -1,4 +1,6 @@
 import ctypes as ct
+import importlib
+import sys
 
 from pybindcpp.api import Box, TypeSystem
 
@@ -37,12 +39,18 @@ ctypemap = {
     'Box': Box,
 }
 
+
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
+    sys.stderr.flush()
+
+
 storage = {}
 
 
 @ct.CFUNCTYPE(None, ct.c_void_p)
 def deleter(ptr):
-    # print('py del', hex(ptr))
+    # eprint('py del', hex(ptr))
     del storage[int(ptr)]
 
 
@@ -103,8 +111,9 @@ def parse(types, typeid, top=None):
 
 def parse_ctype(ns, types, typeid, top=None):
     name, *args = types[typeid]
+
+    # simple type
     if not args:
-        # simple type
         return ctypemap[name]
 
     # composite type
@@ -119,7 +128,7 @@ def identity(arg):
     return arg
 
 
-class Func:
+class Func(object):
 
     def __init__(self, func, box):
         self.func = func
@@ -129,12 +138,15 @@ class Func:
         return self.func(*args)
 
     def __del__(self):
-        box = self.box
-        # print("cc del", hex(box.ptr))
-        box.deleter(box.ptr)
+        b = self.box
+        b.deleter(b.ptr)
 
 
 def struct_env(struct, locals_, globals_):
+    """
+    Create ctypes struct from locals_ and globals_.
+    """
+
     def lookup(name):
         return locals_.get(name, globals_.get(name))
 
@@ -167,7 +179,7 @@ def type_system():
     type_counter = 0
     types = {}
 
-    def add_type(tid, args, nargs, name):
+    def add_type(tid, name, args, nargs):
         if tid in types:
             return tid
         name = name.decode()
@@ -175,6 +187,16 @@ def type_system():
         types[tid] = (name, *args)
 
         return tid
+
+    callers = {}
+
+    def add_caller(tid, box):
+        callers[tid] = box
+
+    callbacks = {}
+
+    def add_callback(tid, cid):
+        callbacks[tid] = cid
 
     def cat(tid):
         name, *args = types[tid]
@@ -200,7 +222,6 @@ def type_system():
         ctype = parse_ctype(ns, types, box.tid)
         ptr = ct.cast(box.ptr, ct.POINTER(ctype))
         obj = ptr[0]
-        # print('cc del', hex(box.ptr))
         box.deleter(box.ptr)
         return obj
 
@@ -253,7 +274,7 @@ def type_system():
         return identity
 
     def box_cppfunc(tid):
-        ctype = parse_ctype(ns, types, tid, top=ct.PYFUNCTYPE)
+        ctype = parse_ctype(ns, types, tid, top=ct.CFUNCTYPE)
         _, ret_tid, *args_tid = types[tid]
 
         _unbox_args = unbox_rets(args_tid)
@@ -275,27 +296,26 @@ def type_system():
             b = Box(tid=callbacks[tid],
                     ptr=ct.cast(ctype(f), ct.c_void_p),
                     deleter=deleter)
-
             storage[int(b.ptr)] = b
-            # print('py new', hex(b.ptr))
+            # eprint('py new', hex(b.ptr))
+
             return b
 
         return _
 
-    callers = {}
+    def add_box(m, name, box):
+        name = name.decode()
+        setattr(m, name, unbox(box))
 
-    def add_caller(tid, box):
-        callers[tid] = box
+    def import_func(module, name, tid, box_out):
+        module = module.decode()
+        name = name.decode()
+        m = importlib.import_module(module)
+        f = getattr(m, name)
+        box_out[0] = box_cppfunc(tid)(f)
 
-    callbacks = {}
-
-    def add_callback(tid, cid):
-        callbacks[tid] = cid
-
-    def import_func(module, name, typeid, box_out):
-        box_out[0] = Box()
-
-    return struct_env(TypeSystem, locals(), globals())
+    ts = struct_env(TypeSystem, locals(), globals())
+    return ts
 
 
 type_systems = {}

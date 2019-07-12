@@ -2,6 +2,8 @@
 from glob import glob
 
 import numpy
+
+print(numpy.__version__)
 from setuptools import setup, Extension
 
 # Read version number
@@ -33,9 +35,9 @@ libraries = []
 ext_modules = [
 
     Extension(
-        'pybindcpp.dispatch',
+        'pybindcpp.core.dispatch',
         sources=[
-            'pybindcpp/dispatch.cpp',
+            'pybindcpp/core/dispatch.cpp',
         ],
         depends=depends,
         include_dirs=include_dirs,
@@ -45,9 +47,9 @@ ext_modules = [
     ),
 
     Extension(
-        f'pybindcpp.ext.native',
+        f'pybindcpp.ext.capi',
         sources=[
-            f'pybindcpp/ext/native.cpp',
+            f'pybindcpp/ext/capi.cpp',
         ],
         depends=depends,
         include_dirs=include_dirs,
@@ -57,9 +59,9 @@ ext_modules = [
     ),
 
     Extension(
-        'pybindcpp.ext.numpy.numpy',
+        'pybindcpp.ext.np.np',
         sources=[
-            'pybindcpp/ext/numpy/numpy.cpp',
+            'pybindcpp/ext/np/np.cpp',
         ],
         depends=depends,
         include_dirs=include_dirs,
@@ -69,9 +71,9 @@ ext_modules = [
     ),
 
     Extension(
-        'pybindcpp.ext.numpy.eigen',
+        'pybindcpp.ext.np.eigen',
         sources=[
-            'pybindcpp/ext/numpy/eigen.cpp',
+            'pybindcpp/ext/np/eigen.cpp',
         ],
         depends=depends,
         include_dirs=include_dirs,
@@ -81,9 +83,9 @@ ext_modules = [
     ),
 
     Extension(
-        'pybindcpp.ext.numpy.fftw',
+        'pybindcpp.ext.np.fftw',
         sources=[
-            'pybindcpp/ext/numpy/fftw.cpp',
+            'pybindcpp/ext/np/fftw.cpp',
         ],
         depends=depends,
         include_dirs=include_dirs,
@@ -93,9 +95,33 @@ ext_modules = [
     ),
 
     Extension(
-        f'pybindcpp.ext.example',
+        'pybindcpp.ext.pb',
         sources=[
-            f'pybindcpp/ext/example.cpp',
+            'pybindcpp/ext/pb.cpp',
+        ],
+        depends=depends,
+        include_dirs=include_dirs,
+        extra_compile_args=extra_compile_args,
+        language="c++",
+        libraries=libraries,
+    ),
+
+    Extension(
+        'pybindcpp.core.ufunc',
+        sources=[
+            'pybindcpp/core/ufunc.cpp',
+        ],
+        depends=depends,
+        include_dirs=include_dirs,
+        extra_compile_args=extra_compile_args,
+        language="c++",
+        libraries=libraries,
+    ),
+
+    Extension(
+        'pybindcpp.ext.ufunc',
+        sources=[
+            'pybindcpp/ext/ufunc.cpp',
         ],
         depends=depends,
         include_dirs=include_dirs,

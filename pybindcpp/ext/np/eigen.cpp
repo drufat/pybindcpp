@@ -14,7 +14,7 @@ template <class T> void computation(const T &X, T &Y) {
   Y(0, 0) = 0.0;
 }
 
-void eigen(ExtModule &m) {
+void import(ExtModule &m) {
 
   m.fun("square", [](PyObject *o) -> PyObject * {
     const auto x =
@@ -41,5 +41,5 @@ void eigen(ExtModule &m) {
 
 PyMODINIT_FUNC PyInit_eigen() {
   import_array();
-  return pybindcpp::module_init("eigen", eigen);
+  return pybindcpp::module_init("eigen", import);
 }

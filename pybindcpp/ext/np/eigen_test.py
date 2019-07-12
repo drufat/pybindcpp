@@ -1,17 +1,17 @@
 # Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
 import numpy as np
 
-from pybindcpp.ext.numpy import eigen
+from pybindcpp.ext.np import eigen
 from pybindcpp.helper import eq
 
 
 def test_eigen():
-    '''
+    """
     >>> eigen.square(None)
     Traceback (most recent call last):
     ...
     ValueError: object of too small depth for desired array
-    '''
+    """
     assert eq(
         eigen.square(
             [[0, 0],

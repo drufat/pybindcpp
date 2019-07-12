@@ -1,4 +1,4 @@
-// Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
+// Copyright (C) 2010-2019 Dzhelil S. Rufat. All Rights Reserved.
 
 #include <cmath>
 
@@ -42,7 +42,7 @@ extern "C" PyObject *py_g(PyObject *self, PyObject *args) {
 constexpr double pi = M_PI;
 constexpr double half = 0.5;
 
-void module(ExtModule &m) {
+void import(ExtModule &m) {
 
   m.var("half", half);
   m.var("pi", pi);
@@ -113,4 +113,4 @@ void module(ExtModule &m) {
   m.fun("PyCapsule_GetName", PyCapsule_GetName);
 }
 
-PYBINDCPP_INIT(native, module)
+PYBINDCPP_INIT(capi, import)

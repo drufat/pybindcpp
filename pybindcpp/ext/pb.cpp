@@ -1,4 +1,4 @@
-// Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
+// Copyright (C) 2010-2019 Dzhelil S. Rufat. All Rights Reserved.
 
 #include <cmath>
 
@@ -26,7 +26,7 @@ int sum(const int *x, size_t N) {
 
 template <class T> T add(T x, T y) { return x + y; }
 
-void example(module &m) {
+void import(module m) {
   m.add("half", half);
   m.add("pi", pi);
   m.add("one", static_cast<int>(1));
@@ -58,7 +58,7 @@ void example(module &m) {
   m.add("get", [](int x) { return [x]() { return x; }; });
 
   m.add("fapp", [](std::function<int(std::function<int(int)>, int)> a, int x) {
-    auto f = [](int x) { return x; };
+    auto f = [](int y) { return y; };
     return a(f, x);
   });
   m.add("farg", [](std::function<int(std::function<int(int)>)> g,
@@ -67,6 +67,13 @@ void example(module &m) {
         [](int x) { return [x]() { return [x]() { return x + 1; }; }; });
 
   m.add("fidentity", [](std::function<int(int)> f) { return f; });
+
+  m.add("import_func", [](const char *name) {
+    return import_func<double, double>("math", name);
+  });
+
+  m.add("import_sin", import_func<double, double>("math", "sin"));
+  m.add("import_log", import_func<double, double>("math", "log"));
 }
 
-PYBINDCPP_INIT(example, example)
+PYBINDCPP_INIT(pb, import)

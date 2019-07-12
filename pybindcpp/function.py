@@ -1,5 +1,5 @@
 # Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
-from pybindcpp import dispatch
+from pybindcpp.core.dispatch import dispatch
 
 
 class function(object):
@@ -7,7 +7,7 @@ class function(object):
         self.func = func
 
     def __call__(self, *args):
-        return dispatch.dispatch(self.func, args)
+        return dispatch(self.func, args)
 
 
 class ufunc(object):

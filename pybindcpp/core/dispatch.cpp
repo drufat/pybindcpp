@@ -1,4 +1,4 @@
-// Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
+// Copyright (C) 2010-2019 Dzhelil S. Rufat. All Rights Reserved.
 #include <Python.h>
 
 #include <capi/module_imp.h>

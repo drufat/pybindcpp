@@ -1,6 +1,6 @@
-# Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
+# Copyright (C) 2010-2019 Dzhelil S. Rufat. All Rights Reserved.
 
-import pybindcpp.ext.native as m
+import pybindcpp.ext.capi as m
 import pytest
 
 

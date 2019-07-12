@@ -3,7 +3,7 @@ import numpy as np
 
 
 def eq(*args):
-    '''
+    """
     >>> eq(1, 1)
     True
     >>> eq(1, 2)
@@ -12,8 +12,7 @@ def eq(*args):
     False
     >>> eq(1, 1, 1)
     True
-
-    '''
+    """
     for l, r in zip(args[:-1], args[1:]):
         if not np.allclose(l, r):
             return False

@@ -6,7 +6,7 @@
 
 using namespace pybindcpp;
 
-void fftw(ExtModule &m) {
+void import(ExtModule &m) {
 
   m.fun("fft", [](PyObject *o) -> PyObject * {
     const auto x =
@@ -71,5 +71,5 @@ void fftw(ExtModule &m) {
 
 PyMODINIT_FUNC PyInit_fftw() {
   import_array();
-  return pybindcpp::module_init("fftw", fftw);
+  return pybindcpp::module_init("fftw", import);
 }

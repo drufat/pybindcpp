@@ -3,20 +3,15 @@
 #define MODULE_H
 
 #include "ctypes.h"
+#include <iostream>
 #include <sstream>
 
 namespace pybindcpp {
 
-struct module {
-  PyObject *obj;
-  module(PyObject *o) : obj(o) {}
-  template <class T> auto add(const char *name, T t) {
-    using ct = ctype_trait<T>;
-    ct::add();
-    return PyModule_AddObject(obj, name, ts->unbox(ct::box(t)));
-  }
-};
-
+/*
+ *  Import typesystem needs to be called before anything
+ *  else can be done.
+ */
 static auto import_typesytem() {
   //  auto m = PyImport_ImportModule("pybindcpp.module");
   //  auto init = PyObject_GetAttrString(m, "typesystem_init");
@@ -32,13 +27,37 @@ static auto import_typesytem() {
   return PyRun_SimpleString(ss.str().c_str());
 }
 
-static PyObject *init_module(const char *name,
-                             std::function<void(module &)> init) {
+/*
+ *  Never call this function during static init of C
+ *  extension as then it outlives the python module
+ *  that it depends on for memory management. It is
+ *  ok to call it from one level of indirection.
+ */
+template <class Ret, class... Args>
+auto import_func(const char *module, const char *name) {
+  using F = std::function<Ret(Args...)>;
+  auto tid = ctype_trait<F>::add();
+  Box box;
+  ts->import_func(module, name, tid, &box);
+  return F(Func<Ret, Args...>(box));
+}
 
-  if (import_typesytem()) {
-    PyErr_SetString(PyExc_RuntimeError, "Cannot import typesystem.");
-    return nullptr;
+/*
+ * Represents a Python module.
+ */
+struct module {
+  using add_box_t = std::function<void(const char *, Box)>;
+  add_box_t add_box;
+  module(add_box_t add_box_) : add_box(add_box_) {}
+  template <class T> auto add(const char *name, T t) {
+    using ct = ctype_trait<T>;
+    ct::add();
+    add_box(name, ct::box(t));
   }
+};
+
+static PyObject *init_module(const char *name,
+                             std::function<void(module)> init) {
 
   static PyModuleDef moduledef({
       PyModuleDef_HEAD_INIT,
@@ -52,17 +71,22 @@ static PyObject *init_module(const char *name,
       nullptr, // m_free
   });
 
-  auto o = PyModule_Create(&moduledef);
-  if (!o)
+  auto obj = PyModule_Create(&moduledef);
+  if (!obj)
     return nullptr;
 
-  auto m = module(o);
+  auto err = import_typesytem();
+  if (err) {
+    PyErr_SetString(PyExc_RuntimeError, "Cannot import typesystem.");
+    return nullptr;
+  }
 
   ts->pre_init();
+  module m([=](const char *name, Box box) { ts->add_box(obj, name, box); });
   init(m);
   ts->post_init();
 
-  return o;
+  return obj;
 }
 
 } // namespace pybindcpp
