@@ -5,7 +5,7 @@ import math
 import pybindcpp.ext.pb as m
 
 
-def test_example():
+def test_1():
     assert round(m.pi, 2) == 3.14
     assert m.half == 0.5
     assert m.one == 1
@@ -28,6 +28,8 @@ def test_example():
     assert m.get_x() == 1
     m.set_x(0)
 
+
+def test_2():
     def _apply(f, arg):
         return f(arg)
 
@@ -75,6 +77,8 @@ def test_example():
         inc = m.fidentity(inc)
     assert m.fidentity(inc)(8) == 9
 
+
+def test_3():
     assert m.import_func(b'log')(2.0) == math.log(2.0)
     assert m.import_func(b'cos')(2.0) == math.cos(2.0)
     assert m.import_func(b'sin')(2.0) == math.sin(2.0)
@@ -83,5 +87,15 @@ def test_example():
     assert m.import_log(2.0) == math.log(2.0)
 
 
+def test_4():
+    assert m.py_double(3.0) == 6.0
+    assert m.py_double((0, 1, 2)) == (0, 1, 2, 0, 1, 2)
+    assert m.py_double([0, 1, 2]) == [0, 1, 2, 0, 1, 2]
+    assert m.py_square(3.0) == 9.0
+
+
 if __name__ == '__main__':
-    test_example()
+    test_1()
+    test_2()
+    test_3()
+    test_4()

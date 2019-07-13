@@ -1,14 +1,17 @@
 // Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
 
-#include <capi/module.h>
 #include <fftw3.h>
 #include <numpy/arrayobject.h>
+#include <pb/module.h>
 
 using namespace pybindcpp;
 
-void import(ExtModule &m) {
+void import(module m) {
 
-  m.fun("fft", [](PyObject *o) -> PyObject * {
+  m.add("fft", [](PyObject *o) -> PyObject * {
+    PyGILState_STATE gstate;
+    gstate = PyGILState_Ensure();
+
     const auto x =
         (PyArrayObject *)PyArray_ContiguousFromAny(o, NPY_CDOUBLE, 1, 1);
     if (!x)
@@ -30,10 +33,16 @@ void import(ExtModule &m) {
     fftw_destroy_plan(plan);
 
     Py_DECREF(x);
-    return (PyObject *)y;
+    auto rslt = (PyObject *)y;
+
+    PyGILState_Release(gstate);
+    return rslt;
   });
 
-  m.fun("fft2", [](PyObject *o) -> PyObject * {
+  m.add("fft2", [](PyObject *o) -> PyObject * {
+    PyGILState_STATE gstate;
+    gstate = PyGILState_Ensure();
+
     const auto x =
         (PyArrayObject *)PyArray_ContiguousFromAny(o, NPY_CDOUBLE, 1, 2);
     if (!x)
@@ -65,11 +74,14 @@ void import(ExtModule &m) {
     fftw_destroy_plan(p);
 
     Py_DECREF(x);
-    return (PyObject *)y;
+    auto rslt = (PyObject *)y;
+
+    PyGILState_Release(gstate);
+    return rslt;
   });
 }
 
 PyMODINIT_FUNC PyInit_fftw() {
   import_array();
-  return pybindcpp::module_init("fftw", import);
+  return pybindcpp::init_module("fftw", import);
 }

@@ -13,18 +13,22 @@ namespace pybindcpp {
  *  else can be done.
  */
 static auto import_typesytem() {
-  //  auto m = PyImport_ImportModule("pybindcpp.module");
-  //  auto init = PyObject_GetAttrString(m, "typesystem_init");
-  //  auto ptr = PyLong_FromVoidPtr(&ts);
-  //  auto ret = PyObject_CallFunctionObjArgs(init, ptr, nullptr);
-  //  Py_DecRef(ptr);
-  //  Py_DecRef(init);
-  //  Py_DecRef(m);
-  //  return ret;
   std::stringstream ss;
   ss << "import pybindcpp.module as m\n";
   ss << "m.typesystem_init(" << &ts << ")\n";
   return PyRun_SimpleString(ss.str().c_str());
+}
+
+static auto import_typesytem_capi() {
+  auto m = PyImport_ImportModule("pybindcpp.module");
+  auto init = PyObject_GetAttrString(m, "typesystem_init");
+  auto ptr = PyLong_FromVoidPtr(&ts);
+  auto ret = PyObject_CallFunctionObjArgs(init, ptr, NULL);
+  Py_DecRef(ptr);
+  Py_DecRef(init);
+  Py_DecRef(m);
+  Py_DecRef(ret);
+  return 0;
 }
 
 /*

@@ -97,12 +97,13 @@ void add_ufunc(module &m, const char *name, Ret (*fn)(Args...)) {
   auto make_ufunc =
       import_func<PyObject *, PyObject *>("pybindcpp.ufunc", "make_ufunc");
   L loop1d = loop1d_imp<F, Args..., Ret>::imp(fn);
-  // do not delete args
+
   PyObject *args = args_ufunc(const_cast<char *>(name), fn, loop1d);
   //  std::cout << "args  " << args->ob_refcnt << std::endl;
   PyObject *ufunc = make_ufunc(args);
   //  std::cout << "ufunc " << ufunc->ob_refcnt << std::endl;
   m.add(name, ufunc);
+  // delete reference to ufunc but not to args
   Py_DecRef(ufunc);
   //  std::cout << "ufunc " << ufunc->ob_refcnt << std::endl;
 }

@@ -1,8 +1,9 @@
 # Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
 import numpy as np
 import numpy.fft as fft
-from pybindcpp.helper import eq
+
 from pybindcpp.ext.np import fftw
+from pybindcpp.helper import eq
 
 
 def test_fftw():
@@ -42,3 +43,8 @@ def test_fftw2():
 
     x = np.random.rand(5) + 1j * np.random.rand(5)
     assert eq(fftw.fft2(x), fft2(x))
+
+
+if __name__ == '__main__':
+    test_fftw()
+    test_fftw2()

@@ -1,10 +1,10 @@
 // Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
 
 #include <Eigen/Core>
-#include <capi/module.h>
 #include <cmath>
 #include <complex>
 #include <numpy/arrayobject.h>
+#include <pb/module.h>
 
 using namespace pybindcpp;
 using namespace Eigen;
@@ -14,11 +14,13 @@ template <class T> void computation(const T &X, T &Y) {
   Y(0, 0) = 0.0;
 }
 
-void import(ExtModule &m) {
+void import(module m) {
 
-  m.fun("square", [](PyObject *o) -> PyObject * {
-    const auto x =
-        (PyArrayObject *)PyArray_ContiguousFromAny(o, NPY_DOUBLE, 2, 2);
+  m.add("square", [](PyObject *o) -> PyObject * {
+    PyGILState_STATE gstate;
+    gstate = PyGILState_Ensure();
+
+    auto x = (PyArrayObject *)PyArray_ContiguousFromAny(o, NPY_DOUBLE, 2, 2);
     if (!x)
       return nullptr;
 
@@ -35,11 +37,14 @@ void import(ExtModule &m) {
     computation(X, Y);
 
     Py_DECREF(x);
-    return (PyObject *)y;
+    auto rslt = (PyObject *)y;
+
+    PyGILState_Release(gstate);
+    return rslt;
   });
 }
 
 PyMODINIT_FUNC PyInit_eigen() {
   import_array();
-  return pybindcpp::module_init("eigen", import);
+  return pybindcpp::init_module("eigen", import);
 }

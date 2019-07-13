@@ -74,6 +74,9 @@ void import(module m) {
 
   m.add("import_sin", import_func<double, double>("math", "sin"));
   m.add("import_log", import_func<double, double>("math", "log"));
+
+  m.add("py_double", [](PyObject *o) { return PyNumber_Add(o, o); });
+  m.add("py_square", [](PyObject *o) { return PyNumber_Multiply(o, o); });
 }
 
 PYBINDCPP_INIT(pb, import)

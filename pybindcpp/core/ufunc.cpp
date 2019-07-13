@@ -17,8 +17,14 @@ static PyUFuncGenericFunction generic_function;
 
 static auto pyufunc(PyUFuncGenericFunction *func, void **data, char *types,
                     int ntypes, int nin, int nout, char *name) {
-  return PyUFunc_FromFuncAndData(func, data, types, ntypes, nin, nout,
-                                 PyUFunc_None, name, nullptr, 0);
+  PyGILState_STATE gstate;
+  gstate = PyGILState_Ensure();
+
+  auto rslt = PyUFunc_FromFuncAndData(func, data, types, ntypes, nin, nout,
+                                      PyUFunc_None, name, nullptr, 0);
+
+  PyGILState_Release(gstate);
+  return rslt;
 }
 
 void import(module m) {
