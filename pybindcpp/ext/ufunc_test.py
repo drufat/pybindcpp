@@ -18,29 +18,22 @@ def test_1():
 def test_2():
     fn = np.vectorize(lambda N, x: N * x)
 
-    assert tuple(uf.fn.types) == ('qd->d',)
-
-    for N, x in (  # (1, 2),
-            (1, [1, 2, 3, 4]),
-            (1, [[1, 2], [3, 4]]),
-            ([1, 2], [[1, 2], [3, 4]])):
+    for N, x in ((1, 2.0),
+                 ([[1], [2]], [1.0, 2.0, 3.0, 4.0]),
+                 (1, [[1.0, 2.0], [3.0, 4.0]]),
+                 ([[1], [2]], [[1.0, 2.0], [3.0, 4.0]])):
         assert eq(fn(N, x), uf.fn(N, x))
 
-    for N, x in (
-            (1, 2),
-    ):
-        assert eq(fn(N, x), uf.fn(N, x))
-
-    for N, x in ((1, [1, 2, 3, 4]),
-                 (1, np.ones(100)),
-                 (1, np.zeros(100))):
+    N = 1
+    for x in ([1, 2, 3, 4],
+              np.ones(100),
+              np.zeros(100)):
         assert eq(fn(N, x), uf.fn(N, x))
 
 
 def test_3():
-    assert tuple(uf.add_one.types) == ('q->q',)
-    assert eq(uf.add_one(np.array([1, 2, 3])), np.array([2, 3, 4]))
-    assert eq(uf.add_one(np.array([3, 2, 1])), np.array([4, 3, 2]))
+    assert eq(uf.add_one([1, 2, 3]), [2, 3, 4])
+    assert eq(uf.add_one([3, 2, 1]), [4, 3, 2])
 
 
 if __name__ == '__main__':

@@ -32,7 +32,6 @@ ctypemap = {
     'const wchar_t *': ct.c_wchar_p,
 
     'void *': ct.c_void_p,
-
     'PyObject *': ct.py_object,
 
     'void': None,
@@ -153,6 +152,13 @@ def struct_env(struct, locals_, globals_):
     return struct(*[ctype(lookup(name)) for name, ctype in struct._fields_])
 
 
+ns = {
+    'POINTER': ct.POINTER,
+    'CFUNCTYPE': ct.CFUNCTYPE,
+    'CPPFUNCTYPE': lambda *args: Box,
+}
+
+
 def type_system():
     def print_types():
         print('types:')
@@ -204,20 +210,6 @@ def type_system():
             return 'SIMPLE'
         return types[tid][0]
 
-    def unbox(box):
-        return {
-            'SIMPLE': unbox_simple,
-            'POINTER': unbox_pointer,
-            'CFUNCTYPE': unbox_cfunc,
-            'CPPFUNCTYPE': unbox_cppfunc,
-        }[cat(box.tid)](box)
-
-    ns = {
-        'POINTER': ct.POINTER,
-        'CFUNCTYPE': ct.CFUNCTYPE,
-        'CPPFUNCTYPE': lambda *args: Box,
-    }
-
     def unbox_simple(box):
         ctype = parse_ctype(ns, types, box.tid)
         ptr = ct.cast(box.ptr, ct.POINTER(ctype))
@@ -238,6 +230,7 @@ def type_system():
     def unbox_cppfunc(box):
 
         _, ret_tid, *args_tid = types[box.tid]
+        assert _ == 'CPPFUNCTYPE'
         _box_args = box_args(args_tid)
         _unbox_ret = unbox_ret(ret_tid)
 
@@ -263,6 +256,16 @@ def type_system():
         if cat(tid) == 'CPPFUNCTYPE':
             return unbox_cppfunc
         return identity
+
+    ns_unbox = {
+        'SIMPLE': unbox_simple,
+        'POINTER': unbox_pointer,
+        'CFUNCTYPE': unbox_cfunc,
+        'CPPFUNCTYPE': unbox_cppfunc,
+    }
+
+    def unbox(box):
+        return ns_unbox[cat(box.tid)](box)
 
     def box_args(tids):
         funcs = [box_arg(_) for _ in tids]

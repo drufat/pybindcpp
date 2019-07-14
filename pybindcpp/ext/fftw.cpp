@@ -6,7 +6,7 @@
 
 using namespace pybindcpp;
 
-void import(module m) {
+void init(module m) {
 
   m.add("fft", [](PyObject *o) -> PyObject * {
     PyGILState_STATE gstate;
@@ -83,5 +83,5 @@ void import(module m) {
 
 PyMODINIT_FUNC PyInit_fftw() {
   import_array();
-  return pybindcpp::init_module("fftw", import);
+  return pybindcpp::init_module("fftw", init);
 }

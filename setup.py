@@ -1,4 +1,4 @@
-# Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
+# Copyright (C) 2010-2019 Dzhelil S. Rufat. All Rights Reserved.
 from glob import glob
 
 import numpy
@@ -19,12 +19,12 @@ include_dirs = [
 ]
 
 headers = [
-    *glob('pybindcpp/include/pb/*.h'),
+    *glob('pybindcpp/include/pybindcpp/*.h'),
 ]
 
 depends = ['setup.py', *headers]
 extra_compile_args = [
-    '-std=c++14',
+    '-std=c++11',
     '-g',
     '-DNPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION',
 ]

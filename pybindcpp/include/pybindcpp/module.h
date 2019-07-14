@@ -12,39 +12,41 @@ namespace pybindcpp {
  *  Import typesystem needs to be called before anything
  *  else can be done.
  */
-static auto import_typesytem() {
+static int import_typesytem() {
   std::stringstream ss;
   ss << "import pybindcpp.module as m\n";
   ss << "m.typesystem_init(" << &ts << ")\n";
   return PyRun_SimpleString(ss.str().c_str());
 }
 
-static auto import_typesytem_capi() {
-  auto m = PyImport_ImportModule("pybindcpp.module");
-  auto init = PyObject_GetAttrString(m, "typesystem_init");
-  auto ptr = PyLong_FromVoidPtr(&ts);
-  auto ret = PyObject_CallFunctionObjArgs(init, ptr, NULL);
-  Py_DecRef(ptr);
-  Py_DecRef(init);
-  Py_DecRef(m);
-  Py_DecRef(ret);
-  return 0;
-}
+// static int import_typesytem_capi() {
+//  auto m = PyImport_ImportModule("pybindcpp.module");
+//  auto init = PyObject_GetAttrString(m, "typesystem_init");
+//  auto ptr = PyLong_FromVoidPtr(&ts);
+//  auto ret = PyObject_CallFunctionObjArgs(init, ptr, NULL);
+//  Py_DecRef(ptr);
+//  Py_DecRef(init);
+//  Py_DecRef(m);
+//  Py_DecRef(ret);
+//  return 0;
+//}
 
-/*
- *  Never call this function during static init of C
- *  extension as then it outlives the python module
- *  that it depends on for memory management. It is
- *  ok to call it from one level of indirection.
- */
-template <class Ret, class... Args>
-auto import_func(const char *module, const char *name) {
+template <class Ret, class... Args> struct import {
   using F = std::function<Ret(Args...)>;
-  auto tid = ctype_trait<F>::add();
-  Box box;
-  ts->import_func(module, name, tid, &box);
-  return F(Func<Ret, Args...>(box));
-}
+
+  /*
+   *  Never call this function during static init of C
+   *  extension as then it outlives the python module
+   *  that it depends on for memory management. It is
+   *  ok to call it from one level of indirection.
+   */
+  static F func(const char *module, const char *name) {
+    auto tid = ctype<F>::add();
+    Box box;
+    ts->import_func(module, name, tid, &box);
+    return F(Func<Ret, Args...>(box));
+  }
+};
 
 /*
  * Represents a Python module.
@@ -53,8 +55,8 @@ struct module {
   using add_box_t = std::function<void(const char *, Box)>;
   add_box_t add_box;
   module(add_box_t add_box_) : add_box(add_box_) {}
-  template <class T> auto add(const char *name, T t) {
-    using ct = ctype_trait<T>;
+  template <class T> void add(const char *name, T t) {
+    using ct = ctype<T>;
     ct::add();
     add_box(name, ct::box(t));
   }

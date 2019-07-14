@@ -26,7 +26,7 @@ int sum(const int *x, size_t N) {
 
 template <class T> T add(T x, T y) { return x + y; }
 
-void import(module m) {
+void init(module m) {
   m.add("half", half);
   m.add("pi", pi);
   m.add("one", static_cast<int>(1));
@@ -69,14 +69,14 @@ void import(module m) {
   m.add("fidentity", [](std::function<int(int)> f) { return f; });
 
   m.add("import_func", [](const char *name) {
-    return import_func<double, double>("math", name);
+    return import<double, double>::func("math", name);
   });
 
-  m.add("import_sin", import_func<double, double>("math", "sin"));
-  m.add("import_log", import_func<double, double>("math", "log"));
+  m.add("import_sin", import<double, double>::func("math", "sin"));
+  m.add("import_log", import<double, double>::func("math", "log"));
 
   m.add("py_double", [](PyObject *o) { return PyNumber_Add(o, o); });
   m.add("py_square", [](PyObject *o) { return PyNumber_Multiply(o, o); });
 }
 
-PYBINDCPP_INIT(example, import)
+PYBINDCPP_INIT(example, init)

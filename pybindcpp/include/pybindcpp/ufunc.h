@@ -7,10 +7,12 @@
 
 namespace pybindcpp {
 
+using L = std::function<void(char **, intptr_t *, intptr_t *, void *)>;
+
 template <class F, class... X> struct loop1d_imp;
 
 template <class F, class A0, class A1> struct loop1d_imp<F, A0, A1> {
-  static auto imp(F func) {
+  static L imp(F func) {
     return [func](char **args, intptr_t *dims, intptr_t *steps, void *data) {
       const auto N = dims[0];
       for (auto i = 0; i < N; i++) {
@@ -24,7 +26,7 @@ template <class F, class A0, class A1> struct loop1d_imp<F, A0, A1> {
 
 template <class F, class A0, class A1, class A2>
 struct loop1d_imp<F, A0, A1, A2> {
-  static auto imp(F func) {
+  static L imp(F func) {
     return [func](char **args, intptr_t *dims, intptr_t *steps, void *data) {
       const auto N = dims[0];
       for (auto i = 0; i < N; i++) {
@@ -39,7 +41,7 @@ struct loop1d_imp<F, A0, A1, A2> {
 
 template <class F, class A0, class A1, class A2, class A3>
 struct loop1d_imp<F, A0, A1, A2, A3> {
-  static auto imp(F func) {
+  static L imp(F func) {
     return [func](char **args, intptr_t *dims, intptr_t *steps, void *data) {
       const auto N = dims[0];
       for (auto i = 0; i < N; i++) {
@@ -55,7 +57,7 @@ struct loop1d_imp<F, A0, A1, A2, A3> {
 
 template <class F, class A0, class A1, class A2, class A3, class A4>
 struct loop1d_imp<F, A0, A1, A2, A3, A4> {
-  static auto imp(F func) {
+  static L imp(F func) {
     return [func](char **args, intptr_t *dims, intptr_t *steps, void *data) {
       const auto N = dims[0];
       for (auto i = 0; i < N; i++) {
@@ -72,7 +74,7 @@ struct loop1d_imp<F, A0, A1, A2, A3, A4> {
 
 template <class F, class A0, class A1, class A2, class A3, class A4, class A5>
 struct loop1d_imp<F, A0, A1, A2, A3, A4, A5> {
-  static auto imp(F func) {
+  static L imp(F func) {
     return [func](char **args, intptr_t *dims, intptr_t *steps, void *data) {
       const auto N = dims[0];
       for (auto i = 0; i < N; i++) {
@@ -91,11 +93,10 @@ struct loop1d_imp<F, A0, A1, A2, A3, A4, A5> {
 template <class Ret, class... Args>
 void add_ufunc(module &m, const char *name, Ret (*fn)(Args...)) {
   using F = Ret (*)(Args...);
-  using L = std::function<void(char **, intptr_t *, intptr_t *, void *)>;
   auto args_ufunc =
-      import_func<PyObject *, char *, F, L>("pybindcpp.ufunc", "args_ufunc");
+      import<PyObject *, char *, F, L>::func("pybindcpp.ufunc", "args_ufunc");
   auto make_ufunc =
-      import_func<PyObject *, PyObject *>("pybindcpp.ufunc", "make_ufunc");
+      import<PyObject *, PyObject *>::func("pybindcpp.ufunc", "make_ufunc");
   L loop1d = loop1d_imp<F, Args..., Ret>::imp(fn);
 
   PyObject *args = args_ufunc(const_cast<char *>(name), fn, loop1d);
@@ -108,11 +109,7 @@ void add_ufunc(module &m, const char *name, Ret (*fn)(Args...)) {
   //  std::cout << "ufunc " << ufunc->ob_refcnt << std::endl;
 }
 
-// using LOOP1D = std::function<void(char **args, intptr_t *dims, intptr_t
-// *steps,
-//                                  void *data)>;
-
-// template <class F, class Ret, class... Args> LOOP1D loop1d(F func) {
+// template <class F, class Ret, class... Args> L loop1d(F func) {
 //  using CF = Ret (*)(Args...);
 //  auto target = func.template target<CF>();
 //  if (target) {

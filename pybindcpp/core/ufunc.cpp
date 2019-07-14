@@ -15,8 +15,8 @@ const static size_t numpy_types[numpy_types_size] = {
 };
 static PyUFuncGenericFunction generic_function;
 
-static auto pyufunc(PyUFuncGenericFunction *func, void **data, char *types,
-                    int ntypes, int nin, int nout, char *name) {
+static PyObject *pyufunc(PyUFuncGenericFunction *func, void **data, char *types,
+                         int ntypes, int nin, int nout, char *name) {
   PyGILState_STATE gstate;
   gstate = PyGILState_Ensure();
 
@@ -27,7 +27,7 @@ static auto pyufunc(PyUFuncGenericFunction *func, void **data, char *types,
   return rslt;
 }
 
-void import(module m) {
+void init(module m) {
   m.add("numpy_types_size", numpy_types_size);
   m.add("numpy_types", numpy_types);
   m.add("generic_function", generic_function);
@@ -37,5 +37,5 @@ void import(module m) {
 PyMODINIT_FUNC PyInit_ufunc() {
   import_array();
   import_ufunc();
-  return init_module("ufunc", import);
+  return init_module("ufunc", init);
 }

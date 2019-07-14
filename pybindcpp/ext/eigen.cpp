@@ -14,7 +14,7 @@ template <class T> void computation(const T &X, T &Y) {
   Y(0, 0) = 0.0;
 }
 
-void import(module m) {
+void init(module m) {
 
   m.add("square", [](PyObject *o) -> PyObject * {
     PyGILState_STATE gstate;
@@ -46,5 +46,5 @@ void import(module m) {
 
 PyMODINIT_FUNC PyInit_eigen() {
   import_array();
-  return pybindcpp::init_module("eigen", import);
+  return pybindcpp::init_module("eigen", init);
 }
