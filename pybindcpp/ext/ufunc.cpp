@@ -3,7 +3,7 @@
 #include <cmath>
 #include <functional>
 #include <iostream>
-#include <pb/ufunc.h>
+#include <pybindcpp/ufunc.h>
 
 using namespace pybindcpp;
 

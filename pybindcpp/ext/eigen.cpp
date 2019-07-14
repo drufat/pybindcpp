@@ -4,7 +4,7 @@
 #include <cmath>
 #include <complex>
 #include <numpy/arrayobject.h>
-#include <pb/module.h>
+#include <pybindcpp/module.h>
 
 using namespace pybindcpp;
 using namespace Eigen;

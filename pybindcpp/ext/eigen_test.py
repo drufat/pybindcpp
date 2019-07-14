@@ -1,7 +1,7 @@
 # Copyright (C) 2010-2019 Dzhelil S. Rufat. All Rights Reserved.
 import numpy as np
 
-from pybindcpp.ext.np import eigen
+from pybindcpp.ext import eigen
 from pybindcpp.helper import eq
 
 

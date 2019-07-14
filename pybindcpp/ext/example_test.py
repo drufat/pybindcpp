@@ -2,7 +2,7 @@
 
 import math
 
-import pybindcpp.ext.pb as m
+import pybindcpp.ext.example as m
 
 
 def test_1():

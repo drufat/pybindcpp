@@ -19,8 +19,6 @@ include_dirs = [
 ]
 
 headers = [
-    *glob('pybindcpp/include/*.h'),
-    *glob('pybindcpp/include/capi/*.h'),
     *glob('pybindcpp/include/pb/*.h'),
 ]
 
@@ -35,9 +33,9 @@ libraries = []
 ext_modules = [
 
     Extension(
-        'pybindcpp.core.dispatch',
+        'pybindcpp.ext.eigen',
         sources=[
-            'pybindcpp/core/dispatch.cpp',
+            'pybindcpp/ext/eigen.cpp',
         ],
         depends=depends,
         include_dirs=include_dirs,
@@ -47,45 +45,9 @@ ext_modules = [
     ),
 
     Extension(
-        f'pybindcpp.ext.capi',
+        'pybindcpp.ext.fftw',
         sources=[
-            f'pybindcpp/ext/capi.cpp',
-        ],
-        depends=depends,
-        include_dirs=include_dirs,
-        extra_compile_args=extra_compile_args,
-        language="c++",
-        libraries=libraries,
-    ),
-
-    Extension(
-        'pybindcpp.ext.np.np',
-        sources=[
-            'pybindcpp/ext/np/np.cpp',
-        ],
-        depends=depends,
-        include_dirs=include_dirs,
-        extra_compile_args=extra_compile_args,
-        language="c++",
-        libraries=libraries,
-    ),
-
-    Extension(
-        'pybindcpp.ext.np.eigen',
-        sources=[
-            'pybindcpp/ext/np/eigen.cpp',
-        ],
-        depends=depends,
-        include_dirs=include_dirs,
-        extra_compile_args=extra_compile_args,
-        language="c++",
-        libraries=libraries,
-    ),
-
-    Extension(
-        'pybindcpp.ext.np.fftw',
-        sources=[
-            'pybindcpp/ext/np/fftw.cpp',
+            'pybindcpp/ext/fftw.cpp',
         ],
         depends=depends,
         include_dirs=include_dirs,
@@ -95,9 +57,9 @@ ext_modules = [
     ),
 
     Extension(
-        'pybindcpp.ext.pb',
+        'pybindcpp.ext.example',
         sources=[
-            'pybindcpp/ext/pb.cpp',
+            'pybindcpp/ext/example.cpp',
         ],
         depends=depends,
         include_dirs=include_dirs,

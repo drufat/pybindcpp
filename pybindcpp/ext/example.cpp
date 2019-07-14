@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-#include <pb/module.h>
+#include <pybindcpp/module.h>
 
 using namespace pybindcpp;
 
@@ -79,4 +79,4 @@ void import(module m) {
   m.add("py_square", [](PyObject *o) { return PyNumber_Multiply(o, o); });
 }
 
-PYBINDCPP_INIT(pb, import)
+PYBINDCPP_INIT(example, import)

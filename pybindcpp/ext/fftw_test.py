@@ -2,7 +2,7 @@
 import numpy as np
 import numpy.fft as fft
 
-from pybindcpp.ext.np import fftw
+from pybindcpp.ext import fftw
 from pybindcpp.helper import eq
 
 

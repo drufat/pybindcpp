@@ -2,7 +2,7 @@
 
 #include <fftw3.h>
 #include <numpy/arrayobject.h>
-#include <pb/module.h>
+#include <pybindcpp/module.h>
 
 using namespace pybindcpp;
 

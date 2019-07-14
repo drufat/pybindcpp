@@ -3,7 +3,7 @@
 #include <numpy/arrayobject.h>
 #include <numpy/ufuncobject.h>
 
-#include <pb/module.h>
+#include <pybindcpp/module.h>
 
 using namespace pybindcpp;
 
