@@ -12,6 +12,21 @@ PyBindCpp
 
 *PyBindCpp* is a Python module that we have developed in order to make it easy to interface Python with C++. In what follows we describe the approach taken by PyBindCpp, and compare it to other similar libraries.
 
+Install
+--------
+
+The PyBindCpp module can be easily installed from the terminal using the command
+
+.. code-block:: bash
+
+    $ pip install pybindcpp
+
+The source code is available on Github, and can be downloaded using the command
+
+.. code-block:: bash
+
+    $ git clone https://github.com/drufat/pybindcpp.git
+
 Introduction
 -------------
 
@@ -30,7 +45,7 @@ Another approach for speeding up Python is to write the low level glue code manu
 
 A third approach is to use the Ctypes module that is included by default in the Python interpreter. Ctypes is a foreign function library for Python that provides C compatible data types that can be used to call functions directly from compiled DLL or shared library files. Ctypes works at the *application binary interface* (ABI) level rather than the *application programming interface* (API) level. One still needs to provide descriptions in Python of the exact signatures of the functions that are being exported. In fact one has to be quite careful, because at the ABI level if there is any mismatch, one can get quite nasty segmentation faults and data corruption errors, whereas the worst that can happen at the API level is for the program not to compile. Again, like the approach taken by Cython, this violates the DRY principle since declarations must be copied into Python.
 
-PyBindCpp
+Design
 -------------
 
 PyBindCpp is our own proposed solution to the problem which leverages Ctypes and C++11 in order to provide highly portable and seamless interoperability between C/C++ and Python. Most of the logic is implemented in Python via the Ctypes module which enables one to call functions from shared library files and do the appropriate type conversions. The key insight is to use C++11 for type deductions, and to feed that information back to Python in order to generate the appropriate Ctypes wrappers. In order to deduce the types of the variables and the signatures of the functions, we have relied heavily on recent features added to C++ such as template metaprogramming, type traits, parameter packs, and the auto specifier. Because of this, the minimum version of C++ necessary to compile PyBindCpp is C++11. Without these features, the only way to obtain the type and signature information of functions would have been to parse C++, which is a very difficult problem given the size and complexity of the language.
