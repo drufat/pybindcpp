@@ -33,6 +33,54 @@ libraries = []
 ext_modules = [
 
     Extension(
+        'pybindcpp.core.ufunc',
+        sources=[
+            'pybindcpp/core/ufunc.cpp',
+        ],
+        depends=depends,
+        include_dirs=include_dirs,
+        extra_compile_args=extra_compile_args,
+        language="c++",
+        libraries=libraries,
+    ),
+
+    Extension(
+        'pybindcpp.ext.example',
+        sources=[
+            'pybindcpp/ext/example.cpp',
+        ],
+        depends=depends,
+        include_dirs=include_dirs,
+        extra_compile_args=extra_compile_args,
+        language="c++",
+        libraries=libraries,
+    ),
+
+    Extension(
+        'pybindcpp.ext.sample',
+        sources=[
+            'pybindcpp/ext/sample.cpp',
+        ],
+        depends=depends,
+        include_dirs=include_dirs,
+        extra_compile_args=extra_compile_args,
+        language="c++",
+        libraries=libraries,
+    ),
+
+    Extension(
+        'pybindcpp.ext.ufunc',
+        sources=[
+            'pybindcpp/ext/ufunc.cpp',
+        ],
+        depends=depends,
+        include_dirs=include_dirs,
+        extra_compile_args=extra_compile_args,
+        language="c++",
+        libraries=libraries,
+    ),
+
+    Extension(
         'pybindcpp.ext.eigen',
         sources=[
             'pybindcpp/ext/eigen.cpp',
@@ -54,42 +102,6 @@ ext_modules = [
         extra_compile_args=extra_compile_args,
         language="c++",
         libraries=libraries + ['fftw3'],
-    ),
-
-    Extension(
-        'pybindcpp.ext.example',
-        sources=[
-            'pybindcpp/ext/example.cpp',
-        ],
-        depends=depends,
-        include_dirs=include_dirs,
-        extra_compile_args=extra_compile_args,
-        language="c++",
-        libraries=libraries,
-    ),
-
-    Extension(
-        'pybindcpp.core.ufunc',
-        sources=[
-            'pybindcpp/core/ufunc.cpp',
-        ],
-        depends=depends,
-        include_dirs=include_dirs,
-        extra_compile_args=extra_compile_args,
-        language="c++",
-        libraries=libraries,
-    ),
-
-    Extension(
-        'pybindcpp.ext.ufunc',
-        sources=[
-            'pybindcpp/ext/ufunc.cpp',
-        ],
-        depends=depends,
-        include_dirs=include_dirs,
-        extra_compile_args=extra_compile_args,
-        language="c++",
-        libraries=libraries,
     ),
 
 ]
