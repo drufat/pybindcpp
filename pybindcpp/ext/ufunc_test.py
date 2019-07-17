@@ -7,10 +7,10 @@ from pybindcpp.helper import eq
 
 def test_1():
     x = np.linspace(0, 1, 5)
-    assert tuple(uf.cos.types) == ('d->d',)
+
     x = x.astype('d')
     assert eq(np.cos(x), uf.cos(x))
-    assert tuple(uf.sin.types) == ('f->f',)
+
     x = x.astype('f')
     assert eq(np.sin(x), uf.sin(x))
 

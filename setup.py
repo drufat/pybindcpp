@@ -2,14 +2,9 @@
 from glob import glob
 
 import numpy
-
-print(numpy.__version__)
 from setuptools import setup, Extension
 
-# Read version number
-ns = {}
-with open("pybindcpp/version.py") as f:
-    exec(f.read(), ns)
+version = '0.1'
 
 include_dirs = [
     'pybindcpp/include',
@@ -118,7 +113,7 @@ setup(
         'pybindcpp': ['include/*.h', 'include/pybindcpp/*.h'],
     },
     ext_modules=ext_modules,
-    version=ns['__version__'],
+    version=version,
     description='Python Bindings from C++',
     author='Dzhelil Rufat',
     author_email='d@rufat.be',

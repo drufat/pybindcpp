@@ -1,14 +1,20 @@
-Python Bindings
-===============
+PyBindCpp
+---------
 
-|Build Status| 
+|PyBindCpp Build Status| |PyBindCpp Version Status| |PyBindCpp Downloads|
 
-A python module to create bindings using modern C++. 
+.. |PyBindCpp Build Status| image:: https://travis-ci.org/drufat/pybindcpp.png
+   :target: https://travis-ci.org/drufat/pybindcpp
+.. |PyBindCpp Version Status| image:: https://img.shields.io/pypi/v/pybindcpp.svg
+   :target: https://pypi.python.org/pypi/pybindcpp/
+.. |PyBindCpp Downloads| image:: https://img.shields.io/pypi/dm/pybindcpp.svg
+   :target: https://pypi.python.org/pypi/pybindcpp/
 
-Install using 
+A python module to create bindings using modern C++.
+
+Install using ::
 
    $ pip install pybindcpp
 
-.. |Build Status| image:: https://travis-ci.org/drufat/pybindcpp.png
-   :target: https://travis-ci.org/drufat/pybindcpp
+The documentation is available at `rufat.be/pybindcpp </pybindcpp>`_.
 
