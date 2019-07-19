@@ -1,6 +1,7 @@
 // Copyright (C) 2010-2019 Dzhelil S. Rufat. All Rights Reserved.
 
 #include <cmath>
+#include <complex>
 
 #include <pybindcpp/module.h>
 
@@ -16,17 +17,27 @@ int f(int N, int n, int x) { return N + n + x; }
 
 double mycos(double x) { return cos(x); }
 
-int sum(const int *x, size_t N) {
+int sum(const int *x, size_t N)
+{
   int s = 0;
-  for (size_t i = 0; i < N; i++) {
+  for (size_t i = 0; i < N; i++)
+  {
     s += x[i];
   }
   return s;
 }
 
-template <class T> T add(T x, T y) { return x + y; }
+template <class T>
+T add(T x, T y) { return x + y; }
 
-void init(module m) {
+template <class T>
+std::complex<T> conj(std::complex<T> x)
+{
+  return std::complex<T>(std::real(x), -std::imag(x));
+}
+
+void init(module m)
+{
   m.add("half", half);
   m.add("pi", pi);
   m.add("one", static_cast<int>(1));
@@ -77,6 +88,8 @@ void init(module m) {
 
   m.add("py_double", [](PyObject *o) { return PyNumber_Add(o, o); });
   m.add("py_square", [](PyObject *o) { return PyNumber_Multiply(o, o); });
+
+  m.add("conj", conj<double>);
 }
 
 PYBINDCPP_INIT(sample, init)

@@ -1,8 +1,11 @@
+# Copyright (C) 2010-2019 Dzhelil S. Rufat. All Rights Reserved.
+
 import ctypes as ct
 import importlib
 import sys
 
 from pybindcpp.api import Box, TypeSystem
+from pybindcpp.complex import cfloat, cdouble, clongdouble
 
 ctypemap = {
     'bool': ct.c_bool,
@@ -36,6 +39,10 @@ ctypemap = {
 
     'void': None,
     'Box': Box,
+
+    'std::complex<float>': cfloat,
+    'std::complex<double>': cdouble,
+    'std::complex<long double>': clongdouble,
 }
 
 
@@ -205,7 +212,7 @@ def type_system():
         callbacks[tid] = cid
 
     def cat(tid):
-        name, *args = types[tid]
+        _, *args = types[tid]
         if not args:
             return 'SIMPLE'
         return types[tid][0]

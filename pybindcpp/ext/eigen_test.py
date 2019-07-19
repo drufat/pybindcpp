@@ -1,19 +1,29 @@
 # Copyright (C) 2010-2019 Dzhelil S. Rufat. All Rights Reserved.
 import numpy as np
+import ctypes as ct
 
 from pybindcpp.ext import eigen
 from pybindcpp.helper import eq
 
+def square(x):
+
+    x = np.ascontiguousarray(x, dtype=np.double)
+    y = np.empty_like(x)
+
+    px = x.ctypes.data_as(ct.POINTER(ct.c_double))
+    py = y.ctypes.data_as(ct.POINTER(ct.c_double))
+
+    eigen.square(
+        px, *x.shape,
+        py, *y.shape,
+    )
+
+    return y
+
 
 def test_eigen():
-    """
-    # >>> eigen.square(None)
-    # Traceback (most recent call last):
-    # ...
-    # ValueError: object of too small depth for desired array
-    """
     assert eq(
-        eigen.square(
+        square(
             [[0, 0],
              [0, 0]]),
         np.array(
@@ -22,7 +32,7 @@ def test_eigen():
     )
 
     assert eq(
-        eigen.square(
+        square(
             [[1, 2],
              [3, 4]]),
         np.array(

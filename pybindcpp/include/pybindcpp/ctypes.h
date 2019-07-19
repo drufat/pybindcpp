@@ -2,6 +2,7 @@
 #ifndef PYBINDCPP_CTYP_TYPES_H
 #define PYBINDCPP_CTYP_TYPES_H
 
+#include <complex>
 #include <functional>
 #include <iostream>
 #include <memory>
@@ -91,6 +92,10 @@ CT(PyObject *)
 
 CT(void)
 CT(Box)
+
+CT(std::complex<float>)
+CT(std::complex<double>)
+CT(std::complex<long double>)
 
 // CONST - ignore for now
 template <class T> struct ctype<const T *> : ctype<T *> {

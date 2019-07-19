@@ -1,7 +1,9 @@
 # Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
 
+import ctypes as ct
 import math
 
+from pybindcpp.complex import cdouble
 import pybindcpp.ext.sample as m
 
 
@@ -73,7 +75,7 @@ def test_2():
 
     assert p_fidentity(inc)(8) == 9
     assert m.fidentity(inc)(8) == 9
-    for i in range(100):
+    for _ in range(100):
         inc = m.fidentity(inc)
     assert m.fidentity(inc)(8) == 9
 
@@ -94,8 +96,15 @@ def test_4():
     assert m.py_square(3.0) == 9.0
 
 
+def test_5():
+    a = cdouble(1.0, 2.0)
+    b = m.conj(a)
+    assert (b.real, b.imag) == (1.0, -2.0)
+
+
 if __name__ == '__main__':
     test_1()
     test_2()
     test_3()
     test_4()
+    test_5()

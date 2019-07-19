@@ -1,87 +1,41 @@
 // Copyright (C) 2010-2016 Dzhelil S. Rufat. All Rights Reserved.
 
 #include <fftw3.h>
+#include <complex>
 #include <numpy/arrayobject.h>
 #include <pybindcpp/module.h>
 
 using namespace pybindcpp;
 
-void init(module m) {
-
-  m.add("fft", [](PyObject *o) -> PyObject * {
-    PyGILState_STATE gstate;
-    gstate = PyGILState_Ensure();
-
-    const auto x =
-        (PyArrayObject *)PyArray_ContiguousFromAny(o, NPY_CDOUBLE, 1, 1);
-    if (!x)
-      return nullptr;
-
-    auto y = (PyArrayObject *)PyArray_EMPTY(PyArray_NDIM(x), PyArray_DIMS(x),
-                                            NPY_CDOUBLE, 0);
-    if (!y)
-      return nullptr;
-
-    auto N = PyArray_DIMS(x)[0];
-    auto in = static_cast<fftw_complex *>(PyArray_DATA(x));
-    auto out = static_cast<fftw_complex *>(PyArray_DATA(y));
-
-    auto plan = fftw_plan_dft_1d(N, in, out, FFTW_FORWARD, FFTW_ESTIMATE);
-
+void init(module m)
+{
+  m.add("fft", [](size_t N, std::complex<double> *in, std::complex<double> *out) {
+    auto _in = reinterpret_cast<fftw_complex *>(in);
+    auto _out = reinterpret_cast<fftw_complex *>(out);
+    auto plan = fftw_plan_dft_1d(N, _in, _out, FFTW_FORWARD, FFTW_ESTIMATE);
     fftw_execute(plan);
-
     fftw_destroy_plan(plan);
-
-    Py_DECREF(x);
-    auto rslt = (PyObject *)y;
-
-    PyGILState_Release(gstate);
-    return rslt;
   });
 
-  m.add("fft2", [](PyObject *o) -> PyObject * {
-    PyGILState_STATE gstate;
-    gstate = PyGILState_Ensure();
 
-    const auto x =
-        (PyArrayObject *)PyArray_ContiguousFromAny(o, NPY_CDOUBLE, 1, 2);
-    if (!x)
-      return nullptr;
-
-    auto y = (PyArrayObject *)PyArray_EMPTY(PyArray_NDIM(x), PyArray_DIMS(x),
-                                            NPY_CDOUBLE, 0);
-    if (!y)
-      return nullptr;
-
-    npy_intp N, M;
-    if (PyArray_NDIM(x) == 2) {
-      N = PyArray_DIMS(x)[1];
-      M = PyArray_DIMS(x)[0];
-    } else {
-      N = PyArray_DIMS(x)[0];
-      M = 1;
-    }
-
+  m.add("fft2", [](size_t N, size_t M, std::complex<double> *_in, std::complex<double> *_out) {
+    auto in = reinterpret_cast<fftw_complex *>(_in);
+    auto out = reinterpret_cast<fftw_complex *>(_out);
     auto p = fftw_plan_dft_1d(N, nullptr, nullptr, FFTW_FORWARD, FFTW_ESTIMATE);
 
-    fftw_complex *in;
-    fftw_complex *out;
-    for (int i = 0; i < M; i++) {
-      in = (fftw_complex *)PyArray_GETPTR1(x, i);
-      out = (fftw_complex *)PyArray_GETPTR1(y, i);
+    for (size_t i = 0; i < M; i++)
+    {
       fftw_execute_dft(p, in, out);
+      in += N;
+      out += N;
     }
     fftw_destroy_plan(p);
-
-    Py_DECREF(x);
-    auto rslt = (PyObject *)y;
-
-    PyGILState_Release(gstate);
-    return rslt;
   });
+
 }
 
-PyMODINIT_FUNC PyInit_fftw() {
+PyMODINIT_FUNC PyInit_fftw()
+{
   import_array();
   return pybindcpp::init_module("fftw", init);
 }

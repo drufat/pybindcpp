@@ -1,6 +1,5 @@
 # Copyright (C) 2010-2019 Dzhelil S. Rufat. All Rights Reserved.
 
-
 __version__ = __import__('pkg_resources').get_distribution('pybindcpp').version
 
 
