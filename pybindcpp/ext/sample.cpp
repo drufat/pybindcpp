@@ -2,7 +2,6 @@
 
 #include <cmath>
 #include <complex>
-
 #include <pybindcpp/module.h>
 
 using namespace pybindcpp;

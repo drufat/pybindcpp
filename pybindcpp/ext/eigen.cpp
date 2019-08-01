@@ -1,9 +1,6 @@
-//Copyright (C) 2010-2019 Dzhelil S. Rufat. All Rights Reserved.
+// Copyright (C) 2010-2019 Dzhelil S. Rufat. All Rights Reserved.
 
 #include <Eigen/Core>
-#include <cmath>
-#include <complex>
-#include <numpy/arrayobject.h>
 #include <pybindcpp/module.h>
 
 using namespace pybindcpp;
@@ -26,8 +23,4 @@ void init(module m)
   });
 }
 
-PyMODINIT_FUNC PyInit_eigen()
-{
-  import_array();
-  return pybindcpp::init_module("eigen", init);
-}
+PYBINDCPP_INIT(eigen, init)

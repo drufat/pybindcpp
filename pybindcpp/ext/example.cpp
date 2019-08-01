@@ -11,7 +11,8 @@ double mycos(double x) { return cos(x); }
 
 using namespace pybindcpp;
 
-void init(module m) {
+void init(module m)
+{
   // numbers
   m.add("half", half);
   m.add("pi", pi);
